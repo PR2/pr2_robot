@@ -125,7 +125,7 @@ def calibrate_imu():
 
     print "Waiting up to 20s for IMU calibration to complete."
     helper = is_calibrated_helper()
-    if not helper.wait_for_calibrated("imu_data/is_calibrated", 20):
+    if not helper.wait_for_calibrated("torso_lift_imu/is_calibrated", 20):
         rospy.logerr("IMU took too long to calibrate.")
         return False
     return True
