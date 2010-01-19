@@ -1,0 +1,83 @@
+<launch>
+  <!-- Head Camera and Projector triggers -->
+  <include file="$(find pr2_bringup)/config/pr2_camera_projector_trigger_controllers.xml" />
+  <node name="spawner_camera_synchronizer" pkg="pr2_controller_manager" type="spawner" args="projector_trigger projector_controller head_camera_trigger" />
+
+
+  <!-- Spawns the synchronizer -->
+  <node type="camera_synchronizer" name="camera_synchronizer_node" pkg="pr2_camera_synchronization">
+  </node>
+
+  <!-- Spawns the wide cameras -->
+  <node name="wide_stereo_l" pkg="wge100_camera" type="wge100_camera_node_new2">
+    <param name="ext_trig" type="bool" value="True" />
+    <param name="camera_url" type="str" value="name://wide_stereo_l#lan0" />
+    <remap from="camera" to="wide_stereo/left" />
+    <remap from="camera_alternate" to="wide_stereo/left" />
+    <param name="trig_timestamp_topic" type="string" value="not_set" />
+  </node>
+
+  <node name="wide_stereo_r" pkg="wge100_camera" type="wge100_camera_node_new2">
+    <param name="ext_trig" type="bool" value="True" />
+    <param name="camera_url" type="str" value="name://wide_stereo_r#lan0"/>
+    <remap from="camera" to="wide_stereo/right" />
+    <remap from="camera_alternate" to="wide_stereo/right" />
+    <param name="trig_timestamp_topic" type="string" value="not_set" />
+  </node>
+  
+  <node name="wide_stereo_cfg" pkg="wge100_camera" type="wge100_multi_configurator2" respawn="true">
+    <param name="camera_nodes" type="str" value="wide_stereo_l wide_stereo_r" />
+    <param name="width" type="int" value="640" />  
+    <param name="height" type="int" value="480" />  
+    <param name="imager_rate" type="double" value="25" />
+  
+    <param name="trig_timestamp_topic" type="str" value="head_camera_trigger/trigger" />
+    <param name="frame_id" type="str" value="wide_stereo_optical_frame" />
+    <param name="first_packet_offset" type="double" value="0.0025" />
+    <param name="ext_trig" type="bool" value="True" />
+    <param name="rotate_180" type="bool" value="True" />
+  </node>
+  
+  <!-- Spawns the narrow cameras -->
+  <node name="narrow_stereo_r" pkg="wge100_camera" type="wge100_camera_node_new2">
+    <param name="camera_url" type="str" value="name://narrow_stereo_r#lan0"/>
+    <remap from="camera" to="narrow_stereo/right" />
+    <remap from="camera_alternate" to="narrow_stereo_textured/right" />
+    <param name="ext_trig" type="bool" value="True" />
+    <param name="trig_timestamp_topic" type="string" value="not_set" />
+  </node>
+
+  <node name="narrow_stereo_l" pkg="wge100_camera" type="wge100_camera_node_new2">
+    <param name="camera_url" type="str" value="name://narrow_stereo_l#lan0"/>
+    <remap from="camera" to="narrow_stereo/left" />
+    <remap from="camera_alternate" to="narrow_stereo_textured/left" />
+    <param name="ext_trig" type="bool" value="True" />
+    <param name="trig_timestamp_topic" type="string" value="not_set" />
+  </node>
+
+  <node name="narrow_stereo_cfg" pkg="wge100_camera" type="wge100_multi_configurator2" respawn="true">
+    <param name="camera_nodes" type="str" value="narrow_stereo_l narrow_stereo_r" />
+    <param name="width" type="int" value="640" />  
+    <param name="height" type="int" value="480" />  
+    <param name="imager_rate" type="double" value="25" />
+
+    <param name="trig_timestamp_topic" type="str" value="head_camera_trigger/trigger" />
+    <param name="frame_id" type="str" value="narrow_stereo_optical_frame" />
+    <param name="first_packet_offset" type="double" value="0.0025" />
+
+    <param name="ext_trig" type="bool" value="True" />
+  </node>
+
+  <!-- Stereo image processing -->
+  <node ns="wide_stereo" name="wide_stereo_proc" pkg="stereo_image_proc" type="stereo_image_proc" respawn="false" output="screen">
+    <param name="num_disp" type="int" value="128"/>
+  </node>
+  <node ns="narrow_stereo" name="narrow_stereo_proc" pkg="stereo_image_proc" type="stereo_image_proc" respawn="false" output="screen">
+    <param name="num_disp" type="int" value="128"/>
+  </node>
+  <node ns="narrow_stereo_textured" name="narrow_stereo_textured_proc" pkg="stereo_image_proc" type="stereo_image_proc" respawn="false" output="screen">
+    <param name="num_disp" type="int" value="128"/>
+  </node>
+
+</launch>
+

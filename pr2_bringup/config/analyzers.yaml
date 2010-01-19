@@ -1,0 +1,183 @@
+analyzers:
+  accelerometers:
+    type: AnalyzerGroup
+    path: Accelerometers
+    analyzers:
+      imu:
+        type: GenericAnalyzer
+        path: IMU
+        find_and_remove_prefix: imu_node
+        num_items: 3
+      r_gripper:
+        type: GenericAnalyzer
+        path: Accelrometer gripper (Right)
+        find_and_remove_prefix: r_gripper_acc
+        num_items: 1
+      l_gripper:
+        type: GenericAnalyzer
+        path: Accelrometer gripper (Left)
+        find_and_remove_prefix: l_gripper_acc
+        num_items: 1
+
+  devices:
+    type: AnalyzerGroup
+    path: Devices
+    analyzers:
+      joystick:
+        type: GenericAnalyzer
+        path: Joystick
+        expected: 'joy: Joystick Driver Status'
+      sound:
+        type: GenericAnalyzer
+        path: Sound
+        expected: '/sound_play: Node State'
+
+  lasers:
+    type: AnalyzerGroup
+    path: Lasers
+    analyzers:
+      base_hk:
+        type: GenericAnalyzer
+        path: Base Hokuyo
+        find_and_remove_prefix: base_hokuyo_node
+        num_items: 2
+      tilt_hk:
+        type: GenericAnalyzer
+        path: Tilt Hokuyo
+        find_and_remove_prefix: tilt_hokuyo_node
+        num_items: 2
+
+  cameras:
+    type: AnalyzerGroup
+    path: Cameras
+    analyzers:
+      narrow_l:
+        type: GenericAnalyzer
+        path: Narrow (Left)
+        find_and_remove_prefix: narrow_stereo_l
+        num_items: 3
+      narrow_r:
+        type: GenericAnalyzer
+        path: Narrow (Right)
+        find_and_remove_prefix: narrow_stereo_r
+        num_items: 3
+      wide_l:
+        type: GenericAnalyzer
+        path: Wide (Left)
+        find_and_remove_prefix: wide_stereo_l
+        num_items: 3
+      wide_r:
+        type: GenericAnalyzer
+        path: Wide (Right)
+        find_and_remove_prefix: wide_stereo_r
+        num_items: 3
+      prosilica:
+        type: GenericAnalyzer
+        path: Prosilica
+        find_and_remove_prefix: prosilica
+        num_items: 4
+      forearm_r:
+        type: GenericAnalyzer
+        path: Forearm (Right)
+        find_and_remove_prefix: forearm_camera_r
+        num_items: 3
+      forearm_l:
+        type: GenericAnalyzer
+        path: Forearm (Left)
+        find_and_remove_prefix: forearm_camera_l
+        num_items: 3
+        
+  computers:
+    type: GenericAnalyzer
+    path: Computers
+    contains: [
+      'HD Temp',
+      'CPU Usage',
+      'CPU Temperature',
+      'HD Usage',
+      'NTP',
+      'NFS']
+  motors:
+    type: GenericAnalyzer
+    path: Motors
+    startswith: [
+      'EtherCAT Device']
+    expected: [
+      'EtherCAT Master',
+      'EtherCAT Device (bl_caster_l_wheel_motor)',
+      'EtherCAT Device (bl_caster_r_wheel_motor)',
+      'EtherCAT Device (bl_caster_rotation_motor)',
+      'EtherCAT Device (br_caster_l_wheel_motor)',
+      'EtherCAT Device (br_caster_r_wheel_motor)',
+      'EtherCAT Device (br_caster_rotation_motor)',
+      'EtherCAT Device (fl_caster_l_wheel_motor)',
+      'EtherCAT Device (fl_caster_r_wheel_motor)',
+      'EtherCAT Device (fl_caster_rotation_motor)',
+      'EtherCAT Device (fr_caster_l_wheel_motor)',
+      'EtherCAT Device (fr_caster_r_wheel_motor)',
+      'EtherCAT Device (fr_caster_rotation_motor)',
+      'EtherCAT Device (laser_tilt_mount_motor)',
+      'EtherCAT Device (head_pan_motor)',
+      'EtherCAT Device (head_tilt_motor)',
+      'EtherCAT Device (led_projector)',
+      'EtherCAT Device (torso_lift_motor)']
+  joints:
+    type: GenericAnalyzer
+    path: Joints
+    startswith: [
+      'Joint']
+    expected: [
+      'Joint (bl_caster_l_wheel_joint)',
+      'Joint (bl_caster_r_wheel_joint)',
+      'Joint (bl_caster_rotation_joint)',
+      'Joint (br_caster_l_wheel_joint)',
+      'Joint (br_caster_r_wheel_joint)',
+      'Joint (br_caster_rotation_joint)',
+      'Joint (fl_caster_l_wheel_joint)',
+      'Joint (fl_caster_r_wheel_joint)',
+      'Joint (fl_caster_rotation_joint)',
+      'Joint (fr_caster_l_wheel_joint)',
+      'Joint (fr_caster_r_wheel_joint)',
+      'Joint (fr_caster_rotation_joint)',
+      'Joint (laser_tilt_mount_joint)',
+      'Joint (head_pan_joint)',
+      'Joint (head_tilt_joint)',
+      'Joint (torso_lift_joint)']
+  power:
+    type: GenericAnalyzer
+    path: 'Power System'
+    timeout: 10
+    num_items: 21
+    expected: [
+      'IBPS 0',
+      'IBPS 1',
+      'IBPS 2',
+      'IBPS 3',
+      'Smart Battery 0.0',
+      'Smart Battery 0.1',
+      'Smart Battery 0.2',
+      'Smart Battery 0.3',
+      'Smart Battery 1.0',
+      'Smart Battery 1.1',
+      'Smart Battery 1.2',
+      'Smart Battery 1.3',
+      'Smart Battery 2.0',
+      'Smart Battery 2.1',
+      'Smart Battery 2.2',
+      'Smart Battery 2.3',
+      'Smart Battery 3.0',
+      'Smart Battery 3.1',
+      'Smart Battery 3.2',
+      'Smart Battery 3.3']
+    startswith: [
+      'Power board',
+      'IBPS',
+      'Smart Battery']
+
+  controllers:
+    type: GenericAnalyzer
+    path: 'Realtime Controllers'
+    expected: 'Realtime Control Loop'
+    startswith: [
+      'Controller']
+    discard_stale: true

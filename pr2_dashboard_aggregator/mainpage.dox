@@ -1,0 +1,7 @@
+/**
+\mainpage
+\htmlinclude manifest.html
+
+\b pr2_dashboard_aggregator exposes no public API.
+
+*/

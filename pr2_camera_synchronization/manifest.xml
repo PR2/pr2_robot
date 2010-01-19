@@ -1,0 +1,15 @@
+<package>
+  <description brief="Node to manage pr2 camera triggering.">
+    A node to set up triggering of the robot's wge100 cameras and the texture projector.
+  </description>
+  <author>Blaise Gassend</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://pr.willowgarage.com/wiki/pr2_camera_synchronization</url>
+  <depend package="ethercat_trigger_controllers"/>
+  <depend package="rospy"/>
+  <depend package="dynamic_reconfigure"/>
+  <depend package="wge100_camera"/>
+</package>
+
+

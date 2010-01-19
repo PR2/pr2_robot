@@ -1,0 +1,9 @@
+r_gripper_controller:
+  type: Pr2GripperController
+  joint: r_gripper_joint
+  pid: &gripper_position_gains
+    p: 1000.0
+l_gripper_controller:
+  type: Pr2GripperController
+  joint: l_gripper_joint
+  pid: *gripper_position_gains

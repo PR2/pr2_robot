@@ -1,0 +1,23 @@
+<launch>
+  <!-- Spwns the controllers -->
+  <node name="forearm_camera_l_trigger_spawner" pkg="pr2_controller_manager" type="spawner" args="forearm_camera_l_trigger" />
+  <group ns="forearm_camera_l_trigger">
+    <param name="type" type="string" value="MultiTriggerController" />
+    <param name="digital_output" type="string" value="l_wrist_l_motor" />
+    <param name="period" type="double" value="0.08" />
+    <param name="times" type="string" value="0" />
+    <param name="topics" type="string" value="-" />
+    <param name="values" type="string" value="0" />
+  </group>
+  
+  <!-- Spawns the forearm camera -->
+  <node name="forearm_camera_l" pkg="wge100_camera" type="wge100_camera_node_new2">
+    <param name="camera_url" type="str" value="name://forearm_l#lan0"/>
+    <param name="frame_id" type="str" value="forearm_camera_l_optical_frame" />
+    <param name="imager_rate" type="double" value="25" />
+    <param name="ext_trig" type="bool" value="false" />
+    <remap from="camera" to="forearm_camera_l" />
+    <remap from="camera_alternate" to="forearm_camera_l" />
+  </node>
+</launch>
+

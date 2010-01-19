@@ -1,0 +1,268 @@
+cal_torso_lift:
+  type: JointCalibrationController
+  joint: torso_lift_joint
+  actuator: torso_lift_motor
+  transmission: torso_lift_trans
+  velocity: -10.0
+  pid:
+    p: 200000
+    d: 10000
+    i: 0
+    i_clamp: 12000
+cal_r_shoulder_pan:
+  type: JointCalibrationController
+  joint: r_shoulder_pan_joint
+  actuator: r_shoulder_pan_motor
+  transmission: r_shoulder_pan_trans
+  velocity: 1.0
+  pid:
+    p: 7
+    i: 0.5
+    d: 0
+    i_clamp: 1.0
+cal_l_shoulder_pan:
+  type: JointCalibrationController
+  joint: l_shoulder_pan_joint
+  actuator: l_shoulder_pan_motor
+  transmission: l_shoulder_pan_trans
+  velocity: 1.0
+  pid:
+    p: 7
+    i: 0.5
+    d: 0
+    i_clamp: 1.0
+cal_r_shoulder_lift:
+  type: JointCalibrationController
+  joint: r_shoulder_lift_joint
+  actuator: r_shoulder_lift_motor
+  transmission: r_shoulder_lift_trans
+  velocity: -1.0
+  pid:
+    p: 9
+    i: 1.0
+    d: 0
+    i_clamp: 6
+cal_l_shoulder_lift:
+  type: JointCalibrationController
+  joint: l_shoulder_lift_joint
+  actuator: l_shoulder_lift_motor
+  transmission: l_shoulder_lift_trans
+  velocity: -1.0
+  pid:
+    p: 9
+    i: 1.0
+    d: 0
+    i_clamp: 6
+cal_r_upper_arm_roll:
+  type: JointCalibrationController
+  joint: r_upper_arm_roll_joint
+  actuator: r_upper_arm_roll_motor
+  transmission: r_upper_arm_roll_trans
+  velocity: 1.0
+  pid:
+    p: 6
+    i: 0.2
+    d: 0
+    i_clamp: 2
+cal_l_upper_arm_roll:
+  type: JointCalibrationController
+  joint: l_upper_arm_roll_joint
+  actuator: l_upper_arm_roll_motor
+  transmission: l_upper_arm_roll_trans
+  velocity: 1.5
+  pid:
+    p: 6
+    i: 0.2
+    d: 0
+    i_clamp: 2
+cal_r_elbow_flex:
+  type: JointCalibrationController
+  joint: r_elbow_flex_joint
+  actuator: r_elbow_flex_motor
+  transmission: r_elbow_flex_trans
+  velocity: -1.0
+  pid:
+    p: 6
+    i: 0.2
+    d: 0
+    i_clamp: 1
+cal_l_elbow_flex:
+  type: JointCalibrationController
+  joint: l_elbow_flex_joint
+  actuator: l_elbow_flex_motor
+  transmission: l_elbow_flex_trans
+  velocity: -1.0
+  pid:
+    p: 6
+    i: 0.2
+    d: 0
+    i_clamp: 1
+
+cal_r_forearm_roll:
+  type: JointCalibrationController
+  joint: r_forearm_roll_joint
+  actuator: r_forearm_roll_motor
+  transmission: r_forearm_roll_trans
+  velocity: 1.2
+  pid:
+    p: 5.0
+    i: 0.0
+    d: 0.0
+    i_clamp: 0.0
+cal_r_wrist:
+  type: WristCalibrationController
+  actuator_l: r_wrist_l_motor
+  actuator_r: r_wrist_r_motor
+  flex_joint: r_wrist_flex_joint
+  roll_joint: r_wrist_roll_joint
+  transmission: r_wrist_trans
+  roll_velocity: 1.2
+  flex_velocity: -1.2
+  pid:
+    p: 3.0
+    d: 0.0
+    i: 0.2
+    i_clamp: 2.0
+cal_r_gripper:
+  type: GripperCalibrationController
+  actuator: r_gripper_motor
+  joint: r_gripper_joint
+  other_joints:
+    - r_gripper_l_finger_joint
+    - r_gripper_l_finger_tip_joint
+    - r_gripper_r_finger_joint
+    - r_gripper_r_finger_tip_joint
+  velocity: -0.01
+  pid:
+    p: 10000
+    d: 0
+    i: 10000.0
+    i_clamp: 15.0
+
+
+cal_l_forearm_roll:
+  type: JointCalibrationController
+  joint: l_forearm_roll_joint
+  actuator: l_forearm_roll_motor
+  transmission: l_forearm_roll_trans
+  velocity: 1.2
+  pid:
+    p: 5.0
+    i: 0.0
+    d: 0.0
+    i_clamp: 0.0
+cal_l_wrist:
+  type: WristCalibrationController
+  actuator_l: l_wrist_l_motor
+  actuator_r: l_wrist_r_motor
+  flex_joint: l_wrist_flex_joint
+  roll_joint: l_wrist_roll_joint
+  transmission: l_wrist_trans
+  roll_velocity: 1.2
+  flex_velocity: -1.2
+  pid:
+    p: 3.0
+    d: 0.0
+    i: 0.2
+    i_clamp: 2.0
+cal_l_gripper:
+  type: GripperCalibrationController
+  actuator: l_gripper_motor
+  joint: l_gripper_joint
+  other_joints:
+    - l_gripper_l_finger_joint
+    - l_gripper_l_finger_tip_joint
+    - l_gripper_r_finger_joint
+    - l_gripper_r_finger_tip_joint
+  velocity: -0.01
+  pid:
+    p: 10000
+    d: 0
+    i: 10000.0
+    i_clamp: 15.0
+
+
+
+cal_laser_tilt:
+  type: JointCalibrationController
+  actuator: laser_tilt_mount_motor
+  joint: laser_tilt_mount_joint
+  transmission: laser_tilt_mount_trans
+  velocity: -1.5
+  pid:
+    p: 0.3
+    d: 0
+    i: 0.1
+    i_clamp: 1.0
+
+caster_calibration: &caster_calibration
+  caster_pid: {p: 6.0}
+  wheel_pid: {p: 4.0}
+  velocity: 2.0
+
+cal_caster_fl:
+  type: CasterCalibrationController
+  <<: *caster_calibration
+  actuator: fl_caster_rotation_motor
+  joint: fl_caster_rotation_joint
+  transmission: fl_caster_rotation_trans
+  joints:
+    caster: fl_caster_rotation_joint
+    wheel_l: fl_caster_l_wheel_joint
+    wheel_r: fl_caster_r_wheel_joint
+cal_caster_fr:
+  type: CasterCalibrationController
+  <<: *caster_calibration
+  actuator: fr_caster_rotation_motor
+  joint: fr_caster_rotation_joint
+  transmission: fr_caster_rotation_trans
+  joints:
+    caster: fr_caster_rotation_joint
+    wheel_l: fr_caster_l_wheel_joint
+    wheel_r: fr_caster_r_wheel_joint
+cal_caster_bl:
+  type: CasterCalibrationController
+  <<: *caster_calibration
+  actuator: bl_caster_rotation_motor
+  joint: bl_caster_rotation_joint
+  transmission: bl_caster_rotation_trans
+  joints:
+    caster: bl_caster_rotation_joint
+    wheel_l: bl_caster_l_wheel_joint
+    wheel_r: bl_caster_r_wheel_joint
+cal_caster_br:
+  type: CasterCalibrationController
+  <<: *caster_calibration
+  actuator: br_caster_rotation_motor
+  joint: br_caster_rotation_joint
+  transmission: br_caster_rotation_trans
+  joints:
+    caster: br_caster_rotation_joint
+    wheel_l: br_caster_l_wheel_joint
+    wheel_r: br_caster_r_wheel_joint
+
+
+
+
+cal_head_pan:
+  type: JointCalibrationController
+  actuator: head_pan_motor
+  joint: head_pan_joint
+  transmission: head_pan_trans
+  velocity: 1.5
+  pid:
+    p: 2.0
+    d: 0
+    i: 0.0
+    i_clamp: 1.0
+cal_head_tilt:
+  type: JointCalibrationController
+  actuator: head_tilt_motor
+  joint: head_tilt_joint
+  transmission: head_tilt_trans
+  velocity: -1.0
+  pid:
+    p: 20.0
+    d: 0
+    i: 5.0
+    i_clamp: 1.0

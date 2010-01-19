@@ -1,0 +1,14 @@
+<package>
+  <description brief="pr2_controller_configuration">
+
+  Configuration files for PR2 controllers.
+
+  </description>
+  <author>Wim Meeussen</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pr2_controller_configuration</url>
+
+</package>
+
+

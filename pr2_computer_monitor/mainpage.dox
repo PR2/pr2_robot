@@ -1,0 +1,6 @@
+/**
+\mainpage
+\htmlinclude manifest.html
+
+\b pr2_computer_monitor exposes no public API.
+*/

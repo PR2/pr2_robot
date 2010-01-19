@@ -1,0 +1,14 @@
+<package>
+  <description brief="pr2_dashboard_aggregator">
+    A simple script that aggregates all of the topics that a "pr2_dashboard" app might be interested in.
+  </description>
+  <author>Rob Wheeler</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pr2_dashboard_aggregator</url>
+  <depend package="rospy"/>
+  <depend package="std_msgs"/>
+  <depend package="pr2_msgs"/>
+</package>
+
+

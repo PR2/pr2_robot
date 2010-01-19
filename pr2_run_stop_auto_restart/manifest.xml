@@ -1,0 +1,17 @@
+<package>
+  <description brief="pr2_e_stop_helper">
+
+     e_stop_helper
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/pr2_e_stop_helper</url>
+  <depend package="pr2_msgs"/>
+  <depend package="pr2_power_board"/>
+  <depend package="std_srvs"/>
+
+</package>
+
+

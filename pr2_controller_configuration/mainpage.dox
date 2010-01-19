@@ -1,0 +1,5 @@
+/**
+\mainpage
+\htmlinclude manifest.html
+\b pr2_controller_configuration exposes no public API.
+*/

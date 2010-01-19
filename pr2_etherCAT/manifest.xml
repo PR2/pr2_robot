@@ -1,0 +1,19 @@
+<package>
+  <description brief='Main robot execution loop'>
+Main loop that runs the robot.
+  </description>
+  <author>Rob Wheeler/wheeler@willowgarage.com</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <depend package="pr2_controller_manager"/>
+  <depend package="pr2_mechanism_model" />
+  <depend package="pr2_hardware_interface"/>
+  <depend package="roscpp" />
+  <depend package="ethercat_hardware"/>
+  <depend package="std_srvs"/>
+  <depend package="realtime_tools"/>
+  <depend package="diagnostic_msgs"/>
+  <depend package="diagnostic_updater"/>
+  <url>http://pr.willowgarage.com</url>
+  <repository>http://pr.willowgarage.com/repos</repository>
+</package>

@@ -1,0 +1,6 @@
+<launch>
+  <param name="check_ipmi_tool" value="False" />
+  <param name="enforce_clock_speed" value="False" />    
+
+  <node pkg="pr2_computer_monitor" type="cpu_monitor.py"  output="screen" />
+</launch>

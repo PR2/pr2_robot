@@ -1,0 +1,5 @@
+In order for ipmitool to work on computers with a BMC, the following line
+needs to appear in /etc/sudoers:
+
+ALL ALL=NOPASSWD: /usr/bin/ipmitool sdr type Temperature
+

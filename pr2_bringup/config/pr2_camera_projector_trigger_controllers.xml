@@ -1,0 +1,26 @@
+<launch>
+  <group ns="projector_controller">
+    <param name="type" type="string" value="ProjectorController" />
+    <param name="actuator" type="string" value="led_projector" />
+    <param name="current" type="double" value="27" />
+  </group>
+  <group ns="projector_trigger">
+    <param name="type" type="string" value="MultiTriggerController" />
+    <param name="digital_output" type="string" value="led_projector_digital_out_M" />
+    <param name="period" type="double" value="1" />
+    <param name="times" type="string" value="0" />
+    <param name="topics" type="string" value="-" />
+    <param name="values" type="string" value="14" />
+  </group>
+  <group ns="head_camera_trigger">
+    <param name="type" type="string" value="MultiTriggerController" />
+    <param name="digital_output" type="string" value="led_projector" />
+    <param name="period" type="double" value="0.08" />
+    <param name="times" type="string" value="0" />
+    <param name="topics" type="string" value="-" />
+    <param name="values" type="string" value="0" />
+    <!--param name="times" type="string" value="0 0.01 0.02 0.03 0.04 0.05 0.06 0.07" />
+    <param name="topics" type="string" value="trigger_narrow_stereo_cfg - trigger_narrow_stereo_cfg - trigger_narrow_stereo_cfg - trigger_narrow_stereo_cfg -" />
+    <param name="values" type="string" value="1 0 1 0 1 0 1 0" /-->
+  </group>
+</launch>
