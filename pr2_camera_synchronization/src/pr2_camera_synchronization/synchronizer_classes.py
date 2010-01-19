@@ -343,7 +343,7 @@ class Camera:
     #
     # PARAMETERS
     # "param_rate"
-    self.trigger_name = "" # Will be set by the CameraTriggerController
+    self.trigger_name = "no_set" # Will be set by the CameraTriggerController
     
     # Took level checking out as it was causing problems with the projector
     # needed flag.
