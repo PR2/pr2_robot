@@ -25,7 +25,7 @@
     <param name="trig_timestamp_topic" type="string" value="not_set" />
   </node>
   
-  <node name="wide_stereo_cfg" pkg="wge100_camera" type="wge100_multi_configurator2" respawn="true">
+  <node name="wide_stereo" pkg="wge100_camera" type="wge100_multi_configurator2" respawn="true">
     <param name="camera_nodes" type="str" value="wide_stereo_l wide_stereo_r" />
     <param name="width" type="int" value="640" />  
     <param name="height" type="int" value="480" />  
@@ -55,7 +55,7 @@
     <param name="trig_timestamp_topic" type="string" value="not_set" />
   </node>
 
-  <node name="narrow_stereo_cfg" pkg="wge100_camera" type="wge100_multi_configurator2" respawn="true">
+  <node name="narrow_stereo" pkg="wge100_camera" type="wge100_multi_configurator2" respawn="true">
     <param name="camera_nodes" type="str" value="narrow_stereo_l narrow_stereo_r" />
     <param name="width" type="int" value="640" />  
     <param name="height" type="int" value="480" />  

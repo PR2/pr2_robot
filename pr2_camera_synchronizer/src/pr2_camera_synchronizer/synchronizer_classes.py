@@ -472,7 +472,7 @@ class CameraSynchronizer:
     # the node names.
     for camera in stereo_camera_names:
       camera_parameters[camera][param_rate] = "stereo_rate"
-      camera_parameters[camera]["node_name"] = camera+"_cfg"
+      camera_parameters[camera]["node_name"] = camera
     for camera in forearm_camera_names:
       camera_parameters[camera]["node_name"] = "forearm_camera_"+camera[-1]
     for i in range(0, len(self.camera_names)):
