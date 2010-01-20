@@ -195,6 +195,13 @@ static void timespecInc(struct timespec &tick, int nsec)
 
 void *controlLoop(void *)
 {
+  int rv = 0;
+  double last_published;
+  int period;
+  int policy;
+  TiXmlElement *root;
+  TiXmlElement *root_element;
+
   ros::NodeHandle node(name);
 
   realtime_tools::RealtimePublisher<diagnostic_msgs::DiagnosticArray> publisher(node, "/diagnostics", 2);
@@ -227,52 +234,54 @@ void *controlLoop(void *)
     else
     {
       ROS_FATAL("Could not load the xml from parameter server: %s", g_options.xml_);
-      return (void *)-1;
+      rv = -1;
+      goto end;
     }
   }
-  TiXmlElement *root_element = xml.RootElement();
-  TiXmlElement *root = xml.FirstChildElement("robot");
+  root_element = xml.RootElement();
+  root = xml.FirstChildElement("robot");
   if (!root || !root_element)
   {
       ROS_FATAL("Could not parse the xml from %s", g_options.xml_);
-      return (void *)-1;
+      rv = -1;
+      goto end;
   }
 
   // Initialize the controller manager from robot description
   if (!cm.initXml(root))
   {
       ROS_FATAL("Could not initialize the controller manager");
-      return (void *)-1;
+      rv = -1;
+      goto end;
   }
 
   // Publish one-time before entering real-time to pre-allocate message vectors
   publishDiagnostics(publisher);
 
   //Start Non-realtime diagonostic thread
-  int rv;
   static pthread_t diagnosticThread;
   if ((rv = pthread_create(&diagnosticThread, NULL, diagnosticLoop, &ec)) != 0)
   {
     ROS_FATAL("Unable to create control thread: rv = %d", rv);
-    ROS_BREAK();
+    goto end;
   }
   
   // Set to realtime scheduler for this thread
   struct sched_param thread_param;
-  int policy = SCHED_FIFO;
+  policy = SCHED_FIFO;
   thread_param.sched_priority = sched_get_priority_max(policy);
   pthread_setschedparam(pthread_self(), policy, &thread_param);
 
   struct timespec tick;
   clock_gettime(CLOCK_REALTIME, &tick);
-  int period = 1e+6; // 1 ms in nanoseconds
+  period = 1e+6; // 1 ms in nanoseconds
 
   // Snap to the nearest second
   tick.tv_sec = tick.tv_sec;
   tick.tv_nsec = (tick.tv_nsec / period + 1) * period;
   clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &tick, NULL);
 
-  double last_published = now();
+  last_published = now();
   while (!g_quit)
   {
     double start = now();
@@ -352,12 +361,13 @@ void *controlLoop(void *)
 
   //pthread_join(diagnosticThread, 0);  
 
+end:
   publisher.stop();
   delete rtpublisher;
 
   ros::shutdown();
 
-  return 0;
+  return (void *)rv;
 }
 
 void quitRequested(int sig)
