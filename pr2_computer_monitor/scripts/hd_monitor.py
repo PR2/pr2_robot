@@ -97,13 +97,16 @@ def get_hddtemp_data_socket(hostname = 'localhost', port = 7634):
 def update_status_stale(stat, last_update_time):
     time_since_update = rospy.get_time() - last_update_time
 
+    # FIXME: This assignment doesn't appear to be used anywhere.
     level = stat.level
     stale_status = 'OK'
     if time_since_update > 20:
         stale_status = 'Lagging'
+        # FIXME: This assignment doesn't appear to be used anywhere.
         level = max(level, 1)
     if time_since_update > 35:
         stale_status = 'Stale'
+        # FIXME: This assignment doesn't appear to be used anywhere.
         level = max(level, 2)
         
     stat.values.pop(0)
@@ -125,7 +128,7 @@ class hdMonitor():
 
         self._temp_stat = DiagnosticStatus()
         self._temp_stat.name = "%s HD Temperature" % hostname
-        self._temp_stat.level = 2
+        self._temp_stat.level = 1
         self._temp_stat.hardware_id = hostname
         self._temp_stat.message = 'No Data'
         self._temp_stat.values = [ KeyValue(key = 'Update Status', value = 'No Data'), 
@@ -133,7 +136,7 @@ class hdMonitor():
 
         if self._home_dir != '':
             self._usage_stat = DiagnosticStatus()
-            self._usage_stat.level = 2
+            self._usage_stat.level = 1
             self._usage_stat.hardware_id = hostname
             self._usage_stat.name = '%s HD Usage' % hostname
             self._usage_stat.values = [ KeyValue(key = 'Update Status', value = 'No Data' ),
@@ -179,6 +182,7 @@ class hdMonitor():
             temp = temps[index]
             
             if not unicode(temp).isnumeric():
+                # FIXME: I think that you also want to assign to diag_level here.
                 temp_level = 2
             else:
                 temp_level = 0
@@ -201,7 +205,7 @@ class hdMonitor():
 
         self._temp_stat.values = diag_strs
         
-        self._temp_stat.level = diag_level
+        self._temp_stat.level = max(diag_level, 1)
 
         # Set HW ID to makes
         self._temp_stat.hardware_id = makes[0]
@@ -296,7 +300,7 @@ class hdMonitor():
         # Update status
         self._mutex.acquire()
         self._last_usage_time = rospy.get_time()
-        self._usage_stat.level = diag_level
+        self._usage_stat.level = max(diag_level, 1)
         self._usage_stat.values = diag_vals
         self._usage_stat.message = diag_message
 
