@@ -91,7 +91,7 @@ def ntp_monitor(ntp_hostname, offset=500, self_offset=500):
                     st.message = "Offset too great"
                                 
             else:
-                st.level = 2
+                st.level = 1
                 st.message = "Error running ntpupdate"
                 st.values = [ KeyValue("offset (us)", "N/A") ]
 
