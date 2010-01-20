@@ -9,7 +9,7 @@
   </node>
 
   <!-- Spawns the wide cameras -->
-  <node name="wide_stereo_l" pkg="wge100_camera" type="wge100_camera_node">
+  <node name="wide_stereo_left" pkg="wge100_camera" type="wge100_camera_node">
     <param name="ext_trig" type="bool" value="True" />
     <param name="camera_url" type="str" value="name://wide_stereo_l#lan0" />
     <remap from="camera" to="wide_stereo/left" />
@@ -17,7 +17,7 @@
     <param name="trig_timestamp_topic" type="string" value="not_set" />
   </node>
 
-  <node name="wide_stereo_r" pkg="wge100_camera" type="wge100_camera_node">
+  <node name="wide_stereo_right" pkg="wge100_camera" type="wge100_camera_node">
     <param name="ext_trig" type="bool" value="True" />
     <param name="camera_url" type="str" value="name://wide_stereo_r#lan0"/>
     <remap from="camera" to="wide_stereo/right" />
@@ -25,8 +25,8 @@
     <param name="trig_timestamp_topic" type="string" value="not_set" />
   </node>
   
-  <node name="wide_stereo" pkg="wge100_camera" type="wge100_multi_configurator" respawn="true">
-    <param name="camera_nodes" type="str" value="wide_stereo_l wide_stereo_r" />
+  <node name="wide_stereo_both" pkg="wge100_camera" type="wge100_multi_configurator" respawn="true">
+    <param name="camera_nodes" type="str" value="wide_stereo_left wide_stereo_right" />
     <param name="width" type="int" value="640" />  
     <param name="height" type="int" value="480" />  
     <param name="imager_rate" type="double" value="25" />
@@ -39,7 +39,7 @@
   </node>
   
   <!-- Spawns the narrow cameras -->
-  <node name="narrow_stereo_r" pkg="wge100_camera" type="wge100_camera_node">
+  <node name="narrow_stereo_right" pkg="wge100_camera" type="wge100_camera_node">
     <param name="camera_url" type="str" value="name://narrow_stereo_r#lan0"/>
     <remap from="camera" to="narrow_stereo/right" />
     <remap from="camera_alternate" to="narrow_stereo_textured/right" />
@@ -47,7 +47,7 @@
     <param name="trig_timestamp_topic" type="string" value="not_set" />
   </node>
 
-  <node name="narrow_stereo_l" pkg="wge100_camera" type="wge100_camera_node">
+  <node name="narrow_stereo_left" pkg="wge100_camera" type="wge100_camera_node">
     <param name="camera_url" type="str" value="name://narrow_stereo_l#lan0"/>
     <remap from="camera" to="narrow_stereo/left" />
     <remap from="camera_alternate" to="narrow_stereo_textured/left" />
@@ -55,8 +55,8 @@
     <param name="trig_timestamp_topic" type="string" value="not_set" />
   </node>
 
-  <node name="narrow_stereo" pkg="wge100_camera" type="wge100_multi_configurator" respawn="true">
-    <param name="camera_nodes" type="str" value="narrow_stereo_l narrow_stereo_r" />
+  <node name="narrow_stereo_both" pkg="wge100_camera" type="wge100_multi_configurator" respawn="true">
+    <param name="camera_nodes" type="str" value="narrow_stereo_left narrow_stereo_right" />
     <param name="width" type="int" value="640" />  
     <param name="height" type="int" value="480" />  
     <param name="imager_rate" type="double" value="25" />

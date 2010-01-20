@@ -39,40 +39,40 @@ analyzers:
     type: AnalyzerGroup
     path: Cameras
     analyzers:
-      narrow_l:
+      narrow_left:
         type: GenericAnalyzer
         path: Narrow (Left)
-        find_and_remove_prefix: narrow_stereo_l
+        find_and_remove_prefix: narrow_stereo_left
         num_items: 2
-      narrow_r:
+      narrow_right:
         type: GenericAnalyzer
         path: Narrow (Right)
-        find_and_remove_prefix: narrow_stereo_r
+        find_and_remove_prefix: narrow_stereo_right
         num_items: 2
-      wide_l:
+      wide_left:
         type: GenericAnalyzer
         path: Wide (Left)
-        find_and_remove_prefix: wide_stereo_l
+        find_and_remove_prefix: wide_stereo_left
         num_items: 2
-      wide_r:
+      wide_right:
         type: GenericAnalyzer
         path: Wide (Right)
-        find_and_remove_prefix: wide_stereo_r
+        find_and_remove_prefix: wide_stereo_right
         num_items: 2
       prosilica:
         type: GenericAnalyzer
         path: Prosilica
         find_and_remove_prefix: prosilica
         num_items: 4
-      forearm_r:
+      forearm_right:
         type: GenericAnalyzer
         path: Forearm (Right)
-        find_and_remove_prefix: forearm_camera_r
+        find_and_remove_prefix: forearm_camera_right
         num_items: 2
-      forearm_l:
+      forearm_left:
         type: GenericAnalyzer
         path: Forearm (Left)
-        find_and_remove_prefix: forearm_camera_l
+        find_and_remove_prefix: forearm_camera_left
         num_items: 2
         
   computers:
