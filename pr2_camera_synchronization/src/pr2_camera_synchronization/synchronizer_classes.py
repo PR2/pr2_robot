@@ -425,7 +425,7 @@ class Camera:
           self.reconfigure_client.update_configuration(reconfig_request)
           #print "**** Reconfigured client", self.name
           #print "Done updating camera ", self.name
-      except rospy.ServiceException: # Handle CTRL+C
+      except rospy.ROSInterruptException: # Handle CTRL+C
           print "Aborted camera update on", self.name
       
   def apply_update(self):
