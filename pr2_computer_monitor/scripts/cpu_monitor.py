@@ -392,8 +392,8 @@ def check_mpstat():
                 usage = usage_old
             usage_old = usage
 
-            if usage == 0 and float(idle) == 0:
-                continue # Don't do the last, empty CPU
+            #if usage == 0 and float(idle) == 0:
+            #    continue # Don't do the last, empty CPU
 
             num_cores += 1
             if usage > 90.0:
@@ -409,7 +409,7 @@ def check_mpstat():
             vals.append(KeyValue(key = 'CPU %s Idle' % cpu_name, value = idle))
         
         # Warn for high load only if we have <= 2 cores that aren't loaded
-        if num_cores - cores_loaded <= 2:
+        if num_cores - cores_loaded <= 2 and num_cores > 2:
             mp_level = DiagnosticStatus.WARN
             
     except Exception, e:
