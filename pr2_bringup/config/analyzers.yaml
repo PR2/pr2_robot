@@ -64,15 +64,15 @@ analyzers:
         path: Prosilica
         find_and_remove_prefix: prosilica
         num_items: 4
-      forearm_right:
+      forearm_r:
         type: GenericAnalyzer
         path: Forearm (Right)
-        find_and_remove_prefix: forearm_camera_right
+        find_and_remove_prefix: forearm_camera_r
         num_items: 2
-      forearm_left:
+      forearm_l:
         type: GenericAnalyzer
         path: Forearm (Left)
-        find_and_remove_prefix: forearm_camera_left
+        find_and_remove_prefix: forearm_camera_l
         num_items: 2
         
   computers:

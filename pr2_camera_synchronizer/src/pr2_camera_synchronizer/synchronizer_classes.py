@@ -462,7 +462,7 @@ class Camera:
 
 class CameraSynchronizer:
   def __init__(self):
-    stereo_camera_names = [ "narrow_stereo", "wide_stereo" ] # narrow must be first as it can be alternate, and hence has more period restrictions. 
+    stereo_camera_names = [ "narrow_stereo_both", "wide_stereo_both" ] # narrow must be first as it can be alternate, and hence has more period restrictions. 
     forearm_camera_names = [ "forearm_r", "forearm_l" ]
     self.camera_names = stereo_camera_names + forearm_camera_names
     # Parameter names are pretty symmetric. Build them up automatically.
