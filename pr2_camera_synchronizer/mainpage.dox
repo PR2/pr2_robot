@@ -2,7 +2,7 @@
 \mainpage
 \htmlinclude manifest.html
 
-\b pr2_camera_synchronization is ... 
+\b pr2_camera_synchronizer is ... 
 
 <!-- 
 In addition to providing an overview of your package,

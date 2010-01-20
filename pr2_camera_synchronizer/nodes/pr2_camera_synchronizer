@@ -31,8 +31,8 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import roslib; roslib.load_manifest('pr2_camera_synchronization')
-import pr2_camera_synchronization.synchronizer_classes as classes
+import roslib; roslib.load_manifest('pr2_camera_synchronizer')
+import pr2_camera_synchronizer.synchronizer_classes as classes
 import rospy
 import signal
 

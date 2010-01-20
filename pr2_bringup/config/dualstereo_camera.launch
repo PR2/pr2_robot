@@ -5,7 +5,7 @@
 
 
   <!-- Spawns the synchronizer -->
-  <node type="pr2_camera_synchronizer" name="camera_synchronizer_node" pkg="pr2_camera_synchronization">
+  <node type="pr2_camera_synchronizer" name="camera_synchronizer_node" pkg="pr2_camera_synchronizer">
   </node>
 
   <!-- Spawns the wide cameras -->

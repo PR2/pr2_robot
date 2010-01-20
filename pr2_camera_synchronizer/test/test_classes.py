@@ -31,11 +31,11 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-PKG = "pr2_camera_synchronization"
+PKG = "pr2_camera_synchronizer"
 import roslib; roslib.load_manifest(PKG)
-from pr2_camera_synchronization.synchronizer_classes import *
+from pr2_camera_synchronizer.synchronizer_classes import *
 import unittest
-import pr2_camera_synchronization.cfg.CameraSynchronizerConfig as Config
+import pr2_camera_synchronizer.cfg.CameraSynchronizerConfig as Config
                              
 DIGITS = 16
 

@@ -32,14 +32,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import with_statement
-import roslib; roslib.load_manifest('pr2_camera_synchronization')
+import roslib; roslib.load_manifest('pr2_camera_synchronizer')
 from dynamic_reconfigure.client import Client as DynamicReconfigureClient
 from dynamic_reconfigure.server import Server as DynamicReconfigureServer
 from ethercat_trigger_controllers.srv import SetMultiWaveform as SetMultiWaveform
 from ethercat_trigger_controllers.srv import SetMultiWaveformRequest as SetMultiWaveformRequest
 from ethercat_trigger_controllers.msg import MultiWaveform as MultiWaveform
 from ethercat_trigger_controllers.msg import MultiWaveformTransition as MultiWaveformTransition
-import pr2_camera_synchronization.cfg.CameraSynchronizerConfig as Config
+import pr2_camera_synchronizer.cfg.CameraSynchronizerConfig as Config
 import wge100_camera.cfg.WGE100Camera2Config as WGEConfig
 
 import rospy
@@ -48,8 +48,8 @@ import math
 import threading
 import signal
 
-from pr2_camera_synchronization.cfg import CameraSynchronizerConfig as ConfigType
-from pr2_camera_synchronization.levels import *
+from pr2_camera_synchronizer.cfg import CameraSynchronizerConfig as ConfigType
+from pr2_camera_synchronizer.levels import *
                    
 ETHERCAT_INTERVAL = 0.001
 
