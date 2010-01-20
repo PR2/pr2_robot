@@ -25,7 +25,7 @@
 
   <depend package="robot_state_publisher"/>
   <depend package="robot_pose_ekf"/>
-  <depend package="pr2_camera_synchronization"/>
+  <depend package="pr2_camera_synchronizer"/>
   <depend package="stereo_image_proc"/>
 
   <depend package="hokuyo_node"/>
