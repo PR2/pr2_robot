@@ -7,19 +7,19 @@ analyzers:
         type: GenericAnalyzer
         path: Joystick
         expected: 'joy: Joystick Driver Status'
-        num_items: 1
         remove_prefix: 'joy'
       sound:
         type: GenericAnalyzer
         path: Sound
-        expected: '/sound_play: Node State'
+        startswith: '/sound_play: Node State'
         num_items: 1
         remove_prefix: ' sound_play'
       imu:
         type: GenericAnalyzer
         path: IMU
-        find_and_remove_prefix: imu_node
+        find_and_remove_prefix: 'imu_node'
         num_items: 3
+
   lasers:
     type: AnalyzerGroup
     path: Lasers
@@ -43,22 +43,22 @@ analyzers:
         type: GenericAnalyzer
         path: Narrow (Left)
         find_and_remove_prefix: narrow_stereo_l
-        num_items: 2
+        num_items: 3
       narrow_r:
         type: GenericAnalyzer
         path: Narrow (Right)
         find_and_remove_prefix: narrow_stereo_r
-        num_items: 2
+        num_items: 3
       wide_l:
         type: GenericAnalyzer
         path: Wide (Left)
         find_and_remove_prefix: wide_stereo_l
-        num_items: 2
+        num_items: 3
       wide_r:
         type: GenericAnalyzer
         path: Wide (Right)
         find_and_remove_prefix: wide_stereo_r
-        num_items: 2
+        num_items: 3
       prosilica:
         type: GenericAnalyzer
         path: Prosilica
@@ -68,12 +68,12 @@ analyzers:
         type: GenericAnalyzer
         path: Forearm (Right)
         find_and_remove_prefix: forearm_camera_r
-        num_items: 2
+        num_items: 3
       forearm_l:
         type: GenericAnalyzer
         path: Forearm (Left)
         find_and_remove_prefix: forearm_camera_l
-        num_items: 2
+        num_items: 3
         
   computers:
     type: GenericAnalyzer
@@ -108,7 +108,23 @@ analyzers:
       'EtherCAT Device (head_pan_motor)',
       'EtherCAT Device (head_tilt_motor)',
       'EtherCAT Device (led_projector)',
-      'EtherCAT Device (torso_lift_motor)']
+      'EtherCAT Device (torso_lift_motor)',
+      'EtherCAT Device (r_shoulder_pan_motor)',
+      'EtherCAT Device (r_shoulder_lift_motor)',
+      'EtherCAT Device (r_upper_arm_roll_motor)',
+      'EtherCAT Device (r_elbow_flex_motor)',
+      'EtherCAT Device (r_forearm_roll_motor)',
+      'EtherCAT Device (r_wrist_l_motor)',
+      'EtherCAT Device (r_wrist_r_motor)',
+      'EtherCAT Device (r_gripper_motor)',
+      'EtherCAT Device (l_shoulder_pan_motor)',
+      'EtherCAT Device (l_shoulder_lift_motor)',
+      'EtherCAT Device (l_upper_arm_roll_motor)',
+      'EtherCAT Device (l_elbow_flex_motor)',
+      'EtherCAT Device (l_forearm_roll_motor)',
+      'EtherCAT Device (l_wrist_l_motor)',
+      'EtherCAT Device (l_wrist_r_motor)',
+      'EtherCAT Device (l_gripper_motor)']
   joints:
     type: GenericAnalyzer
     path: Joints
@@ -130,7 +146,23 @@ analyzers:
       'Joint (laser_tilt_mount_joint)',
       'Joint (head_pan_joint)',
       'Joint (head_tilt_joint)',
-      'Joint (torso_lift_joint)']
+      'Joint (torso_lift_joint)',
+      'Joint (r_shoulder_pan_joint)',
+      'Joint (r_shoulder_lift_joint)',
+      'Joint (r_upper_arm_roll_joint)',
+      'Joint (r_elbow_flex_joint)',
+      'Joint (r_forearm_roll_joint)',
+      'Joint (r_wrist_flex_joint)',
+      'Joint (r_wrist_roll_joint)',
+      'Joint (r_gripper_joint)',
+      'Joint (l_shoulder_pan_joint)',
+      'Joint (l_shoulder_lift_joint)',
+      'Joint (l_upper_arm_roll_joint)',
+      'Joint (l_elbow_flex_joint)',
+      'Joint (l_forearm_roll_joint)',
+      'Joint (l_wrist_flex_joint)',
+      'Joint (l_wrist_roll_joint)',
+      'Joint (l_gripper_joint)']
   power:
     type: GenericAnalyzer
     path: 'Power System'
