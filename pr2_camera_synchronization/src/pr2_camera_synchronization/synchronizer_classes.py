@@ -139,7 +139,7 @@ class MultiTriggerController:
           if not rslt.success:
               rospy.logerr("Error setting waveform %s: %s"%(self.name, rslt.status_message))
           #print "Done updating waveform ", self.name
-      except rospy.ServiceException: # Handle CTRL+C
+      except rospy.ROSInterruptException: # Handle CTRL+C
           print "Aborted trigger update on", self.name
 
   def update(self):
