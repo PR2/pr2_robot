@@ -1,0 +1,15 @@
+<!-- 
+
+Starts a Prosilica camera in triggered (polled) mode. 
+
+This launch file is used by pr2.launch and should not be modified.
+
+-->
+<launch>
+  <group ns="prosilica">
+    <include file="$(find prosilica_camera)/cam_settings.xml"/>
+    <param name="trigger_mode" type="str" value="Triggered"/>
+    <param name="ip_address" type="str" value="10.68.0.20"/>
+  </group>
+  <node name="prosilica" pkg="prosilica_camera" type="prosilica_node" output="screen" respawn="false"/>
+</launch>
