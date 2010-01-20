@@ -40,7 +40,7 @@ from ethercat_trigger_controllers.srv import SetMultiWaveformRequest as SetMulti
 from ethercat_trigger_controllers.msg import MultiWaveform as MultiWaveform
 from ethercat_trigger_controllers.msg import MultiWaveformTransition as MultiWaveformTransition
 import pr2_camera_synchronizer.cfg.CameraSynchronizerConfig as Config
-import wge100_camera.cfg.WGE100Camera2Config as WGEConfig
+import wge100_camera.cfg.WGE100CameraConfig as WGEConfig
 
 import rospy
 import time
@@ -354,7 +354,7 @@ class Camera:
     projector_rate = config[param_proj_rate]
     self.reset_cameras = config["camera_reset"]
     self.ext_trig = True
-    self.register_set = WGEConfig.WGE100Camera2_PrimaryRegisterSet
+    self.register_set = WGEConfig.WGE100Camera_PrimaryRegisterSet
 
     projector_limits_exposure = True
 
@@ -396,10 +396,10 @@ class Camera:
         projector_limits_exposure = False
       if trig_mode == Config.CameraSynchronizer_AlternateProjector:
         self.end_offset = self.proj.alt_end_offset 
-        self.register_set = WGEConfig.WGE100Camera2_Auto
+        self.register_set = WGEConfig.WGE100Camera_Auto
       elif trig_mode == Config.CameraSynchronizer_WithProjector:
         self.end_offset = self.proj.proj_end_offset
-        self.register_set = WGEConfig.WGE100Camera2_AlternateRegisterSet
+        self.register_set = WGEConfig.WGE100Camera_AlternateRegisterSet
       else:
         self.end_offset = self.proj.noproj_end_offset
 
