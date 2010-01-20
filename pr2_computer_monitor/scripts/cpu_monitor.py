@@ -236,7 +236,7 @@ def check_clock_speed(enforce_speed):
                 if mhz < 2240 and mhz > 2150:
                     lvl = max(lvl, 1)
                 if mhz <= 2150:
-                    lvl = max(lvl, 1)
+                    lvl = max(lvl, 2)
             else:
                 # Automatically give error if speed isn't a number
                 lvl = max(lvl, 1)
@@ -295,7 +295,7 @@ def check_uptime():
         level = 1
         vals.append(KeyValue(key = 'Load Average Status', value = traceback.format_exc()))
         
-    return max(level, 1), vals
+    return min(level, 1), vals
 
 # Add msgs output
 def check_memory():
@@ -336,7 +336,7 @@ def check_memory():
         rospy.logerr(traceback.format_exc())
         msg = 'Memory Error'
     
-    return max(level,1), values
+    return min(level,1), values
 
 # Use mpstat
 usage_old = 0
@@ -402,7 +402,7 @@ def check_mpstat():
         mp_level = 1
         vals.append(KeyValue(key = 'mpstat Exception', value = str(e)))
 
-    return max(mp_level, 1), vals
+    return min(mp_level, 1), vals
 
 ## Returns names for core temperature files
 ## Returns list of names, each name can be read like file

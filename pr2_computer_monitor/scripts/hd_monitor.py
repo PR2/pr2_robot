@@ -205,7 +205,7 @@ class hdMonitor():
 
         self._temp_stat.values = diag_strs
         
-        self._temp_stat.level = max(diag_level, 1)
+        self._temp_stat.level = min(diag_level, 1)
 
         # Set HW ID to makes
         self._temp_stat.hardware_id = makes[0]
@@ -300,7 +300,7 @@ class hdMonitor():
         # Update status
         self._mutex.acquire()
         self._last_usage_time = rospy.get_time()
-        self._usage_stat.level = max(diag_level, 1)
+        self._usage_stat.level = min(diag_level, 1)
         self._usage_stat.values = diag_vals
         self._usage_stat.message = diag_message
 
