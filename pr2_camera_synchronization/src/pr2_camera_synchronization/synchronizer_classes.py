@@ -139,7 +139,7 @@ class MultiTriggerController:
           if not rslt.success:
               rospy.logerr("Error setting waveform %s: %s"%(self.name, rslt.status_message))
           #print "Done updating waveform ", self.name
-      except rospy.ROSInterruptException: # Handle CTRL+C
+      except KeyboardInterrupt: # Handle CTRL+C
           print "Aborted trigger update on", self.name
 
   def update(self):
@@ -425,7 +425,7 @@ class Camera:
           self.reconfigure_client.update_configuration(reconfig_request)
           #print "**** Reconfigured client", self.name
           #print "Done updating camera ", self.name
-      except rospy.ROSInterruptException: # Handle CTRL+C
+      except KeyboardInterrupt: # Handle CTRL+C
           print "Aborted camera update on", self.name
       
   def apply_update(self):
