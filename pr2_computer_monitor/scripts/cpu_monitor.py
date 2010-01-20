@@ -68,7 +68,7 @@ def check_ipmi():
         retcode = p.returncode
                         
         if retcode != 0:
-            diag_level = 2
+            diag_level = 1
             diag_msg = [ 'ipmitool Error' ]
             diag_vals = [ KeyValue(key = 'IPMI Error', value = stderr) ]
             return diag_vals, diag_msgs, diag_level
@@ -77,7 +77,7 @@ def check_ipmi():
         if len(lines) < 2:
             diag_vals = [ KeyValue(key = 'ipmitool status', value = 'No output') ]
             diag_msgs = [ 'No response' ]
-            diag_level = 2
+            diag_level = 1
             return diag_vals, diag_msgs, diag_level
 
         for ln in lines:
@@ -103,7 +103,7 @@ def check_ipmi():
                             if diag_msgs.count('CPU Hot') == 0:
                                 diag_msgs.append('CPU Warm')
                         if temperature >= 85:
-                            diag_level = max(diag_level, 2)
+                            diag_level = max(diag_level, 1)
                             diag_msgs.append('CPU Hot')                                
                             # Don't keep CPU Warm in list if CPU is hot
                             if diag_msgs.count('CPU Warm') > 0:
@@ -127,10 +127,10 @@ def check_ipmi():
                             diag_level = max(diag_level, 1)
                             diag_msgs.append('%s Warm' % dev_name)
                         if temperature >= 70:
-                            diag_level = max(diag_level, 2)
+                            diag_level = max(diag_level, 1)
                             diag_msgs.append('%s Hot' % dev_name)
                     else:
-                        diag_level = max(diag_level, 2)
+                        diag_level = max(diag_level, 1)
                         diag_msgs.append('%s Error' % dev_name)
                 else:
                     diag_vals.append(KeyValue(key = name, value = ipmi_val))
@@ -150,12 +150,12 @@ def check_ipmi():
                     diag_vals.append(KeyValue(key = name, value = 'OK'))
                 else:
                     diag_vals.append(KeyValue(key = name, value = 'Hot'))
-                    diag_level = max(diag_level, 2)
+                    diag_level = max(diag_level, 1)
                     diag_msgs.append('CPU Hot Alarm')
 
     except Exception, e:
         diag_vals.append(KeyValue(key = 'Exception', value = traceback.format_exc()))
-        diag_level = 2
+        diag_level = 1
         diag_msgs.append('Exception')
 
     return diag_vals, diag_msgs, diag_level
@@ -180,7 +180,7 @@ def check_core_temps(sys_temp_strings):
         retcode = p.returncode
 
         if retcode != 0:
-            diag_level = 2
+            diag_level = 1
             diag_msg = [ 'Core Temp Error' ]
             diag_vals = [ KeyValue(key = 'Core Temp Error', value = stderr), KeyValue(key = 'Output', value = stdout) ]
             return diag_vals, diag_msgs, diag_level
@@ -194,10 +194,10 @@ def check_core_temps(sys_temp_strings):
                 diag_level = max(diag_level, 1)
                 diag_msgs.append('Warm')
             if temp >= 90:
-                diag_level = max(diag_level, 2)
+                diag_level = max(diag_level, 1)
                 diag_msgs.append('Hot')
         else:
-            diag_level = max(diag_level, 2) # Error if not numeric value
+            diag_level = max(diag_level, 1) # Error if not numeric value
             diag_vals.append(KeyValue(key = 'Core %s Temp' % index, value = tmp))
 
     return diag_vals, diag_msgs, diag_level
@@ -216,7 +216,7 @@ def check_clock_speed(enforce_speed):
         retcode = p.returncode
 
         if retcode != 0:
-            lvl = 2
+            lvl = 1
             msgs = [ 'Clock speed error' ]
             vals = [ KeyValue(key = 'Clock speed error', value = stderr), 
                      KeyValue(key = 'Output', value = stdout) ]
@@ -236,10 +236,10 @@ def check_clock_speed(enforce_speed):
                 if mhz < 2240 and mhz > 2150:
                     lvl = max(lvl, 1)
                 if mhz <= 2150:
-                    lvl = max(lvl, 2)
+                    lvl = max(lvl, 1)
             else:
                 # Automatically give error if speed isn't a number
-                lvl = max(lvl, 2)
+                lvl = max(lvl, 1)
 
 
         if not enforce_speed:
@@ -247,12 +247,12 @@ def check_clock_speed(enforce_speed):
 
         if lvl == 1 and enforce_speed:
             msgs = [ 'Core slowing' ]
-        elif lvl == 2 and enforce_speed:
+        elif lvl == 1 and enforce_speed:
             msgs = [ 'Core throttled' ]
 
     except Exception, e:
         rospy.logerr(traceback.format_exc())
-        lvl = 2
+        lvl = 1
         msgs.append('Exception')
         vals.append(KeyValue(key = 'Exception', value = traceback.format_exc()))
 
@@ -292,15 +292,15 @@ def check_uptime():
 
     except Exception, e:
         rospy.logerr(traceback.format_exc())
-        level = 2
+        level = 1
         vals.append(KeyValue(key = 'Load Average Status', value = traceback.format_exc()))
         
-    return level, vals
+    return max(level, 1), vals
 
 # Add msgs output
 def check_memory():
     values = []
-    level = 2
+    level = 1
     msg = ''
 
 
@@ -336,7 +336,7 @@ def check_memory():
         rospy.logerr(traceback.format_exc())
         msg = 'Memory Error'
     
-    return level, values
+    return max(level,1), values
 
 # Use mpstat
 usage_old = 0
@@ -399,10 +399,10 @@ def check_mpstat():
             mp_level = max(mp_level, core_level)
             
     except Exception, e:
-        mp_level = 2
+        mp_level = 1
         vals.append(KeyValue(key = 'mpstat Exception', value = str(e)))
 
-    return mp_level, vals
+    return max(mp_level, 1), vals
 
 ## Returns names for core temperature files
 ## Returns list of names, each name can be read like file
@@ -436,7 +436,7 @@ def update_status_stale(stat, last_update_time):
         stat.level = max(stat.level, 1)
     if time_since_update > 35:
         stale_status = 'Stale'
-        stat.level = max(stat.level, 2)
+        stat.level = max(stat.level, 1)
         
     stat.values.pop(0)
     stat.values.pop(0)
@@ -462,7 +462,7 @@ class CPUMonitor():
         # CPU stats
         self._temp_stat = DiagnosticStatus()
         self._temp_stat.name = '%s CPU Temperature' % hostname
-        self._temp_stat.level = 2
+        self._temp_stat.level = 1
         self._temp_stat.hardware_id = hostname
         self._temp_stat.message = 'No Data'
         self._temp_stat.values = [ KeyValue(key = 'Update Status', value = 'No Data' ),
@@ -470,7 +470,7 @@ class CPUMonitor():
 
         self._usage_stat = DiagnosticStatus()
         self._usage_stat.name = '%s CPU Usage' % hostname
-        self._usage_stat.level = 2
+        self._usage_stat.level = 1
         self._usage_stat.hardware_id = hostname
         self._usage_stat.message = 'No Data'
         self._usage_stat.values = [ KeyValue(key = 'Update Status', value = 'No Data' ),
@@ -478,7 +478,7 @@ class CPUMonitor():
 
         self._nfs_stat = DiagnosticStatus()
         self._nfs_stat.name = '%s NFS IO' % hostname
-        self._nfs_stat.level = 2
+        self._nfs_stat.level = 1
         self._nfs_stat.hardware_id = hostname
         self._nfs_stat.message = 'No Data'
         self._nfs_stat.values = [ KeyValue(key = 'Update Status', value = 'No Data' ),
@@ -561,7 +561,7 @@ class CPUMonitor():
                 
         except Exception, e:
             rospy.logerr(traceback.format_exc())
-            nfs_level = 2
+            nfs_level = 1
             msg = 'Exception'
             vals.append(KeyValue(key = 'Exception', value = str(e)))
             
