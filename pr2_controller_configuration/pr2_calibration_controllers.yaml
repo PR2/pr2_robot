@@ -3,7 +3,7 @@ cal_torso_lift:
   joint: torso_lift_joint
   actuator: torso_lift_motor
   transmission: torso_lift_trans
-  velocity: -10.0
+  velocity: 10.0
   pid:
     p: 200000
     d: 10000
@@ -36,7 +36,7 @@ cal_r_shoulder_lift:
   joint: r_shoulder_lift_joint
   actuator: r_shoulder_lift_motor
   transmission: r_shoulder_lift_trans
-  velocity: -1.0
+  velocity: 1.0
   pid:
     p: 9
     i: 1.0
@@ -47,7 +47,7 @@ cal_l_shoulder_lift:
   joint: l_shoulder_lift_joint
   actuator: l_shoulder_lift_motor
   transmission: l_shoulder_lift_trans
-  velocity: -1.0
+  velocity: 1.0
   pid:
     p: 9
     i: 1.0
@@ -80,7 +80,7 @@ cal_r_elbow_flex:
   joint: r_elbow_flex_joint
   actuator: r_elbow_flex_motor
   transmission: r_elbow_flex_trans
-  velocity: -1.0
+  velocity: 1.0
   pid:
     p: 6
     i: 0.2
@@ -91,7 +91,7 @@ cal_l_elbow_flex:
   joint: l_elbow_flex_joint
   actuator: l_elbow_flex_motor
   transmission: l_elbow_flex_trans
-  velocity: -1.0
+  velocity: 1.0
   pid:
     p: 6
     i: 0.2
@@ -117,7 +117,7 @@ cal_r_wrist:
   roll_joint: r_wrist_roll_joint
   transmission: r_wrist_trans
   roll_velocity: 1.2
-  flex_velocity: -1.2
+  flex_velocity: 1.2
   pid:
     p: 3.0
     d: 0.0
@@ -132,7 +132,7 @@ cal_r_gripper:
     - r_gripper_l_finger_tip_joint
     - r_gripper_r_finger_joint
     - r_gripper_r_finger_tip_joint
-  velocity: -0.01
+  velocity: 0.01
   pid:
     p: 10000
     d: 0
@@ -159,7 +159,7 @@ cal_l_wrist:
   roll_joint: l_wrist_roll_joint
   transmission: l_wrist_trans
   roll_velocity: 1.2
-  flex_velocity: -1.2
+  flex_velocity: 1.2
   pid:
     p: 3.0
     d: 0.0
@@ -174,7 +174,7 @@ cal_l_gripper:
     - l_gripper_l_finger_tip_joint
     - l_gripper_r_finger_joint
     - l_gripper_r_finger_tip_joint
-  velocity: -0.01
+  velocity: 0.01
   pid:
     p: 10000
     d: 0
@@ -188,7 +188,7 @@ cal_laser_tilt:
   actuator: laser_tilt_mount_motor
   joint: laser_tilt_mount_joint
   transmission: laser_tilt_mount_trans
-  velocity: -1.5
+  velocity: 1.5
   pid:
     p: 0.3
     d: 0
@@ -260,7 +260,7 @@ cal_head_tilt:
   actuator: head_tilt_motor
   joint: head_tilt_joint
   transmission: head_tilt_trans
-  velocity: -1.0
+  velocity: 1.0
   pid:
     p: 20.0
     d: 0
