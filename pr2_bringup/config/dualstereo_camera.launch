@@ -1,7 +1,7 @@
 <launch>
   <!-- Head Camera and Projector triggers -->
   <include file="$(find pr2_bringup)/config/pr2_camera_projector_trigger_controllers.xml" />
-  <node name="spawner_camera_synchronizer" pkg="pr2_controller_manager" type="spawner" args="projector_trigger projector_controller head_camera_trigger" />
+  <node name="spawner_camera_synchronizer" pkg="pr2_controller_manager" type="spawner" args="projector_trigger projector_controller head_camera_trigger prosilica_inhibit_projector_controller" />
 
 
   <!-- Spawns the synchronizer -->

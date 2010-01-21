@@ -70,7 +70,7 @@
   </node>
 
   <!-- Prosilica camera -->
-  <include file="$(find pr2_bringup)/config/prosilica.launch"/>
+  <include file="$(find prosilica_camera)/prosilica.launch"/>
 
   <!-- Stereo Camera and synchronization -->
   <include file="$(find pr2_bringup)/config/dualstereo_camera.launch"/>
