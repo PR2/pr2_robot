@@ -17,7 +17,7 @@
   </description>
   <author>Blaise Gassend</author>
   <license>BSD</license>
-  <review status="unreviewed" notes=""/>
+  <review status="API Reviewed" notes="Jan 20 2010"/>
   <url>http://pr.willowgarage.com/wiki/pr2_camera_synchronizer</url>
   <depend package="ethercat_trigger_controllers"/>
   <depend package="rospy"/>
