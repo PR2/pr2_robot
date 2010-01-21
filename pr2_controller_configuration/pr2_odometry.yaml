@@ -2,7 +2,6 @@ base_odometry:
   publish_tf: false
   caster_names: fr_caster_rotation_link fl_caster_rotation_link bl_caster_rotation_link br_caster_rotation_link
   type: Pr2Odometry
-  ils_weight_type: Gaussian
   ils_max_iterations: 3
   odom_frame: odom
   base_footprint_frame: base_footprint
