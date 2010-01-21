@@ -1,6 +1,7 @@
 <package>
-  <description brief="Node to manage pr2 camera triggering.">
-    A node to set up triggering of the robot's wge100 cameras and the texture projector.
+  <description brief="Node to manage synchronization of the pr2 cameras and
+    the texture projector.">
+    A node to set up triggering of the robot's wge100 cameras and the texture projector. Based on its dynamically reconfigurable parameters, this node decides whether the projector should be on or off, and whether cameras should be exposuring during or in between projector pulses.
   </description>
   <author>Blaise Gassend</author>
   <license>BSD</license>
