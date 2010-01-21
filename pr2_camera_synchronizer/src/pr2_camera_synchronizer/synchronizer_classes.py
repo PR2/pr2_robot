@@ -494,7 +494,7 @@ class CameraSynchronizer:
 
     self.projector = Projector()
     self.cameras = dict((name, Camera(proj = self.projector, **camera_parameters[name])) for name in self.camera_names)
-    self.prosilica_inhibit = ProsilicaInhibitTriggerController('prosilica_inhibit_projector_controller', "prosilica_projector_disable", 0x0A, 0x00)
+    self.prosilica_inhibit = ProsilicaInhibitTriggerController('prosilica_inhibit_projector_controller', "prosilica_projector_inhibit", 0x0A, 0x00)
     
     self.controllers = [
       ProjectorTriggerController('projector_trigger', self.projector),
