@@ -202,7 +202,9 @@ analyzers:
       'Controller (head_camera_trigger)',
       'Controller (projector_controller)',
       'Controller (projector_trigger)',
-      'Controller (prosilica_inhibit_projector_controller)' ]
+      'Controller (prosilica_inhibit_projector_controller)',
+      'Controller (forearm_camera_r_trigger)',
+      'Controller (forearm_camera_l_trigger)' ]
     startswith: [
       'Controller']
     discard_stale: true

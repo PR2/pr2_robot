@@ -99,9 +99,10 @@
   <node pkg="pr2_computer_monitor" name="two_cpu_monitor" type="cpu_monitor.py" machine="c2" />
 
   <!-- Diagnostics aggregation -->
-  <node pkg="diagnostic_aggregator" type="aggregator_node"  name="diag_agg" >
-    <rosparam command="load" file="/etc/ros/diagnostics/analyzers.yaml" />
-  </node>
+  <node pkg="diagnostic_aggregator" type="aggregator_node"  name="diag_agg" />
+  <group ns="diag_agg">
+    <include file="/etc/ros/diagnostics/analyzers.launch" />
+  </group>
 
   <!-- Dashboard aggregation -->
   <node pkg="pr2_dashboard_aggregator" type="dashboard_aggregator.py" name="pr2_dashboard_aggregator"/>

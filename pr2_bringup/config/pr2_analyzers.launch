@@ -1,0 +1,3 @@
+<launch>
+  <rosparam command="load" file="$(find pr2_bringup)/config/pr2_analyzers.yaml" />
+</launch>

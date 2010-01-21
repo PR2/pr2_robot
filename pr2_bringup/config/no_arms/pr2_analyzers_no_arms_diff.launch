@@ -1,0 +1,3 @@
+<launch>
+  <rosparam command="load" file="$(find pr2_bringup)/config/no_arms/pr2_analyzers_no_arms_diff.yaml" />
+</launch>
