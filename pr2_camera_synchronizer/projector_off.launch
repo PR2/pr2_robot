@@ -1,0 +1,6 @@
+<launch>
+  <node name="$(anon dynparam)" pkg="dynamic_reconfigure" type="dynparam" args="set_from_parameters camera_synchronizer_node">
+    <param name="projector_mode" type="int" value="1" />
+  </node>
+</launch>
+
