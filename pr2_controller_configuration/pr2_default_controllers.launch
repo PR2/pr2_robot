@@ -1,4 +1,5 @@
 <launch>
+  <include file="$(find pr2_machine)/pr2.machine" />
 
   <!-- Base Control -->
   <rosparam file="$(find pr2_controller_configuration)/pr2_base_controller.yaml" command="load" />
@@ -30,27 +31,27 @@
   
   <!-- Nodes on top of the controllers -->
   <group ns="r_arm_controller">
-    <node name="joint_trajectory_action_node"
+    <node name="joint_trajectory_action_node"  machine="c1"
           pkg="joint_trajectory_action" type="joint_trajectory_action" />
   </group>
-  <group ns="l_arm_controller">
+  <group ns="l_arm_controller"> machine="c1"
     <node name="joint_trajectory_action_node"
           pkg="joint_trajectory_action" type="joint_trajectory_action" />
   </group>
   <group ns="r_gripper_controller">
-    <node name="gripper_action_node"
+    <node name="gripper_action_node" machine="c1"
           pkg="pr2_gripper_action" type="pr2_gripper_action" />
   </group>
   <group ns="l_gripper_controller">
-    <node name="gripper_action_node"
+    <node name="gripper_action_node" machine="c1"
           pkg="pr2_gripper_action" type="pr2_gripper_action" />
   </group>
   <group ns="head_traj_controller">
-    <node name="point_head_action"
+    <node name="point_head_action" machine="c1"
           pkg="pr2_head_action" type="pr2_head_action" />
   </group>
   <group ns="torso_controller">
-    <node name="position_joint_action_node"
+    <node name="position_joint_action_node" machine="c1"
           pkg="single_joint_position_action" type="single_joint_position_action" />
   </group>
   
