@@ -343,7 +343,7 @@ class Camera:
     #
     # PARAMETERS
     # "param_rate"
-    self.trigger_name = "no_set" # Will be set by the CameraTriggerController
+    self.trigger_name = "not_set" # Will be set by the CameraTriggerController
     
     # Took level checking out as it was causing problems with the projector
     # needed flag.
@@ -462,7 +462,7 @@ class Camera:
 
 class CameraSynchronizer:
   def __init__(self):
-    stereo_camera_names = [ "narrow_stereo_both", "wide_stereo_both" ] # narrow must be first as it can be alternate, and hence has more period restrictions. 
+    stereo_camera_names = [ "narrow_stereo", "wide_stereo" ] # narrow must be first as it can be alternate, and hence has more period restrictions. 
     forearm_camera_names = [ "forearm_r", "forearm_l" ]
     self.camera_names = stereo_camera_names + forearm_camera_names
     # Parameter names are pretty symmetric. Build them up automatically.
@@ -472,7 +472,7 @@ class CameraSynchronizer:
     # the node names.
     for camera in stereo_camera_names:
       camera_parameters[camera][param_rate] = "stereo_rate"
-      camera_parameters[camera]["node_name"] = camera
+      camera_parameters[camera]["node_name"] = camera+"_both"
     for camera in forearm_camera_names:
       camera_parameters[camera]["node_name"] = "forearm_camera_"+camera[-1]
     for i in range(0, len(self.camera_names)):
