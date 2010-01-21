@@ -55,21 +55,20 @@ def ntp_monitor(ntp_hostname, offset=500, self_offset=500):
 
     stat = DiagnosticStatus()
     stat.level = 0
-    stat.name = "NTP offset from: "+ hostname + " to: " +ntp_hostname
-    stat.message = "Acceptable synchronization"
+    stat.name = "NTP offset from "+ hostname + " to " + ntp_hostname
+    stat.message = "OK"
     stat.hardware_id = hostname
     stat.values = []
 
     self_stat = DiagnosticStatus()
-    self_stat.level = 0
-    self_stat.name = "NTP offset from: "+ hostname + " to: self."
-    self_stat.message = "Acceptable synchronization"
+    self_stat.level = DiagnosticStatus.OK
+    self_stat.name = "NTP self-offset for "+ hostname
+    self_stat.message = "OK"
     self_stat.hardware_id = hostname
     self_stat.values = []
     
     while not rospy.is_shutdown():
         for st,host,off in [(stat,ntp_hostname,offset), (self_stat, hostname,self_offset)]:
-
             try:
                 p = Popen(["ntpdate", "-q", host], stdout=PIPE, stdin=PIPE, stderr=PIPE)
                 res = p.wait()
@@ -82,18 +81,20 @@ def ntp_monitor(ntp_hostname, offset=500, self_offset=500):
             if (res == 0):
                 measured_offset = float(re.search("offset (.*),", o).group(1))*1000000
 
-                st.level = 0
-                st.message = "Acceptable synchronization"
-                st.values = [ KeyValue("offset (us)", str(measured_offset)) ]
+                st.level = DiagnosticStatus.OK
+                st.message = "OK"
+                st.values = [ KeyValue("Offset (us)", str(measured_offset)),
+                              KeyValue("Offset tolerance (us)", str(off)) ]
             
                 if (abs(measured_offset) > off):
-                    st.level = 1
-                    st.message = "Offset too great"
+                    st.level = DiagnosticStatus.WARN
+                    st.message = "NTP Offset Too High"
                                 
             else:
-                st.level = 1
-                st.message = "Error running ntpupdate"
-                st.values = [ KeyValue("offset (us)", "N/A") ]
+                st.level = DiagnosticStatus.ERROR
+                st.message = "Error Running ntpupdate"
+                st.values = [ KeyValue("Offset (us)", "N/A"),
+                              KeyValue("Offset tolerance (us)", str(off)) ]
 
 
         msg = DiagnosticArray()
@@ -112,6 +113,7 @@ def ntp_monitor_main(argv=sys.argv):
                       action="store", default=500,
                       help="Offset from self", metavar="SELF_OFFSET-TOL")
     options, args = parser.parse_args(rospy.myargv())
+
     if (len(args) == 2):
         try:
             offset = int(options.offset_tol)
