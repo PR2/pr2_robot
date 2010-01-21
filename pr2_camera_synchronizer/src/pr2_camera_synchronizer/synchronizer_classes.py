@@ -148,6 +148,20 @@ class MultiTriggerController:
       #print "Trigger update on", self.name
       self.async.update(self.period, self.zero_offset, self.transitions)
 
+class ProsilicaInhibitTriggerController(MultiTriggerController):
+    def __init__(self, name, param, true_val, false_val):
+        MultiTriggerController.__init__(self, name)
+        self.param = param
+        self.true_val = true_val
+        self.false_val = false_val
+
+    def process_update(self, config, level):
+        self.period = 1
+        self.zero_offset = 0
+        self.clear_waveform()
+        self.add_sample(0, { True: self.true_val, False: self.false_val}[config[self.param]], '-')
+        MultiTriggerController.update(self)
+
 class ProjectorTriggerController(MultiTriggerController):
     def __init__(self, name, proj):
         MultiTriggerController.__init__(self, name)
@@ -480,6 +494,7 @@ class CameraSynchronizer:
 
     self.projector = Projector()
     self.cameras = dict((name, Camera(proj = self.projector, **camera_parameters[name])) for name in self.camera_names)
+    self.prosilica_inhibit = ProsilicaInhibitTriggerController('prosilica_inhibit_projector_controller', "prosilica_projector_disable", 0x0A, 0x00)
     
     self.controllers = [
       ProjectorTriggerController('projector_trigger', self.projector),
@@ -516,6 +531,7 @@ class CameraSynchronizer:
     # print "Reconfigure", config
     # Reconfigure the projector.
     self.projector.process_update(config, level)
+    self.prosilica_inhibit.process_update(config, level)
     # Reconfigure the cameras.
     for camera in self.cameras.values():
       camera.process_update(config, level)
