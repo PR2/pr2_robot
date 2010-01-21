@@ -447,10 +447,10 @@ def update_status_stale(stat, last_update_time):
     stale_status = 'OK'
     if time_since_update > 20:
         stale_status = 'Lagging'
-        stat.level = max(stat.level, 1)
+        stat.level = max(stat.level, DiagnsoticStatus.WARN)
     if time_since_update > 35:
         stale_status = 'Stale'
-        stat.level = max(stat.level, 1)
+        stat.level = max(stat.level, DiagnosticStatus.ERROR)
         
     stat.values.pop(0)
     stat.values.pop(0)
