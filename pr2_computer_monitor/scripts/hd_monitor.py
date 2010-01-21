@@ -63,7 +63,7 @@ usage_dict = { 0: 'OK', 1: 'Low Disk Space', 2: 'Very Low Disk Space' }
 
 
 ## Connects to hddtemp daemon to get temp, HD make.
-def get_hddtemp_data_socket(hostname = 'localhost', port = 7634):
+def get_hddtemp_data(hostname = 'localhost', port = 7634):
     try:
         hd_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         hd_sock.connect((hostname, port))
@@ -84,16 +84,26 @@ def get_hddtemp_data_socket(hostname = 'localhost', port = 7634):
         makes = []
         temps = []
         while idx + 5 < len(sock_vals):
-            drives.append(sock_vals[idx + 1])
-            makes.append(sock_vals[idx + 2])
-            temps.append(sock_vals[idx + 3])
+            this_drive = sock_vals[idx + 1]
+            this_make = sock_vals[idx + 2]
+            this_temp = sock_vals[idx + 3]
+
+            # Sometimes we get duplicate makes if hard drives are mounted
+            # to two different points
+            if this_make in makes:
+                idx += 5
+                continue
+
+            drives.append(this_drive)
+            makes.append(this_make)
+            temps.append(this_temp)
                         
-            idx = idx + 5
+            idx += 5
 
         return True, drives, makes, temps
     except:
         rospy.logerr(traceback.format_exc())
-        return False, [ 'Exception' ], [ traceback.format_exc() ], [ 100 ]
+        return False, [ 'Exception' ], [ traceback.format_exc() ], [ 0 ]
 
 def update_status_stale(stat, last_update_time):
     time_since_update = rospy.get_time() - last_update_time
@@ -170,7 +180,7 @@ class hd_monitor():
         diag_level = DiagnosticStatus.OK
         diag_message = 'OK'
                 
-        temp_ok, drives, makes, temps = get_hddtemp_data_socket()
+        temp_ok, drives, makes, temps = get_hddtemp_data()
 
         for index in range(0, len(drives)):
             temp = temps[index]
@@ -196,12 +206,8 @@ class hd_monitor():
 
         with self._mutex:
             self._last_temp_time = rospy.get_time()
-            
             self._temp_stat.values = diag_strs
-            
             self._temp_stat.level = diag_level
-
-            self._temp_stat.hardware_id = makes[0]
             
             # Give No Data message if we have no reading
             self._temp_stat.message = temp_dict[diag_level]
