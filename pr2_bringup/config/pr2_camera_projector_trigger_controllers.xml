@@ -22,7 +22,7 @@
   </group>
   <group ns="prosilica_inhibit_projector_controller">
     <param name="type" type="string" value="MultiTriggerController" />
-    <param name="actuator" type="string"value="led_projector_digital_out_L0" />
+    <param name="actuator" type="string" value="led_projector_digital_out_L0" />
     <param name="period" type="double" value="1" />
     <param name="times" type="string" value="0" />
     <param name="topics" type="string" value="-" />
