@@ -7,11 +7,12 @@ analyzers:
         type: GenericAnalyzer
         path: Joystick
         expected: 'joy: Joystick Driver Status'
+        num_items: 1
         remove_prefix: 'joy'
       sound:
         type: GenericAnalyzer
         path: Sound
-        startswith: '/sound_play: Node State'
+        expected: 'sound_play: Node State'
         num_items: 1
         remove_prefix: ' sound_play'
       imu:
@@ -19,7 +20,6 @@ analyzers:
         path: IMU
         find_and_remove_prefix: 'imu_node'
         num_items: 3
-
   lasers:
     type: AnalyzerGroup
     path: Lasers
@@ -39,26 +39,26 @@ analyzers:
     type: AnalyzerGroup
     path: Cameras
     analyzers:
-      narrow_l:
+      narrow_left:
         type: GenericAnalyzer
         path: Narrow (Left)
-        find_and_remove_prefix: narrow_stereo_l
-        num_items: 3
-      narrow_r:
+        find_and_remove_prefix: narrow_stereo_left
+        num_items: 2
+      narrow_right:
         type: GenericAnalyzer
         path: Narrow (Right)
-        find_and_remove_prefix: narrow_stereo_r
-        num_items: 3
-      wide_l:
+        find_and_remove_prefix: narrow_stereo_right
+        num_items: 2
+      wide_left:
         type: GenericAnalyzer
         path: Wide (Left)
-        find_and_remove_prefix: wide_stereo_l
-        num_items: 3
-      wide_r:
+        find_and_remove_prefix: wide_stereo_left
+        num_items: 2
+      wide_right:
         type: GenericAnalyzer
         path: Wide (Right)
-        find_and_remove_prefix: wide_stereo_r
-        num_items: 3
+        find_and_remove_prefix: wide_stereo_right
+        num_items: 2
       prosilica:
         type: GenericAnalyzer
         path: Prosilica
@@ -68,12 +68,12 @@ analyzers:
         type: GenericAnalyzer
         path: Forearm (Right)
         find_and_remove_prefix: forearm_camera_r
-        num_items: 3
+        num_items: 2
       forearm_l:
         type: GenericAnalyzer
         path: Forearm (Left)
         find_and_remove_prefix: forearm_camera_l
-        num_items: 3
+        num_items: 2
         
   computers:
     type: GenericAnalyzer
@@ -197,7 +197,14 @@ analyzers:
   controllers:
     type: GenericAnalyzer
     path: 'Realtime Controllers'
-    expected: 'Realtime Control Loop'
+    expected: [ 
+      'Realtime Control Loop',
+      'Controller (forearm_camera_l_trigger)',
+      'Controller (forearm_camera_r_trigger)',
+      'Controller (head_camera_trigger)',
+      'Controller (projector_controller)',
+      'Controller (projector_trigger)',
+      'Controller (prosilica_inhibit_projector_controller)' ]
     startswith: [
       'Controller']
     discard_stale: true

@@ -12,13 +12,13 @@ analyzers:
       sound:
         type: GenericAnalyzer
         path: Sound
-        expected: '/sound_play: Node State'
+        expected: 'sound_play: Node State'
         num_items: 1
         remove_prefix: ' sound_play'
       imu:
         type: GenericAnalyzer
         path: IMU
-        find_and_remove_prefix: imu_node
+        find_and_remove_prefix: 'imu_node'
         num_items: 3
   lasers:
     type: AnalyzerGroup
@@ -165,7 +165,12 @@ analyzers:
   controllers:
     type: GenericAnalyzer
     path: 'Realtime Controllers'
-    expected: 'Realtime Control Loop'
+    expected: [ 
+      'Realtime Control Loop',
+      'Controller (head_camera_trigger)',
+      'Controller (projector_controller)',
+      'Controller (projector_trigger)',
+      'Controller (prosilica_inhibit_projector_controller)' ]
     startswith: [
       'Controller']
     discard_stale: true
