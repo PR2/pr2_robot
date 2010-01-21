@@ -1,13 +1,14 @@
 <package>
-  <description brief="pr2_e_stop_helper">
-
-     e_stop_helper
-
+  <description brief="pr2_run_stop_auto_restart">
+   This package provides a node that monitors the state of the run stops of the pr2_robot. When the state of the
+   run stop changes from off to on, this node will automatically enable the power to the motors, and reset
+   the motors. This allows you to use the run stop as a 'pause' button. By using the run stop as a tool to
+   power up the robot, the run stop is also in reach of the user once the robot starts moving.
   </description>
-  <author></author>
+  <author>Wim Meeussen</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/pr2_e_stop_helper</url>
+  <url>http://ros.org/wiki/pr2_run_stop_auto_restart</url>
   <depend package="pr2_msgs"/>
   <depend package="pr2_power_board"/>
   <depend package="std_srvs"/>
