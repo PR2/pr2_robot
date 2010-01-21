@@ -1,7 +1,19 @@
 <package>
   <description brief="Node to manage synchronization of the pr2 cameras and
     the texture projector.">
-    A node to set up triggering of the robot's wge100 cameras and the texture projector. Based on its dynamically reconfigurable parameters, this node decides whether the projector should be on or off, and whether cameras should be exposuring during or in between projector pulses.
+    <p>
+    The PR2 is equipped with a texture projector that can be used to
+    project a texture onto featureless surfaces, allowing their
+    three-dimensional structure to be determined using stereoscopy. The
+    projector operates in a pulsed mode, producing brief (2ms) pulses of
+    light. Cameras that want to see the texture must expose during the
+    projector pulse; other cameras should be expose while the projector is
+    off.
+    </p>
+    
+    <p>
+      This package contains the pr2_projector_synchronizer node. Based on its dynamically reconfigurable parameters, this node controls the projector pulsing, and sets up triggering of the WGE100 cameras. 
+    </p>
   </description>
   <author>Blaise Gassend</author>
   <license>BSD</license>
