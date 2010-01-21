@@ -128,6 +128,7 @@ if __name__ == "__main__":
     try:
         ntp_monitor_main(rospy.myargv())
     except KeyboardInterrupt: pass
+    except SystemExit: pass
     except:
         import traceback
         traceback.print_exc()

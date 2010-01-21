@@ -1,4 +1,4 @@
 <launch>
-  <node pkg="pr2_computer_monitor" type="ntp_monitor.py"
-        args="fw1 7000" output="screen"  />
+  <node pkg="pr2_computer_monitor" type="ntp_monitor.py" name="ntp_monitor"
+        args="fw1"  />
 </launch>
