@@ -4,7 +4,7 @@ Main loop that runs the robot.
   </description>
   <author>Rob Wheeler/wheeler@willowgarage.com</author>
   <license>BSD</license>
-  <review status="unreviewed" notes=""/>
+  <review status="Doc Reviewed" notes=""/>
   <depend package="pr2_controller_manager"/>
   <depend package="pr2_mechanism_model" />
   <depend package="pr2_hardware_interface"/>

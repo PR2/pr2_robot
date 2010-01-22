@@ -6,7 +6,7 @@
   </description>
   <author>Wim Meeussen</author>
   <license>BSD</license>
-  <review status="unreviewed" notes=""/>
+  <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_controller_configuration</url>
 
   <depend package="pr2_machine"/>

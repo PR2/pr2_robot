@@ -4,7 +4,7 @@
   </description>
   <author>Rob Wheeler</author>
   <license>BSD</license>
-  <review status="unreviewed" notes=""/>
+  <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_dashboard_aggregator</url>
   <depend package="rospy"/>
   <depend package="std_msgs"/>

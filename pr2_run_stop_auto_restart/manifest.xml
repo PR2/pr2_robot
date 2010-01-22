@@ -7,7 +7,7 @@
   </description>
   <author>Wim Meeussen</author>
   <license>BSD</license>
-  <review status="unreviewed" notes=""/>
+  <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_run_stop_auto_restart</url>
   <depend package="pr2_msgs"/>
   <depend package="pr2_power_board"/>

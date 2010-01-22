@@ -6,7 +6,7 @@
   </description>
   <author>Wim Meeussen</author>
   <license>BSD</license>
-  <review status="unreviewed" notes=""/>
+  <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_bringup</url>
 
 <!-- missing deps: pr2_head_controller, joint_trajectory_action -->

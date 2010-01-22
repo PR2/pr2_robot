@@ -7,7 +7,7 @@
   </description>
   <author>Maintained by Wim Meeussen</author>
   <license>BSD</license>  
-  <review status="unreviewed" notes=""/>
+  <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_robot</url>
   <depend stack="camera_drivers" /> <!-- prosilica_camera, wge100_camera -->
   <depend stack="common_msgs" /> <!-- diagnostic_msgs -->
