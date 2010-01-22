@@ -11,6 +11,7 @@
 
 <!-- missing deps: pr2_head_controller, joint_trajectory_action -->
 
+  <depend package="pr2_description"/>
   <depend package="pr2_machine"/>
   <depend package="pr2_etherCAT"/>
   <depend package="pr2_controller_manager"/>
