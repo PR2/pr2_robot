@@ -477,6 +477,10 @@ class CPUMonitor():
         self._check_ipmi = rospy.get_param('~check_ipmi_tool', True)
         self._enforce_speed = rospy.get_param('~enforce_clock_speed', True)
         self._check_nfs = rospy.get_param('~check_nfs', False)
+
+        self._temps_timer = None
+        self._usage_timer = None
+        self._nfs_timer = None
         
         # Get temp_input files
         self._temp_vals = get_core_temp_names()
@@ -511,10 +515,7 @@ class CPUMonitor():
         self._last_nfs_time = 0
         self._last_publish_time = 0
 
-        self._temps_timer = None
-        self._usage_timer = None
-        self._nfs_timer = None
-        self._publish_timer = None
+
         ##@todo Need wireless stuff, at some point, put NFS in usage status
         
         # Start checking everything

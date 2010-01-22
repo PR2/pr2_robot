@@ -143,6 +143,9 @@ class hd_monitor():
         self._last_usage_time = 0
         self._last_publish_time = 0
 
+        self._temp_timer = None
+        self._usage_timer = None
+
         self._temp_stat = DiagnosticStatus()
         self._temp_stat.name = "%s HD Temperature" % diag_hostname
         self._temp_stat.level = DiagnosticStatus.ERROR
@@ -160,12 +163,9 @@ class hd_monitor():
                                         KeyValue(key = 'Time Since Last Update', value = 'N/A') ]
             self.check_disk_usage()
 
-
-        
         self.check_temps()
 
-        self._temp_timer = None
-        self._usage_timer = None
+
         
     ## Must have the lock to cancel everything
     def cancel_timers(self):
