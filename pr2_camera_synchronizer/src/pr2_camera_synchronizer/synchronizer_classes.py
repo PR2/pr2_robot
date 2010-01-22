@@ -50,7 +50,8 @@ import signal
 
 from pr2_camera_synchronizer.cfg import CameraSynchronizerConfig as ConfigType
 from pr2_camera_synchronizer.levels import *
-                   
+from diagnostic_msgs.msg import DiagnosticStatus, KeyValue, DiagnosticArray
+
 ETHERCAT_INTERVAL = 0.001
 
 param_rate = "rate"
@@ -75,6 +76,7 @@ class AsynchronousUpdater(threading.Thread):
         self.cv = threading.Condition()
         asynchronous_updaters.append(self)
         self.exiting = False
+        self.idle = True
         self.start()
 
     def update(self, *args, **nargs):
@@ -92,7 +94,10 @@ class AsynchronousUpdater(threading.Thread):
                     break
                 if self.allargs == None:
                   #print "start wait"
+                   self.idle = True
                    self.cv.wait()
+                   self.idle_end_time = rospy.get_time()
+                   self.idle = False
                   #print "end wait"
                 allargs = self.allargs
                 self.allargs = None
@@ -106,6 +111,12 @@ class AsynchronousUpdater(threading.Thread):
             self.exiting = True
             self.allargs = None
             self.cv.notify()
+
+    def getStatus(self): # For diagnostics
+        if self.idle:
+            return self.name, 0
+        interval = rospy.get_time() - self.idle_end_time
+        return self.name, interval
 
 class MultiTriggerController:
   def __init__(self, name):
@@ -547,7 +558,30 @@ class CameraSynchronizer:
     self.config = config
     return config
   
+  def update_diagnostics(self):
+    da = DiagnosticArray()
+    ds = DiagnosticStatus()
+    ds.name = rospy.get_caller_id().lstrip('/')
+    in_progress = 0;
+    for updater in list(asynchronous_updaters):
+        (name, interval) = updater.getStatus()
+        if interval == 0:
+            msg = "Idle"
+        else:
+            in_progress = in_progress + 1
+            msg = "Update in progress (%i s)"%interval
+        ds.values.append(KeyValue(name, msg))
+    ds.level = 0
+    if in_progress == 0:
+        ds.message = "Idle"
+    else:
+        ds.message = "Updates in progress: %i"%in_progress
+    ds.hardware_id = "none"
+    da.status.append(ds)
+    self.diagnostic_pub.publish(da)
+
   def spin(self):
+    self.diagnostic_pub = rospy.Publisher("/diagnostics", DiagnosticArray)
     try:
       reset_count = 0
       rospy.loginfo("Camera synchronizer is running...")
@@ -558,6 +592,7 @@ class CameraSynchronizer:
                   self.server.update_configuration({'camera_reset' : False})
           else:
               reset_count = 0
+          self.update_diagnostics()
           rospy.sleep(1)
     finally:
       rospy.signal_shutdown("Main thread exiting")
