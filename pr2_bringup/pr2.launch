@@ -64,9 +64,9 @@
     <param name="time_offset" value="-0.040" />
     <param name="port"  type="string" value="/etc/ros/sensors/imu" />
     <param name="autostart" type="bool" value="true" />
-    <param name="frameid"  type="string" value="imu_link" />
+    <param name="frame_id"  type="string" value="imu_link" />
     <param name="autocalibrate" type="bool" value="true" />
-    <param name="angular_velocity_stdev" type="double" value="0.00017" />
+    <param name="orientation_stdev" type="double" value="0.00017" />
   </node>
 
   <!-- Prosilica camera -->
