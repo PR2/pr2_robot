@@ -561,8 +561,9 @@ class CameraSynchronizer:
   def update_diagnostics(self):
     da = DiagnosticArray()
     ds = DiagnosticStatus()
-    ds.name = rospy.get_caller_id().lstrip('/')
+    ds.name = rospy.get_caller_id().lstrip('/') + ": Tasks"
     in_progress = 0;
+    longest_interval = 0;
     for updater in list(asynchronous_updaters):
         (name, interval) = updater.getStatus()
         if interval == 0:
@@ -570,12 +571,15 @@ class CameraSynchronizer:
         else:
             in_progress = in_progress + 1
             msg = "Update in progress (%i s)"%interval
+        longest_interval = max(interval, longest_interval)
         ds.values.append(KeyValue(name, msg))
-    ds.level = 0
     if in_progress == 0:
         ds.message = "Idle"
     else:
         ds.message = "Updates in progress: %i"%in_progress
+    if longest_interval > 10:
+        ds.level = 1
+        ds.message = "Update is taking too long: %i"%in_progress
     ds.hardware_id = "none"
     da.status.append(ds)
     self.diagnostic_pub.publish(da)

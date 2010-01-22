@@ -39,6 +39,11 @@ analyzers:
     type: AnalyzerGroup
     path: Cameras
     analyzers:
+      camera_synchronizer:
+        type: GenericAnalyzer
+        path: Camera Synchronizer
+        find_and_remove_prefix: camera_synchronizer_node
+        num_items: 1
       narrow_left:
         type: GenericAnalyzer
         path: Narrow (Left)
