@@ -116,7 +116,7 @@ def ntp_monitor_main(argv=sys.argv):
                       help="Offset from self", metavar="SELF_OFFSET-TOL")
     parser.add_option("--diag-hostname", dest="diag_hostname",
                       help="Computer name in diagnostics output (ex: 'c1')",
-                      metavar="DIAG_HOSTNAM",
+                      metavar="DIAG_HOSTNAME",
                       action="store", default=None)
     options, args = parser.parse_args(rospy.myargv())
 

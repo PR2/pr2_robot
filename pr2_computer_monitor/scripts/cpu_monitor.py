@@ -707,6 +707,8 @@ if __name__ == '__main__':
     import optparse
     parser = optparse.OptionParser(usage="usage: cpy_monitor [--diag-hostname=cX]")
     parser.add_option("--diag-hostname", dest="diag_hostname",
+                      help="Computer name in diagnostics output (ex: 'c1')",
+                      metavar="DIAG_HOSTNAME",
                       action="store", default = hostname)
     options, args = parser.parse_args(rospy.myargv())
 
