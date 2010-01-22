@@ -459,7 +459,7 @@ def update_status_stale(stat, last_update_time):
     
 
 class CPUMonitor():
-    def __init__(self, hostname):
+    def __init__(self, hostname, diag_hostname):
         self._diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
 
         self._mutex = threading.Lock()
@@ -474,7 +474,7 @@ class CPUMonitor():
 
         # CPU stats
         self._temp_stat = DiagnosticStatus()
-        self._temp_stat.name = '%s CPU Temperature' % hostname
+        self._temp_stat.name = '%s CPU Temperature' % diag_hostname
         self._temp_stat.level = 1
         self._temp_stat.hardware_id = hostname
         self._temp_stat.message = 'No Data'
@@ -482,7 +482,7 @@ class CPUMonitor():
                                    KeyValue(key = 'Time Since Last Update', value = 'N/A') ]
 
         self._usage_stat = DiagnosticStatus()
-        self._usage_stat.name = '%s CPU Usage' % hostname
+        self._usage_stat.name = '%s CPU Usage' % diag_hostname
         self._usage_stat.level = 1
         self._usage_stat.hardware_id = hostname
         self._usage_stat.message = 'No Data'
@@ -490,7 +490,7 @@ class CPUMonitor():
                                     KeyValue(key = 'Time Since Last Update', value = 'N/A') ]
 
         self._nfs_stat = DiagnosticStatus()
-        self._nfs_stat.name = '%s NFS IO' % hostname
+        self._nfs_stat.name = '%s NFS IO' % diag_hostname
         self._nfs_stat.level = 1
         self._nfs_stat.hardware_id = hostname
         self._nfs_stat.message = 'No Data'
@@ -704,13 +704,19 @@ class CPUMonitor():
 if __name__ == '__main__':
     hostname = socket.gethostname()
 
+    import optparse
+    parser = optparse.OptionParser(usage="usage: cpy_monitor [--diag-hostname=cX]")
+    parser.add_option("--diag-hostname", dest="diag_hostname",
+                      action="store", default = hostname)
+    options, args = parser.parse_args(rospy.myargv())
+
     try:
         rospy.init_node('cpu_monitor_%s' % hostname)
     except rospy.exceptions.ROSInitException:
         print 'CPU monitor is unable to initialize node. Master may not be running.'
         sys.exit(0)
 
-    cpu_node = CPUMonitor(hostname)
+    cpu_node = CPUMonitor(hostname, options.diag_hostname)
 
     rate = rospy.Rate(1.0)
     try:

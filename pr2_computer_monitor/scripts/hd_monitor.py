@@ -122,7 +122,7 @@ def update_status_stale(stat, last_update_time):
     stat.values.insert(1, KeyValue(key = 'Time Since Update', value = str(time_since_update)))
 
 class hd_monitor():
-    def __init__(self, hostname, home_dir = ''):
+    def __init__(self, hostname, diag_hostname, home_dir = ''):
         self._mutex = threading.Lock()
         
         self._hostname = hostname
@@ -136,7 +136,7 @@ class hd_monitor():
         self._last_publish_time = 0
 
         self._temp_stat = DiagnosticStatus()
-        self._temp_stat.name = "%s HD Temperature" % hostname
+        self._temp_stat.name = "%s HD Temperature" % diag_hostname
         self._temp_stat.level = DiagnosticStatus.ERROR
         self._temp_stat.hardware_id = hostname
         self._temp_stat.message = 'No Data'
@@ -147,7 +147,7 @@ class hd_monitor():
             self._usage_stat = DiagnosticStatus()
             self._usage_stat.level = DiagnosticStatus.ERROR
             self._usage_stat.hardware_id = hostname
-            self._usage_stat.name = '%s HD Usage' % hostname
+            self._usage_stat.name = '%s HD Usage' % diag_hostname
             self._usage_stat.values = [ KeyValue(key = 'Update Status', value = 'No Data' ),
                                         KeyValue(key = 'Time Since Last Update', value = 'N/A') ]
             self.check_disk_usage()
@@ -330,9 +330,15 @@ class hd_monitor():
 if __name__ == '__main__':
     hostname = socket.gethostname()
 
+    import optparse
+    parser = optparse.OptionParser(usage="usage: cpy_monitor [--diag-hostname=cX]")
+    parser.add_option("--diag-hostname", dest="diag_hostname",
+                      action="store", default = hostname)
+    options, args = parser.parse_args(rospy.myargv())
+
     home_dir = ''
-    if len(rospy.myargv()) > 1:
-        home_dir = rospy.myargv()[1]
+    if len(args) > 1:
+        home_dir = args[1]
 
     try:
         rospy.init_node('hd_monitor_%s' % hostname)
@@ -340,7 +346,7 @@ if __name__ == '__main__':
         print 'HD monitor is unable to initialize node. Master may not be running.'
         sys.exit(0)
         
-    hd_monitor = hd_monitor(hostname, home_dir)
+    hd_monitor = hd_monitor(hostname, options.diag_hostname, home_dir)
     rate = rospy.Rate(1.0)
 
     try:

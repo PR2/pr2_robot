@@ -47,22 +47,24 @@ import re
 
 NAME = 'ntp_monitor'
 
-def ntp_monitor(ntp_hostname, offset=500, self_offset=500):
+def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None):
     pub = rospy.Publisher("/diagnostics", DiagnosticArray)
     rospy.init_node(NAME, anonymous=True)
-
+    
     hostname = socket.gethostname()
+    if diag_hostname is None:
+        diag_hostname = hostname
 
     stat = DiagnosticStatus()
     stat.level = 0
-    stat.name = "NTP offset from "+ hostname + " to " + ntp_hostname
+    stat.name = "NTP offset from "+ diag_hostname + " to " + ntp_hostname
     stat.message = "OK"
     stat.hardware_id = hostname
     stat.values = []
 
     self_stat = DiagnosticStatus()
     self_stat.level = DiagnosticStatus.OK
-    self_stat.name = "NTP self-offset for "+ hostname
+    self_stat.name = "NTP self-offset for "+ diag_hostname
     self_stat.message = "OK"
     self_stat.hardware_id = hostname
     self_stat.values = []
@@ -112,6 +114,10 @@ def ntp_monitor_main(argv=sys.argv):
     parser.add_option("--self_offset-tolerance", dest="self_offset_tol", 
                       action="store", default=500,
                       help="Offset from self", metavar="SELF_OFFSET-TOL")
+    parser.add_option("--diag-hostname", dest="diag_hostname",
+                      help="Computer name in diagnostics output (ex: 'c1')",
+                      metavar="DIAG_HOSTNAM",
+                      action="store", default=None)
     options, args = parser.parse_args(rospy.myargv())
 
     if (len(args) == 2):
@@ -120,7 +126,7 @@ def ntp_monitor_main(argv=sys.argv):
             self_offset = int(options.self_offset_tol)
         except:
             parser.error("Offsets must be numbers")        
-        ntp_monitor(args[1], offset, self_offset)
+        ntp_monitor(args[1], offset, self_offset, options.diag_hostname)
     else:
         parser.error("Invalid arguments. Must have HOSTNAME [args]. %s" % args)
 
