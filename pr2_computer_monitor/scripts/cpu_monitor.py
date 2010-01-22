@@ -705,7 +705,7 @@ if __name__ == '__main__':
     hostname = socket.gethostname()
 
     import optparse
-    parser = optparse.OptionParser(usage="usage: cpy_monitor [--diag-hostname=cX]")
+    parser = optparse.OptionParser(usage="usage: cpu_monitor.py [--diag-hostname=cX]")
     parser.add_option("--diag-hostname", dest="diag_hostname",
                       help="Computer name in diagnostics output (ex: 'c1')",
                       metavar="DIAG_HOSTNAME",
