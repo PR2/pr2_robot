@@ -58,7 +58,7 @@ hd_temp_warn = 50 # This might need to be 55, needs testing
 hd_temp_error = 70 # Above this temperature, hard drives will have serious problems
 
 stat_dict = { 0: 'OK', 1: 'Warning', 2: 'Error' }
-temp_dict = { 0: 'OK', 1: 'Warm', 2: 'Hot' }
+temp_dict = { 0: 'OK', 1: 'Hot', 2: 'Critical Hot' }
 usage_dict = { 0: 'OK', 1: 'Low Disk Space', 2: 'Very Low Disk Space' }
 
 
@@ -195,6 +195,7 @@ class hd_monitor():
             
             if not unicode(temp).isnumeric():
                 temp_level = DiagnosticStatus.ERROR
+                temp_ok = False
             else:
                 temp_level = DiagnosticStatus.OK
                 if float(temp) > hd_temp_warn:
@@ -224,7 +225,6 @@ class hd_monitor():
 
             if self._no_temp_warn and temp_ok:
                 self._temp_stat.level = DiagnosticStatus.OK
-
 
             if not rospy.is_shutdown():
                 self._temp_timer = threading.Timer(10.0, self.check_temps)
