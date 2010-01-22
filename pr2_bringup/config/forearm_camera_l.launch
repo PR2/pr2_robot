@@ -19,5 +19,11 @@
     <remap from="camera" to="forearm_camera_l" />
     <remap from="camera_alternate" to="forearm_camera_l" />
   </node>
+
+  <!-- Start image_proc inside camera namespace-->
+  <group ns="forearm_camera_l">
+    <node name="image_proc" pkg="image_proc" type="image_proc" />
+  </group>
+
 </launch>
 
