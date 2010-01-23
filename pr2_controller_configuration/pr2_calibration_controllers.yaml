@@ -132,7 +132,7 @@ cal_r_gripper:
     - r_gripper_l_finger_tip_joint
     - r_gripper_r_finger_joint
     - r_gripper_r_finger_tip_joint
-  velocity: 0.01
+  velocity: -0.01
   pid:
     p: 10000
     d: 0
@@ -174,7 +174,7 @@ cal_l_gripper:
     - l_gripper_l_finger_tip_joint
     - l_gripper_r_finger_joint
     - l_gripper_r_finger_tip_joint
-  velocity: 0.01
+  velocity: -0.01
   pid:
     p: 10000
     d: 0
