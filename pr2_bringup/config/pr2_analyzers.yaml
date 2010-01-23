@@ -12,9 +12,8 @@ analyzers:
       sound:
         type: GenericAnalyzer
         path: Sound
-        expected: 'sound_play: Node State'
         num_items: 1
-        remove_prefix: ' sound_play'
+        contains: 'sound_play'
       imu:
         type: GenericAnalyzer
         path: IMU
