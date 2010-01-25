@@ -3,12 +3,12 @@ head_traj_controller:
   joints: ['head_pan_joint', 'head_tilt_joint']
   gains:
     head_pan_joint:
-      p: 10.0
+      p: 20.0
       i: 12.0
-      d: 0.5
+      d: 1.5
       i_clamp: 0.5 
     head_tilt_joint:
-      p: 12.4
+      p: 49.6
       i: 2.0
       d: 0.4
       i_clamp: 0.1 
