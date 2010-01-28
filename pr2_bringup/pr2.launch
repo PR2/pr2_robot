@@ -1,7 +1,7 @@
 <launch>
 
   <include file="$(find pr2_machine)/pr2.machine" />
-  <param name="use_sim_time" value="false"/>
+  <param name="/use_sim_time" value="false"/>
 
   <!-- Robot Description -->
   <param name="robot_description" textfile="/etc/ros/urdf/robot.xml" />
