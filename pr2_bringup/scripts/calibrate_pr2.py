@@ -68,7 +68,7 @@ last_joint_states = None
 def joint_states_cb(msg):
     global last_joint_states
     last_joint_states = msg
-rospy.Subscriber('/joint_states', JointState, joint_states_cb)
+rospy.Subscriber('joint_states', JointState, joint_states_cb)
     
 
 def calibrate(joints):
