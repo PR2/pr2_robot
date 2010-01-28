@@ -1,4 +1,7 @@
 <launch>
+  <!-- Remap diagnostics if we are pushed into a namespace. -->
+  <remap from="/diagnostics" to="/$(optenv ROS_NAMESPACE /)/diagnostics" />
+  <remap from="/diagnostics_agg" to="/$(optenv ROS_NAMESPACE /)/diagnostics_agg" />
 
   <include file="$(find pr2_machine)/pr2.machine" />
   <param name="/use_sim_time" value="false"/>
