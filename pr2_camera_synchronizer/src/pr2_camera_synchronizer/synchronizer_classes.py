@@ -486,10 +486,12 @@ class Camera:
 #   Prosilica setting
 
 class CameraSynchronizer:
-  def __init__(self):
+  def __init__(self, forearm=True):
     stereo_camera_names = [ "narrow_stereo", "wide_stereo" ] # narrow must be first as it can be alternate, and hence has more period restrictions. 
     forearm_camera_names = [ "forearm_r", "forearm_l" ]
-    self.camera_names = stereo_camera_names + forearm_camera_names
+    self.camera_names = stereo_camera_names
+    if forearm:
+        self.camera_names = self.camera_names + forearm_camera_names
     # Parameter names are pretty symmetric. Build them up automatically.
     parameters = [ param_rate, param_trig_mode ]
     camera_parameters = dict((name, dict((suffix, name+"_"+suffix) for suffix in parameters)) for name in self.camera_names)
@@ -498,8 +500,9 @@ class CameraSynchronizer:
     for camera in stereo_camera_names:
       camera_parameters[camera][param_rate] = "stereo_rate"
       camera_parameters[camera]["node_name"] = camera+"_both"
-    for camera in forearm_camera_names:
-      camera_parameters[camera]["node_name"] = "forearm_camera_"+camera[-1]
+    if forearm:
+      for camera in forearm_camera_names:
+        camera_parameters[camera]["node_name"] = "forearm_camera_"+camera[-1]
     for i in range(0, len(self.camera_names)):
       camera_parameters[self.camera_names[i]]["level"] = 1 << i; # This only works because of the specific levels in the .cfg file.
 
@@ -509,10 +512,12 @@ class CameraSynchronizer:
     
     self.controllers = [
       ProjectorTriggerController('projector_trigger', self.projector),
-      DualCameraTriggerController('head_camera_trigger', *[self.cameras[name] for name in stereo_camera_names]),
-      SingleCameraTriggerController('forearm_camera_r_trigger', self.cameras["forearm_r"]),
-      SingleCameraTriggerController('forearm_camera_l_trigger', self.cameras["forearm_l"]),
-    ]
+      DualCameraTriggerController('head_camera_trigger', *[self.cameras[name] for name in stereo_camera_names])]
+    if forearm:
+      self.controllers = self.controllers + [
+          SingleCameraTriggerController('forearm_camera_r_trigger', self.cameras["forearm_r"]),
+          SingleCameraTriggerController('forearm_camera_l_trigger', self.cameras["forearm_l"]),
+        ]
 
     self.server = DynamicReconfigureServer(ConfigType, self.reconfigure)
 
