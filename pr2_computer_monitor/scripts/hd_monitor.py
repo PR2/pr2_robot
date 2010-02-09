@@ -54,7 +54,7 @@ from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 low_hd_level = 5
 critical_hd_level = 1
 
-hd_temp_warn = 50 # This might need to be 55, needs testing
+hd_temp_warn = 55 #3580, setting to 55C to after checking manual
 hd_temp_error = 70 # Above this temperature, hard drives will have serious problems
 
 stat_dict = { 0: 'OK', 1: 'Warning', 2: 'Error' }
