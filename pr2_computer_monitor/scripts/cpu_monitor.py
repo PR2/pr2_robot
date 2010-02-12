@@ -89,7 +89,7 @@ def check_ipmi():
             words = ln.split('|')
             name = words[0].strip()
             ipmi_val = words[1].strip()
-            stat_byte = words[1].strip()
+            stat_byte = words[2].strip()
 
             # CPU temps
             if words[0].startswith('CPU') and words[0].strip().endswith('Temp'):
@@ -97,7 +97,7 @@ def check_ipmi():
                     tmp = ipmi_val.rstrip(' degrees C').lstrip()
                     if unicode(tmp).isnumeric():
                         temperature = float(tmp)
-                        diag_vals.append(KeyValue(key = name, value = tmp))
+                        diag_vals.append(KeyValue(key = name + ' (C)', value = tmp))
 
                         cpu_name = name.split()[0]
                         if temperature >= 80 and temperature < 89:
@@ -120,7 +120,7 @@ def check_ipmi():
             if name == 'MB Temp' or name == 'BP Temp' or name == 'FP Temp':
                 if ipmi_val.endswith('degrees C'):
                     tmp = ipmi_val.rstrip(' degrees C').lstrip()
-                    diag_vals.append(KeyValue(key = name, value = tmp))
+                    diag_vals.append(KeyValue(key = name + ' (C)', value = tmp))
                     # Give temp warning
                     dev_name = name.split()[0]
                     if unicode(tmp).isnumeric():
@@ -144,12 +144,16 @@ def check_ipmi():
                 if ipmi_val.endswith('RPM'):
                     rpm = ipmi_val.rstrip(' RPM').lstrip()
                     if unicode(rpm).isnumeric():
-                        diag_vals.append(KeyValue(key = name, value = rpm))
+                        if int(rpm) == 0:
+                            diag_level = max(diag_level, DiagnosticStatus.WARN)
+                            diag_msgs.append('Fan Warning')
+                            
+                        diag_vals.append(KeyValue(key = name + ' RPM', value = rpm))
                     else:
                         diag_vals.append(KeyValue(key = name, value = ipmi_val))
 
             # If CPU is hot we get an alarm from ipmitool, report that too
-            # CPU should shut down if we get a hot alarm
+            # CPU should shut down if we get a hot alarm, so report as error
             if name.startswith('CPU') and name.endswith('hot'):
                 if ipmi_val == '0x01':
                     diag_vals.append(KeyValue(key = name, value = 'OK'))
@@ -236,7 +240,7 @@ def check_clock_speed(enforce_speed):
                 continue
 
             speed = words[1].strip().split('.')[0] # Conversion to float doesn't work with decimal
-            vals.append(KeyValue(key = 'Core %d Speed' % index, value = speed))
+            vals.append(KeyValue(key = 'Core %d MHz' % index, value = speed))
             if unicode(speed).isnumeric():
                 mhz = float(speed)
                 
