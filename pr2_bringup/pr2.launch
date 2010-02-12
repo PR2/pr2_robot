@@ -23,6 +23,7 @@
   <node machine="c2" pkg="joy" type="joy_node" name="joy" >
     <param name="deadzone" value="0.12" />
     <param name="dev" value="/etc/ros/sensors/ps3joy" />
+    <param name="autorepeat_rate" value="10" />
   </node>
 
   <!-- Run stop auto restart -->
