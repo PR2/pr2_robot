@@ -12,7 +12,7 @@
   
   <!-- Spawns the forearm camera -->
   <node name="forearm_camera_l" pkg="wge100_camera" type="wge100_camera_node">
-    <param name="camera_url" type="str" value="name://forearm_l#lan0@10.68.0.42"/>
+    <param name="camera_url" type="str" value="name://forearm_l#lan1@10.69.0.42"/>
     <param name="frame_id" type="str" value="l_forearm_cam_optical_frame" />
     <param name="imager_rate" type="double" value="25" />
     <param name="ext_trig" type="bool" value="false" />

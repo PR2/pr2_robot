@@ -11,7 +11,7 @@
   <!-- Spawns the wide cameras -->
   <node name="wide_stereo_left" pkg="wge100_camera" type="wge100_camera_node">
     <param name="ext_trig" type="bool" value="True" />
-    <param name="camera_url" type="str" value="name://wide_stereo_l#lan0@10.68.0.45" />
+    <param name="camera_url" type="str" value="name://wide_stereo_l#lan1@10.69.0.45" />
     <remap from="camera" to="wide_stereo/left" />
     <remap from="camera_alternate" to="wide_stereo/left" />
     <param name="trig_timestamp_topic" type="string" value="not_set" />
@@ -19,7 +19,7 @@
 
   <node name="wide_stereo_right" pkg="wge100_camera" type="wge100_camera_node">
     <param name="ext_trig" type="bool" value="True" />
-    <param name="camera_url" type="str" value="name://wide_stereo_r#lan0@10.68.0.46"/>
+    <param name="camera_url" type="str" value="name://wide_stereo_r#lan1@10.69.0.46"/>
     <remap from="camera" to="wide_stereo/right" />
     <remap from="camera_alternate" to="wide_stereo/right" />
     <param name="trig_timestamp_topic" type="string" value="not_set" />
@@ -40,7 +40,7 @@
   
   <!-- Spawns the narrow cameras -->
   <node name="narrow_stereo_right" pkg="wge100_camera" type="wge100_camera_node">
-    <param name="camera_url" type="str" value="name://narrow_stereo_r#lan0@10.68.0.44"/>
+    <param name="camera_url" type="str" value="name://narrow_stereo_r#lan1@10.69.0.44"/>
     <remap from="camera" to="narrow_stereo/right" />
     <remap from="camera_alternate" to="narrow_stereo_textured/right" />
     <param name="ext_trig" type="bool" value="True" />
@@ -48,7 +48,7 @@
   </node>
 
   <node name="narrow_stereo_left" pkg="wge100_camera" type="wge100_camera_node">
-    <param name="camera_url" type="str" value="name://narrow_stereo_l#lan0@10.68.0.43"/>
+    <param name="camera_url" type="str" value="name://narrow_stereo_l#lan1@10.69.0.43"/>
     <remap from="camera" to="narrow_stereo/left" />
     <remap from="camera_alternate" to="narrow_stereo_textured/left" />
     <param name="ext_trig" type="bool" value="True" />
