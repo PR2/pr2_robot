@@ -587,6 +587,7 @@ class CameraSynchronizer:
         ds.message = "Update is taking too long: %i"%in_progress
     ds.hardware_id = "none"
     da.status.append(ds)
+    da.header.stamp = rospy.get_rostime()
     self.diagnostic_pub.publish(da)
 
   def spin(self):
