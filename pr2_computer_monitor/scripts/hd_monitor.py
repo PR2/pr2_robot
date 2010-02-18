@@ -115,7 +115,7 @@ def update_status_stale(stat, last_update_time):
             stat.message = stale_status
         elif stat.message.find(stale_status) < 0:
             stat.message = ', '.join([stat.message, stale_status])
-        stat.level = max(stat.level, DiagnsoticStatus.WARN)
+        stat.level = max(stat.level, DiagnosticStatus.WARN)
     if time_since_update > 35:
         stale_status = 'Stale'
         if stat.level == DiagnosticStatus.OK:
