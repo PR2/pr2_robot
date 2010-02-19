@@ -283,6 +283,10 @@ def check_uptime():
         stdout, stderr = p.communicate()
         retcode = p.returncode
 
+        if retcode != 0:
+            vals.append(KeyValue(key = 'uptime Failed', value = stderr))
+            return DiagnosticStatus.ERROR, vals
+
         upvals = stdout.split()
         load1 = upvals[-3].rstrip(',')
         load5 = upvals[-2].rstrip(',')
@@ -292,8 +296,6 @@ def check_uptime():
         # Give error if we go over load limit 
         if float(load1) > 25 or float(load5) > 18:
             level = DiagnosticStatus.WARN
-        if float(load1) > 35 or float(load5) > 25 or float(load15) > 20:
-            level = DiagnosticStatus.ERROR
 
         vals.append(KeyValue(key = 'Load Average Status', value = load_dict[level]))
         vals.append(KeyValue(key = '1 min Load Average', value = load1))
@@ -306,7 +308,7 @@ def check_uptime():
         level = DiagnosticStatus.ERROR
         vals.append(KeyValue(key = 'Load Average Status', value = traceback.format_exc()))
         
-    return min(level, 1), vals
+    return level, vals
 
 # Add msgs output
 ##\brief Uses 'free -m' to check free memory
@@ -323,7 +325,11 @@ def check_memory():
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
         retcode = p.returncode
-                
+               
+        if retcode != 0:
+            values.append(KeyValue(key = "\"free -m\" Call Error", value = str(retcode)))
+            return DiagnosticStatus.ERROR, values
+ 
         rows = stdout.split('\n')
         data = rows[1].split()
         total_mem = data[1]
@@ -341,11 +347,11 @@ def check_memory():
         values.append(KeyValue(key = 'Used Memory', value = used_mem))
         values.append(KeyValue(key = 'Free Memory', value = free_mem))
 
-    
         msg = mem_dict[level]
     except Exception, e:
         rospy.logerr(traceback.format_exc())
         msg = 'Memory Usage Check Error'
+        values.append(KeyValue(key = msg, value = str(e)))
         level = DiagnosticStatus.ERROR
     
     return level, values
@@ -354,6 +360,7 @@ def check_memory():
 ##
 ##
 usage_old = 0
+has_warned_mpstat = False
 def check_mpstat():
     vals = []
     mp_level = DiagnosticStatus.OK
@@ -366,7 +373,17 @@ def check_mpstat():
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
         retcode = p.returncode
-    
+
+        if retcode != 0:
+            global has_warned_mpstat
+            if not has_warned_mpstat:
+                rospy.logerr("mpstat failed to run for cpu_monitor. Return code %d.", retcode)
+                has_warned_mpstat = True
+
+            mp_level = DiagnosticStatus.ERROR
+            vals.append(KeyValue(key = '\"mpstat\" Call Error', value = str(retcode)))
+            return mp_level, vals
+
         num_cores = 0
         cores_loaded = 0
         for index, row in enumerate(stdout.split('\n')):
@@ -396,9 +413,6 @@ def check_mpstat():
                 usage = usage_old
             usage_old = usage
 
-            #if usage == 0 and float(idle) == 0:
-            #    continue # Don't do the last, empty CPU
-
             num_cores += 1
             if usage > 90.0:
                 cores_loaded += 1
@@ -420,7 +434,7 @@ def check_mpstat():
         mp_level = DiagnosticStatus.ERROR
         vals.append(KeyValue(key = 'mpstat Exception', value = str(e)))
 
-    return min(mp_level, 1), vals
+    return mp_level, vals
 
 ## Returns names for core temperature files
 ## Returns list of names, each name can be read like file
@@ -557,6 +571,13 @@ class CPUMonitor():
             stdout, stderr = p.communicate()
             retcode = p.returncode
             
+            if retcode != 0:
+                nfs_level = DiagnosticStatus.ERROR
+                msg = 'iostat Error'
+                vals.append(KeyValue(key = '\"iostat -n\" Call Error', value = str(e)))
+                stdout = ''
+                
+
             for index, row in enumerate(stdout.split('\n')):
                 if index < 3:
                     continue
@@ -588,7 +609,7 @@ class CPUMonitor():
                 
         except Exception, e:
             rospy.logerr(traceback.format_exc())
-            nfs_level = 1
+            nfs_level = DiagnosticStatus.ERROR
             msg = 'Exception'
             vals.append(KeyValue(key = 'Exception', value = str(e)))
           
