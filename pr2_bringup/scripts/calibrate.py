@@ -34,6 +34,8 @@
 
 # Author: Stuart Glaser
 
+from __future__ import with_statement
+
 import roslib
 import copy
 import threading
@@ -106,21 +108,19 @@ def calibrate_imu():
 
         def callback(self, msg):
             if msg.data:
-                self.cond.acquire()
-                self.is_calibrated = True
-                self.cond.notify()
-                self.cond.release()
+                with self.cond:
+                    self.is_calibrated = True
+                    self.cond.notify()
 
         def wait_for_calibrated(self, topic, timeout):
             self.sub = rospy.Subscriber(topic,Bool,self.callback)
-            self.cond.acquire()
             try:
-                if not self.is_calibrated:
-                  self.cond.wait(timeout)
-            except RuntimeError:
-                pass # The check of is_calibrated will tell us what happened.
-            self.cond.release()
-            self.sub.unregister()
+                with self.cond:
+                    if not self.is_calibrated:
+                        self.cond.wait(timeout)
+                return self.is_calibrated
+            finally:
+                self.sub.unregister()
             return self.is_calibrated
 
     print "Waiting up to 20s for IMU calibration to complete."
