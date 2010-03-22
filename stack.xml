@@ -24,7 +24,7 @@
   <depend stack="pr2_mechanism" /> <!-- pr2_controller_manager, realtime_tools, pr2_hardware_interface, pr2_mechanism_model -->
   <depend stack="pr2_power_drivers" /> <!-- pr2_power_board, ocean_battery_driver, power_monitor -->
   <depend stack="robot_model" /> <!-- robot_state_publisher -->
-  <depend stack="ros" /> <!-- std_msgs, rospy, std_srvs, roscpp, rosrecord -->
+  <depend stack="ros" /> <!-- std_msgs, rospy, rosrecord, std_srvs, roscpp -->
   <depend stack="sound_drivers" /> <!-- sound_play -->
 
 </stack>
