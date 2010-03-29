@@ -502,7 +502,7 @@ class CameraSynchronizer:
       camera_parameters[camera]["node_name"] = camera+"_both"
     if forearm:
       for camera in forearm_camera_names:
-        camera_parameters[camera]["node_name"] = "forearm_camera_"+camera[-1]
+        camera_parameters[camera]["node_name"] = camera[-1]+"_forearm_cam"
     for i in range(0, len(self.camera_names)):
       camera_parameters[self.camera_names[i]]["level"] = 1 << i; # This only works because of the specific levels in the .cfg file.
 
@@ -515,8 +515,8 @@ class CameraSynchronizer:
       DualCameraTriggerController('head_camera_trigger', *[self.cameras[name] for name in stereo_camera_names])]
     if forearm:
       self.controllers = self.controllers + [
-          SingleCameraTriggerController('forearm_camera_r_trigger', self.cameras["forearm_r"]),
-          SingleCameraTriggerController('forearm_camera_l_trigger', self.cameras["forearm_l"]),
+          SingleCameraTriggerController('r_forearm_cam_trigger', self.cameras["forearm_r"]),
+          SingleCameraTriggerController('l_forearm_cam_trigger', self.cameras["forearm_l"]),
         ]
 
     self.server = DynamicReconfigureServer(ConfigType, self.reconfigure)
