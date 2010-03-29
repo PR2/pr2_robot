@@ -1,7 +1,7 @@
 <launch>
   <!-- Spwns the controllers -->
-  <node name="forearm_camera_r_trigger_spawner" pkg="pr2_controller_manager" type="spawner" args="forearm_camera_r_trigger" />
-  <group ns="forearm_camera_r_trigger">
+  <node name="r_forearm_cam_trigger_spawner" pkg="pr2_controller_manager" type="spawner" args="r_forearm_cam_trigger" />
+  <group ns="r_forearm_cam_trigger">
     <param name="type" type="string" value="MultiTriggerController" />
     <param name="digital_output" type="string" value="r_wrist_l_motor" />
     <param name="period" type="double" value="0.08" />
@@ -11,17 +11,17 @@
   </group>
   
   <!-- Spawns the forearm camera -->
-  <node name="forearm_camera_r" pkg="wge100_camera" type="wge100_camera_node">
+  <node name="r_forearm_cam" pkg="wge100_camera" type="wge100_camera_node">
     <param name="camera_url" type="str" value="name://forearm_r#lan1@10.69.0.41"/>
     <param name="frame_id" type="str" value="r_forearm_cam_optical_frame" />
     <param name="imager_rate" type="double" value="25" />
     <param name="ext_trig" type="bool" value="false" />
-    <remap from="camera" to="forearm_camera_r" />
-    <remap from="camera_alternate" to="forearm_camera_r" />
+    <remap from="camera" to="r_forearm_cam" />
+    <remap from="camera_alternate" to="r_forearm_cam" />
   </node>
 
   <!-- Start image_proc inside camera namespace-->
-  <group ns="forearm_camera_r">
+  <group ns="r_forearm_cam">
     <node name="image_proc" pkg="image_proc" type="image_proc" />
   </group>
 

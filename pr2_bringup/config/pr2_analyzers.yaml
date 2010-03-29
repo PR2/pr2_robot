@@ -71,12 +71,12 @@ analyzers:
       forearm_r:
         type: GenericAnalyzer
         path: Forearm (Right)
-        find_and_remove_prefix: forearm_camera_r
+        find_and_remove_prefix: r_forearm_cam
         num_items: 2
       forearm_l:
         type: GenericAnalyzer
         path: Forearm (Left)
-        find_and_remove_prefix: forearm_camera_l
+        find_and_remove_prefix: l_forearm_cam
         num_items: 2
         
   computers:
@@ -207,8 +207,8 @@ analyzers:
       'Controller (projector_controller)',
       'Controller (projector_trigger)',
       'Controller (prosilica_inhibit_projector_controller)',
-      'Controller (forearm_camera_r_trigger)',
-      'Controller (forearm_camera_l_trigger)' ]
+      'Controller (r_forearm_cam_trigger)',
+      'Controller (l_forearm_cam_trigger)' ]
     startswith: [
       'Controller']
     discard_stale: true

@@ -81,8 +81,8 @@
   <include file="$(find pr2_bringup)/config/dualstereo_camera.launch"/>
 
   <!-- Forearm Camera -->
-  <include file="$(find pr2_bringup)/config/forearm_camera_r.launch" />
-  <include file="$(find pr2_bringup)/config/forearm_camera_l.launch" />
+  <include file="$(find pr2_bringup)/config/r_forearm_cam.launch" />
+  <include file="$(find pr2_bringup)/config/l_forearm_cam.launch" />
 
   <!-- Sound -->
   <node pkg="sound_play" type="soundplay_node.py" machine="c1" name="sound_play" /> 
