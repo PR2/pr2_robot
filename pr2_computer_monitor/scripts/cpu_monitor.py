@@ -293,8 +293,8 @@ def check_uptime():
         load15 = upvals[-1]
         num_users = upvals[-7]
 
-        # Give error if we go over load limit 
-        if float(load1) > 25 or float(load5) > 18:
+        # Give warning if we go over load limit 
+        if float(load1) > 5 or float(load5) > 3:
             level = DiagnosticStatus.WARN
 
         vals.append(KeyValue(key = 'Load Average Status', value = load_dict[level]))
