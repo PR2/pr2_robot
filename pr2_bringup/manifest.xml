@@ -35,6 +35,7 @@
   <depend package="prosilica_camera"/>
   <depend package="sound_play"/>
   <depend package="joy"/>
+  <depend package="std_srvs"/>
   <depend package="pr2_run_stop_auto_restart"/>
   <depend package="rosrecord"/>
   <depend package="pr2_power_board"/>
