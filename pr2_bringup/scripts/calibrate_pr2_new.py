@@ -81,26 +81,33 @@ def calibrate(joints):
     if type(joints) is not list:
         joints = [joints]
 
+    print [controllers[j] for j in joints]
+
     try:
+        rospy.logdebug("starting controllers")
         # Starts the launched controllers
         switch_controller([controllers[j] for j in joints], [], SwitchControllerRequest.BEST_EFFORT)
 
-        # Waits for the calibration controllers to complete
-        waiting_for = joints[:]
 
+        # Waits for the calibration controllers to complete
+        start_time = rospy.Time.now()
+        delay = rospy.Duration(20.0)
+        waiting_for = joints[:]
+        rospy.logdebug("waiting for calibration")
         while waiting_for and not rospy.is_shutdown():
             remove = []
             for j in waiting_for:
                 try:
                     services[j]()
-                    rospy.loginfo("Finished calibration: %s"%j) 
+                    rospy.loginfo("Finished calibrating joint %s"%j) 
                     remove.append(j)
                 except:
-                    rospy.loginfo("Still not calibrated: %s"%j)
-            rospy.sleep(1)
+                    if rospy.Time.now() > start_time + delay:
+                        rospy.logwarn("Joint %s is taking a long time to calibrate. It might be stuck and need some human help"%j)
+                        rospy.sleep(1.0)
             for r in remove:
                 waiting_for.remove(r)
-
+            rospy.sleep(0.1)
 
     finally:
         # unload controllers 
@@ -159,37 +166,35 @@ def calibrate_group(joints_group):
     all_joints = flatten(joints_group)
     
     # spawn calibration controllers for this group
-    controllers = {}
     for j in all_joints:
         controllers[j] =  calibration_params_namespace+"/calibrate/cal_%s" % j
-        rospy.loginfo("Launching: %s" %controllers[j])
+        rospy.logdebug("Launching: %s" %controllers[j])
         resp = load_controller(controllers[j])
         if resp.ok == 0:
             rospy.logerr("Failed: %s" %controllers[j])
-            return false
+            return False
 
     # create service client to each controller
-    services = {}
     for j in all_joints:
         service_name = '%s/is_calibrated'%controllers[j]
-        rospy.loginfo("Waiting for service: %s" %service_name)
+        rospy.logdebug("Waiting for service: %s" %service_name)
         rospy.wait_for_service(service_name)
         services[j] = rospy.ServiceProxy(service_name, Empty)
 
     # check if all joints are calibrated
-    rospy.loginfo('Checking which joints need calibration')
-    needs_calibrating = False
+    rospy.logdebug('Checking which joints need calibration')
+    needs_calibration = False
     for j in all_joints:
         try:
             services[j]()
-            rospy.loginfo("joint %s is already calibrated"%j)
+            rospy.logdebug("joint %s is already calibrated"%j)
         except:
-            rospy.loginfo("joint %s needs to be calibrated"%j)
-            needs_calibrating = True
+            rospy.logdebug("joint %s needs to be calibrated"%j)
+            needs_calibration = True
             break
 
-    if not needs_calibrating:
-        rospy.loginfo("All joints are already calibrated")
+    if not needs_calibration:
+        rospy.loginfo("These joints are already calibrated: %s"%all_joints)
         return True
 
     # calibrate all joints in group
@@ -199,7 +204,7 @@ def calibrate_group(joints_group):
         calibrate(joints)
         for j in joints:
             if j in hold_position:
-                publishers.append( hold(j, h) )
+                publishers.append( hold(j, hold_position[j]) )
         status["done"].extend(status["active"])
 
 
@@ -316,48 +321,34 @@ def main():
                         arms = 'none'
                 rospy.logout("Arm selection was set to \"auto\".  Chose to calibrate using \"%s\"" % arms)
 
-            # Calibrate all joints sequentially
-            # Hold joints after they're calibrated.
-
+            # calibrate imu
             status["active"] = ["imu"]
-
             imustatus = calibrate_imu()
             if not imustatus:
                 rospy.logerr("IMU Calibration failed.")
-
+            status["done"].extend(status["active"])
 
             # load calibration controllers configuration
             rospy.loginfo("Loading controller configuration on parameter server...")
             rospy.set_param(calibration_params_namespace+"/calibrate", yaml.load(open(calibration_yaml)))
             rospy.set_param(calibration_params_namespace+"/hold", yaml.load(open(hold_yaml)))
 
-            status["done"].extend(status["active"])
-
+            # calibrate torso
             calibrate_group([['torso_lift']])
-            sleep(0.5)
 
-            status["done"].extend(status["active"])
-            publish_status(status, status_pub)
-            if arms in ['both', 'right']:
-                calibrate_group([['r_shoulder_pan']])
-
-            if arms in ['both', 'left']:
-                calibrate_group([['l_shoulder_pan']])
-
+            # calibrate arms
+            publishers.append( hold('torso_lift', 0.08) )
             if arms == 'both':
-                calibrate_group([['r_elbow_flex', 'l_elbow_flex'], ['r_upper_arm_roll', 'l_upper_arm_roll'], ['r_shoulder_lift', 'l_shoulder_lift']])
-
+                calibrate_group([['r_shoulder_pan', 'l_shoulder_pan'], ['r_elbow_flex', 'l_elbow_flex'], 
+                                 ['r_upper_arm_roll', 'l_upper_arm_roll'], ['r_shoulder_lift', 'l_shoulder_lift']])
             elif arms == 'right':
-                calibrate_group([['r_elbow_flex'], ['r_upper_arm_roll'], ['r_shoulder_lift']])
-
+                calibrate_group([['r_shoulder_pan'], ['r_elbow_flex'], ['r_upper_arm_roll'], ['r_shoulder_lift']])
             elif arms == 'left':
-                calibrate_group([['l_elbow_flex'], ['l_upper_arm_roll'], ['l_shoulder_lift']])
-
+                calibrate_group([['l_shoulder_pan'], ['l_elbow_flex'], ['l_upper_arm_roll'], ['l_shoulder_lift']])
             publishers.append( hold('torso_lift', 0.0) )
             sleep(1.0)
 
             # Everything else
-
             common = ['laser_tilt']
             if arms in ['right', 'both']:
                 common.extend(['r_forearm_roll', 'r_wrist', 'r_gripper'])
