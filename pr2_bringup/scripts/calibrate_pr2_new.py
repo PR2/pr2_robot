@@ -162,7 +162,7 @@ def flatten(l, ltypes=(list, tuple)):
 
 
 
-def calibrate_group(joints_group):
+def is_calibrated_group(joints_group):
     all_joints = flatten(joints_group)
     
     # spawn calibration controllers for this group
@@ -183,20 +183,21 @@ def calibrate_group(joints_group):
 
     # check if all joints are calibrated
     rospy.logdebug('Checking which joints need calibration')
-    needs_calibration = False
     for j in all_joints:
         try:
             services[j]()
             rospy.logdebug("joint %s is already calibrated"%j)
         except:
             rospy.logdebug("joint %s needs to be calibrated"%j)
-            needs_calibration = True
-            break
+            rospy.loginfo("These joints will get calibrated: %s"%all_joints)
+            return False
 
-    if not needs_calibration:
-        rospy.loginfo("These joints are already calibrated: %s"%all_joints)
-        return True
+    rospy.loginfo("These joints are already calibrated: %s"%all_joints)
+    return True
 
+
+
+def calibrate_group(joints_group):
     # calibrate all joints in group
     for joints  in joints_group:
         status["active"] = joints
@@ -321,41 +322,78 @@ def main():
                         arms = 'none'
                 rospy.logout("Arm selection was set to \"auto\".  Chose to calibrate using \"%s\"" % arms)
 
-            # calibrate imu
-            status["active"] = ["imu"]
-            imustatus = calibrate_imu()
-            if not imustatus:
-                rospy.logerr("IMU Calibration failed.")
-            status["done"].extend(status["active"])
+
+            # define calibration groups
+            r_arm_group = [['r_shoulder_pan'], ['r_elbow_flex'], ['r_upper_arm_roll'], ['r_shoulder_lift'], ['r_forearm_roll', 'r_wrist']]
+            l_arm_group = [['l_shoulder_pan'], ['l_elbow_flex'], ['l_upper_arm_roll'], ['l_shoulder_lift'], ['l_forearm_roll', 'l_wrist']]
+            b_arm_group = [['r_shoulder_pan', 'l_shoulder_pan'], ['r_elbow_flex', 'l_elbow_flex'],
+                           ['r_upper_arm_roll', 'l_upper_arm_roll'], ['r_shoulder_lift', 'l_shoulder_lift'],
+                           ['r_forearm_roll', 'r_wrist', 'l_forearm_roll', 'l_wrist']]
+            torso_group = [['torso_lift']]
+            common = ['laser_tilt']
+            if arms in ['right', 'both']:
+                common.extend(['r_gripper'])
+            if arms in ['left', 'both']:
+                common.extend(['l_gripper'])
+            common_group = [common]
+            head_group = [head]
+            casters_group = [casters]
 
             # load calibration controllers configuration
             rospy.loginfo("Loading controller configuration on parameter server...")
             rospy.set_param(calibration_params_namespace+"/calibrate", yaml.load(open(calibration_yaml)))
             rospy.set_param(calibration_params_namespace+"/hold", yaml.load(open(hold_yaml)))
 
+            # check which groups need calibration
+            arm_group_calibrated = False
+            if arms == 'both':
+                arm_group_calibrated = is_calibrated_group(b_arm_group)
+            elif arms == 'right':
+                arm_group_calibrated = is_calibrated_group(r_arm_group)
+            elif arms == 'left':
+                arm_group_calibrated = is_calibrated_group(l_arm_group)
+            torso_group_calibrated = is_calibrated_group(torso_group)
+            common_group_calibrated = is_calibrated_group(common_group)
+            casters_group_calibrated = is_calibrated_group(casters_group)
+            head_group_calibrated = is_calibrated_group(head_group)
+
+            # calibrate imu
+            imustatus = True
+            if not torso_group_calibrated:
+                status["active"] = ["imu"]
+                imustatus = calibrate_imu()
+                if not imustatus:
+                    rospy.logerr("IMU Calibration failed.")
+                status["done"].extend(status["active"])
+
             # calibrate torso
-            calibrate_group([['torso_lift']])
+            if not torso_group_calibrated:
+                calibrate_group(torso_group)
 
             # calibrate arms
             publishers.append( hold('torso_lift', 0.08) )
-            if arms == 'both':
-                calibrate_group([['r_shoulder_pan', 'l_shoulder_pan'], ['r_elbow_flex', 'l_elbow_flex'], 
-                                 ['r_upper_arm_roll', 'l_upper_arm_roll'], ['r_shoulder_lift', 'l_shoulder_lift']])
-            elif arms == 'right':
-                calibrate_group([['r_shoulder_pan'], ['r_elbow_flex'], ['r_upper_arm_roll'], ['r_shoulder_lift']])
-            elif arms == 'left':
-                calibrate_group([['l_shoulder_pan'], ['l_elbow_flex'], ['l_upper_arm_roll'], ['l_shoulder_lift']])
+            if not arm_group_calibrated:
+                if arms == 'both':
+                    calibrate_group(b_arm_group)
+                elif arms == 'right':
+                    calibrate_group(r_arm_group)
+                elif arms == 'left':
+                    calibrate_group(l_arm_group)
+
             publishers.append( hold('torso_lift', 0.0) )
             sleep(1.0)
 
-            # Everything else
-            common = ['laser_tilt']
-            if arms in ['right', 'both']:
-                common.extend(['r_forearm_roll', 'r_wrist', 'r_gripper'])
-            if arms in ['left', 'both']:
-                common.extend(['l_forearm_roll', 'l_wrist', 'l_gripper'])
+            # calibrate common
+            if not common_group_calibrated:
+                calibrate_group(common_group)
 
-            calibrate_group([common + head + casters])
+            # calibrate head
+            if not head_group_calibrated:
+                calibrate_group(head_group)
+
+            # calibrate casters
+            if not casters_group_calibrated:
+                calibrate_group(casters_group)
 
             joints_status = True
             status_pub.publish("CALIBRATION COMPLETE")
