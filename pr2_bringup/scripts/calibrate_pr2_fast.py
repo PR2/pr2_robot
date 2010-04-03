@@ -107,7 +107,7 @@ def calibrate(joints):
                         rospy.sleep(1.0)
             for r in remove:
                 waiting_for.remove(r)
-            rospy.sleep(0.1)
+            rospy.sleep(0.05)
 
     finally:
         # unload controllers 
@@ -249,12 +249,14 @@ def publish_status(status, pub):
 
 
 def main():
+    rospy.init_node('calibration', anonymous=True, disable_signals=True)
+    calibration_start_time = rospy.Time.now()
+
     imustatus = False
     joints_status = False
     try:
         try:
             pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True)
-            rospy.init_node('calibration', anonymous=True, disable_signals=True)
             pub_calibrated.publish(False)
             global status_pub
             status_pub = rospy.Publisher('calibration_status', String)
@@ -330,13 +332,13 @@ def main():
                            ['r_upper_arm_roll', 'l_upper_arm_roll'], ['r_shoulder_lift', 'l_shoulder_lift'],
                            ['r_forearm_roll', 'r_wrist', 'l_forearm_roll', 'l_wrist']]
             torso_group = [['torso_lift']]
-            common = ['laser_tilt']
+            gripper = []
             if arms in ['right', 'both']:
-                common.extend(['r_gripper'])
+                gripper.append('r_gripper')
             if arms in ['left', 'both']:
-                common.extend(['l_gripper'])
-            common_group = [common]
-            head_group = [head]
+                gripper.append('l_gripper')
+            gripper_group = [gripper]
+            head_group = [head, 'laser_tilt']
             casters_group = [casters]
 
             # load calibration controllers configuration
@@ -353,24 +355,33 @@ def main():
             elif arms == 'left':
                 arm_group_calibrated = is_calibrated_group(l_arm_group)
             torso_group_calibrated = is_calibrated_group(torso_group)
-            common_group_calibrated = is_calibrated_group(common_group)
+            gripper_group_calibrated = is_calibrated_group(gripper_group)
             casters_group_calibrated = is_calibrated_group(casters_group)
             head_group_calibrated = is_calibrated_group(head_group)
 
             # calibrate imu
             imustatus = True
             if not torso_group_calibrated:
+                rospy.loginfo('Calibrating imu')
                 status["active"] = ["imu"]
-                imustatus = calibrate_imu()
-                if not imustatus:
-                    rospy.logerr("IMU Calibration failed.")
+                imu_calibrate_srv_name = '/torso_lift_imu/calibrate'
+                rospy.wait_for_service(imu_calibrate_srv_name)  
+                imu_calibrate_srv = rospy.ServiceProxy(imu_calibrate_srv_name, Empty)
+                try:
+                    imu_calibrate_srv()
+                except:
+                    imustatus = False
                 status["done"].extend(status["active"])
+                rospy.loginfo('Calibrating imu finished')
+            else:
+                rospy.loginfo('Not calibrating imu')
 
             # calibrate torso
             if not torso_group_calibrated:
                 calibrate_group(torso_group)
 
             # calibrate arms
+            # @TODO: move spine up when arms need to get calibrated. Will need holding controller of torso to do that
             publishers.append( hold('torso_lift', 0.08) )
             if not arm_group_calibrated:
                 if arms == 'both':
@@ -381,11 +392,11 @@ def main():
                     calibrate_group(l_arm_group)
 
             publishers.append( hold('torso_lift', 0.0) )
-            sleep(1.0)
+            #sleep(1.0)
 
-            # calibrate common
-            if not common_group_calibrated:
-                calibrate_group(common_group)
+            # calibrate grippers
+            if not gripper_group_calibrated:
+                calibrate_group(gripper_group)
 
             # calibrate head
             if not head_group_calibrated:
@@ -396,6 +407,7 @@ def main():
                 calibrate_group(casters_group)
 
             joints_status = True
+            rospy.loginfo('Calibration completed in %f sec' %(rospy.Time.now() - calibration_start_time).to_sec())
             status_pub.publish("CALIBRATION COMPLETE")
 
         finally:
