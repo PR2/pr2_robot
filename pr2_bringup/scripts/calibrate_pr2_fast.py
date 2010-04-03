@@ -210,7 +210,7 @@ def main():
     rospy.init_node('calibration', anonymous=True, disable_signals=True)
     calibration_start_time = rospy.Time.now()
 
-    imustatus = False
+    imustatus = True
     joints_status = False
     try:
         try:
