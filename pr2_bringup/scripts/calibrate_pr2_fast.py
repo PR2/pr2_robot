@@ -63,7 +63,7 @@ switch_controller = rospy.ServiceProxy('pr2_controller_manager/switch_controller
 up_controllers = []
 hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': -2.0, 
                  'l_elbow_flex': -2.0, 'r_upper_arm_roll': 0.0, 'l_upper_arm_roll': 0.0, 
-                 'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0, 'torso_lift': 0.08}
+                 'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0}
 services = {}
 controllers = {}
 status = {}
@@ -82,7 +82,7 @@ def calibrate(joints):
     if type(joints) is not list:
         joints = [joints]
 
-    # Starts the launched controllers
+    # Starts the calibration controllers
     rospy.logdebug("Calibrating joints %s"%joints)
     switch_controller([controllers[j] for j in joints], [], SwitchControllerRequest.BEST_EFFORT)
 
@@ -106,6 +106,8 @@ def calibrate(joints):
             waiting_for.remove(r)
         rospy.sleep(0.05)
 
+    # Stops the calibration controllers
+    switch_controller([], [controllers[j] for j in joints], SwitchControllerRequest.BEST_EFFORT)
 
 
 def hold(joint, command):
@@ -336,18 +338,14 @@ def main():
                 calibrate_group(torso_group)
 
             # calibrate arms
-            # @TODO: move spine up when arms need to get calibrated. Will need holding controller of torso to do that
-            publishers.append( hold('torso_lift', 0.08) )
             if not arm_group_calibrated:
+                publishers.append( hold('torso_lift', 0.08) )
                 if arms == 'both':
                     calibrate_group(b_arm_group)
                 elif arms == 'right':
                     calibrate_group(r_arm_group)
                 elif arms == 'left':
                     calibrate_group(l_arm_group)
-
-            publishers.append( hold('torso_lift', 0.0) )
-            #sleep(1.0)
 
             # calibrate grippers
             if not gripper_group_calibrated:
@@ -362,7 +360,6 @@ def main():
                 calibrate_group(casters_group)
 
             joints_status = True
-            rospy.loginfo('Calibration completed in %f sec' %(rospy.Time.now() - calibration_start_time).to_sec())
             status_pub.publish("CALIBRATION COMPLETE")
 
 
@@ -370,22 +367,16 @@ def main():
         finally:
             rospy.loginfo("Bringing down calibration node")
 
-            # stop all controllers
+            # stop/unload all controllers
             try:
-                resp_stop = switch_controller([], up_controllers, SwitchControllerRequest.STRICT)
-                if (resp_stop == 0):
-                    rospy.logerr("Failed to stop controllers %s" % up_controllers)
-            except:
-                rospy.logerr("Failed to stop controllers %s" % up_controllers)                
-
-            # Unload all controllers
-            for name in up_controllers:
-                try:
+                switch_controller([], up_controllers, SwitchControllerRequest.BEST_EFFORT)
+                # Unload all controllers
+                for name in up_controllers:
                     resp_unload = unload_controller(name)
                     if (resp_unload == 0):
                         rospy.logerr("Failed to unload controller %s" % name)
-                except Exception, ex:
-                    rospy.logerr("Failed to stop/unload controller %s" % name)
+            except Exception, ex:
+                rospy.logerr("Failed to stop/unload controller %s" % name)
 
             # Unregister all holding publishers
             for p in publishers:
@@ -401,7 +392,7 @@ def main():
             elif not imustatus:
                 rospy.logerr("Mechanism calibration complete, but IMU calibration failed.")
             else:
-                rospy.logout("Calibration complete")
+                rospy.loginfo('Calibration completed in %f sec' %(rospy.Time.now() - calibration_start_time).to_sec())
 
             if joints_status:
                 pub_calibrated.publish(True)
