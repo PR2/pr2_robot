@@ -60,9 +60,10 @@ from sensor_msgs.msg import *
 load_controller = rospy.ServiceProxy('pr2_controller_manager/load_controller', LoadController)
 unload_controller = rospy.ServiceProxy('pr2_controller_manager/unload_controller', UnloadController)
 switch_controller = rospy.ServiceProxy('pr2_controller_manager/switch_controller', SwitchController)
-
-controllers_up = []
-hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': -2.0, 'l_elbow_flex': -2.0, 'r_upper_arm_roll': 0.0, 'l_upper_arm_roll': 0.0, 'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0, 'torso_lift': 0.08}
+up_controllers = []
+hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': -2.0, 
+                 'l_elbow_flex': -2.0, 'r_upper_arm_roll': 0.0, 'l_upper_arm_roll': 0.0, 
+                 'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0, 'torso_lift': 0.08}
 services = {}
 controllers = {}
 status = {}
@@ -81,69 +82,55 @@ def calibrate(joints):
     if type(joints) is not list:
         joints = [joints]
 
-    print [controllers[j] for j in joints]
+    # Starts the launched controllers
+    rospy.logdebug("Calibrating joints %s"%joints)
+    switch_controller([controllers[j] for j in joints], [], SwitchControllerRequest.BEST_EFFORT)
 
-    try:
-        rospy.logdebug("starting controllers")
-        # Starts the launched controllers
-        switch_controller([controllers[j] for j in joints], [], SwitchControllerRequest.BEST_EFFORT)
-
-
-        # Waits for the calibration controllers to complete
-        start_time = rospy.Time.now()
-        delay = rospy.Duration(20.0)
-        waiting_for = joints[:]
-        rospy.logdebug("waiting for calibration")
-        while waiting_for and not rospy.is_shutdown():
-            remove = []
-            for j in waiting_for:
-                try:
-                    services[j]()
-                    rospy.loginfo("Finished calibrating joint %s"%j) 
-                    remove.append(j)
-                except:
-                    if rospy.Time.now() > start_time + delay:
-                        rospy.logwarn("Joint %s is taking a long time to calibrate. It might be stuck and need some human help"%j)
-                        rospy.sleep(1.0)
-            for r in remove:
-                waiting_for.remove(r)
-            rospy.sleep(0.05)
-
-    finally:
-        # unload controllers 
-        for j in joints:
+    # Waits for the calibration controllers to complete
+    start_time = rospy.Time.now()
+    delay = rospy.Duration(20.0)
+    waiting_for = joints[:]
+    rospy.logdebug("waiting for calibration")
+    while waiting_for and not rospy.is_shutdown():
+        remove = []
+        for j in waiting_for:
             try:
-                resp_stop = switch_controller([], [controllers[j]], SwitchControllerRequest.STRICT)
-                if (resp_stop == 0):
-                    rospy.logerr("Failed to stop controller %s" % controllers[j])
-                resp_unload = unload_controller(controllers[j])
-                if (resp_unload == 0):
-                    rospy.logerr("Failed to unload controller %s" % controllers[j])
-            except Exception, ex:
-                rospy.logerr("Failed to stop/unload controller %s" % controllers[j])
+                services[j]()
+                rospy.loginfo("Finished calibrating joint %s"%j) 
+                remove.append(j)
+            except:
+                if rospy.Time.now() > start_time + delay:
+                    rospy.logwarn("Joint %s is taking a long time to calibrate. It might be stuck and need some human help"%j)
+                    rospy.sleep(1.0)
+        for r in remove:
+            waiting_for.remove(r)
+        rospy.sleep(0.05)
+
 
 
 def hold(joint, command):
     controller = "%s/hold/%s_position_controller" % (calibration_params_namespace, joint)
-    if controller not in controllers_up:
-        for i in range(3):
-            try:
-                resp = load_controller(controller)
-                if resp.ok != 0:
-                    controllers_up.append(controller)
+    if controller not in up_controllers:
+        try:
+            # loads the holding controllers
+            resp = load_controller(controller)
+            if resp.ok == 0:
+                rospy.logerr('Failed to start controller %s'%controller)
+                return
+            up_controllers.append(controller)
 
-                    # Starts the launched controllers
-                    switch_controller([controller], [], SwitchControllerRequest.BEST_EFFORT)
-
-                    break
-                else:
-                    rospy.logerr("Error loading %s" % controller)
-            except Exception, ex:
-                rospy.logerr("Failed to load holding controller %s on try %d: %s" % (controller, i+1, str(ex)))
+            # Starts the holding controllers
+            resp = switch_controller([controller], [], SwitchControllerRequest.BEST_EFFORT)
+            if resp.ok == 0:
+                rospy.logerr('Failed to start controller %s'%controller)
+                return
+        except Exception, ex:
+            rospy.logerr("Failed to load holding controller %s: %s" % (controller, str(ex)))
 
     pub = rospy.Publisher("%s/command" % controller, Float64, latch=True)
     pub.publish(Float64(command))
     return pub
+
 
 def flatten(l, ltypes=(list, tuple)):
     ltype = type(l)
@@ -161,7 +148,6 @@ def flatten(l, ltypes=(list, tuple)):
     return ltype(l)
 
 
-
 def is_calibrated_group(joints_group):
     all_joints = flatten(joints_group)
     
@@ -173,6 +159,7 @@ def is_calibrated_group(joints_group):
         if resp.ok == 0:
             rospy.logerr("Failed: %s" %controllers[j])
             return False
+        up_controllers.append(controllers[j])
 
     # create service client to each controller
     for j in all_joints:
@@ -209,35 +196,6 @@ def calibrate_group(joints_group):
         status["done"].extend(status["active"])
 
 
-
-def calibrate_imu():
-    class is_calibrated_helper:
-        def __init__(self):
-            self.is_calibrated = False
-            self.cond = threading.Condition()
-
-        def callback(self, msg):
-            if msg.data:
-                with self.cond:
-                    self.is_calibrated = True
-                    self.cond.notify()
-
-        def wait_for_calibrated(self, topic, timeout):
-            self.sub = rospy.Subscriber(topic,Bool,self.callback)
-            try:
-                with self.cond:
-                    if not self.is_calibrated:
-                        self.cond.wait(timeout)
-                return self.is_calibrated
-            finally:
-                self.sub.unregister()
-
-    rospy.loginfo("Waiting up to 20s for IMU calibration to complete.")
-    helper = is_calibrated_helper()
-    if not helper.wait_for_calibrated("torso_lift_imu/is_calibrated", 20):
-        rospy.logerr("IMU took too long to calibrate.")
-        return False
-    return True
 
 
 def publish_status(status, pub):
@@ -297,8 +255,6 @@ def main():
             else:
                calibration_yaml = args[1]
                hold_yaml  = args[2]
-
-
             rospy.wait_for_service('pr2_controller_manager/load_controller')
             rospy.wait_for_service('pr2_controller_manager/switch_controller')
             rospy.wait_for_service('pr2_controller_manager/unload_controller')
@@ -323,7 +279,6 @@ def main():
                     else:
                         arms = 'none'
                 rospy.logout("Arm selection was set to \"auto\".  Chose to calibrate using \"%s\"" % arms)
-
 
             # define calibration groups
             r_arm_group = [['r_shoulder_pan'], ['r_elbow_flex'], ['r_upper_arm_roll'], ['r_shoulder_lift'], ['r_forearm_roll', 'r_wrist']]
@@ -360,7 +315,6 @@ def main():
             head_group_calibrated = is_calibrated_group(head_group)
 
             # calibrate imu
-            imustatus = True
             if not torso_group_calibrated:
                 rospy.loginfo('Calibrating imu')
                 status["active"] = ["imu"]
@@ -369,6 +323,7 @@ def main():
                 imu_calibrate_srv = rospy.ServiceProxy(imu_calibrate_srv_name, Empty)
                 try:
                     imu_calibrate_srv()
+                    imustatus = True
                 except:
                     imustatus = False
                 status["done"].extend(status["active"])
@@ -410,14 +365,22 @@ def main():
             rospy.loginfo('Calibration completed in %f sec' %(rospy.Time.now() - calibration_start_time).to_sec())
             status_pub.publish("CALIBRATION COMPLETE")
 
+
+
         finally:
-            print "Bringing down calibration things"
-            # Unload all holding controllers
-            for name in controllers_up:
+            rospy.loginfo("Bringing down calibration node")
+
+            # stop all controllers
+            try:
+                resp_stop = switch_controller([], up_controllers, SwitchControllerRequest.STRICT)
+                if (resp_stop == 0):
+                    rospy.logerr("Failed to stop controllers %s" % up_controllers)
+            except:
+                rospy.logerr("Failed to stop controllers %s" % up_controllers)                
+
+            # Unload all controllers
+            for name in up_controllers:
                 try:
-                    resp_stop = switch_controller([], [name], SwitchControllerRequest.STRICT)
-                    if (resp_stop == 0):
-                        rospy.logerr("Failed to stop controller %s" % name)
                     resp_unload = unload_controller(name)
                     if (resp_unload == 0):
                         rospy.logerr("Failed to unload controller %s" % name)
