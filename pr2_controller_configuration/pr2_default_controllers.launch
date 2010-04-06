@@ -30,14 +30,6 @@
 
   
   <!-- Nodes on top of the controllers -->
-  <group ns="r_arm_controller">
-    <node name="joint_trajectory_action_node"  machine="c1"
-          pkg="joint_trajectory_action" type="joint_trajectory_action" />
-  </group>
-  <group ns="l_arm_controller"> machine="c1"
-    <node name="joint_trajectory_action_node"
-          pkg="joint_trajectory_action" type="joint_trajectory_action" />
-  </group>
   <group ns="r_gripper_controller">
     <node name="gripper_action_node" machine="c1"
           pkg="pr2_gripper_action" type="pr2_gripper_action" />

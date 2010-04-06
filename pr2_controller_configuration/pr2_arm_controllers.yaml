@@ -1,5 +1,5 @@
 r_arm_controller:
-  type: "JointSplineTrajectoryController"
+  type: "JointTrajectoryActionController"
   joints:
     - r_shoulder_pan_joint
     - r_shoulder_lift_joint
@@ -46,7 +46,7 @@ r_arm_controller:
 
 
 l_arm_controller:
-  type: "JointSplineTrajectoryController"
+  type: "JointTrajectoryActionController"
   joints:
     - l_shoulder_pan_joint
     - l_shoulder_lift_joint
