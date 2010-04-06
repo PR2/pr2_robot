@@ -316,7 +316,7 @@ def main():
             casters_group_calibrated = is_calibrated_group(casters_group)
             head_group_calibrated = is_calibrated_group(head_group)
 
-            # calibrate imu
+            # calibrate imu and torso
             if not torso_group_calibrated:
                 rospy.loginfo('Calibrating imu')
                 status["active"] = ["imu"]
@@ -326,16 +326,14 @@ def main():
                 try:
                     imu_calibrate_srv()
                     imustatus = True
+                    # only calibrate torso when imu calibration succeeds
+                    calibrate_group(torso_group)
                 except:
                     imustatus = False
                 status["done"].extend(status["active"])
                 rospy.loginfo('Calibrating imu finished')
             else:
                 rospy.loginfo('Not calibrating imu')
-
-            # calibrate torso
-            if not torso_group_calibrated:
-                calibrate_group(torso_group)
 
             # calibrate arms
             if not arm_group_calibrated:
