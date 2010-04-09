@@ -102,7 +102,11 @@ class AsynchronousUpdater(threading.Thread):
                 allargs = self.allargs
                 self.allargs = None
             if allargs != None:
-                self.f(*allargs[0], **allargs[1])
+                try:
+                    self.f(*allargs[0], **allargs[1])
+                except Exception, e:
+                    rospy.logerr("AsynchronousUpdater failed with exception: %s"%str(e))
+                    pass
 
     def kill(self):
         #print "kill"
@@ -595,6 +599,7 @@ class CameraSynchronizer:
     try:
       reset_count = 0
       rospy.loginfo("Camera synchronizer is running...")
+      controller_update_count = 0
       while not rospy.is_shutdown():
           if self.config['camera_reset'] == True:
               reset_count = reset_count + 1
@@ -603,6 +608,12 @@ class CameraSynchronizer:
           else:
               reset_count = 0
           self.update_diagnostics()
+          # In case the controllers got restarted, refresh their state.
+          controller_update_count += 1
+          if controller_update_count >= 10:
+              controller_update_count = 0
+              for controller in self.controllers:
+                  controller.update();
           rospy.sleep(1)
     finally:
       rospy.signal_shutdown("Main thread exiting")
