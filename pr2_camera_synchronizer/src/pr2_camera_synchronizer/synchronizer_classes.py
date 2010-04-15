@@ -204,9 +204,9 @@ class SingleCameraTriggerController(MultiTriggerController):
     if self.camera.reset_cameras:
       self.camera_reset()
       return
+    self.clear_waveform()
     if not self.camera.ext_trig:
       return
-    self.clear_waveform()
     self.period = 2 * self.camera.period
     self.zero_offset = -self.camera.imager_period - 1 * ETHERCAT_INTERVAL
     first_pulse_start = self.camera.end_offset
