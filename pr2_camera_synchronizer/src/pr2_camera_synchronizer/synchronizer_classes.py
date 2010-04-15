@@ -206,21 +206,23 @@ class SingleCameraTriggerController(MultiTriggerController):
       return
     self.clear_waveform()
     if not self.camera.ext_trig:
-      return
-    self.period = 2 * self.camera.period
-    self.zero_offset = -self.camera.imager_period - 1 * ETHERCAT_INTERVAL
-    first_pulse_start = self.camera.end_offset
-    second_pulse_start = self.camera.period + first_pulse_start
-    extra_pulse_start = (2 * first_pulse_start + 2 * second_pulse_start) / 4   # May cause problems at really low frame rates.
-    trigger_name = "trigger"
-    self.add_sample(first_pulse_start, 1, trigger_name)
-    self.add_sample((3 * first_pulse_start + second_pulse_start) / 4, 0, "-")
-    self.add_sample(extra_pulse_start, 1, "-")
-    self.add_sample((extra_pulse_start + second_pulse_start) / 3, 0, "-")
-    self.add_sample(second_pulse_start, 1, trigger_name)
-    self.add_sample((second_pulse_start + self.period) / 2, 0, "-")
-    self.camera.trig_rising = True
-    self.camera.trigger_name = self.name+"/"+trigger_name
+      self.period = 1
+      self.add_sample(0, 0, "-")
+    else:
+      self.period = 2 * self.camera.period
+      self.zero_offset = -self.camera.imager_period - 1 * ETHERCAT_INTERVAL
+      first_pulse_start = self.camera.end_offset
+      second_pulse_start = self.camera.period + first_pulse_start
+      extra_pulse_start = (2 * first_pulse_start + 2 * second_pulse_start) / 4   # May cause problems at really low frame rates.
+      trigger_name = "trigger"
+      self.add_sample(first_pulse_start, 1, trigger_name)
+      self.add_sample((3 * first_pulse_start + second_pulse_start) / 4, 0, "-")
+      self.add_sample(extra_pulse_start, 1, "-")
+      self.add_sample((extra_pulse_start + second_pulse_start) / 3, 0, "-")
+      self.add_sample(second_pulse_start, 1, trigger_name)
+      self.add_sample((second_pulse_start + self.period) / 2, 0, "-")
+      self.camera.trig_rising = True
+      self.camera.trigger_name = self.name+"/"+trigger_name
     
     #print "About to update trigger", self.name
     MultiTriggerController.update(self)
