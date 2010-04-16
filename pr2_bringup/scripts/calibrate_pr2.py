@@ -337,7 +337,7 @@ def main():
 
             # calibrate arms
             if not arm_group_calibrated:
-                publishers.append( hold('torso_lift', 0.08) )
+                publishers.append( hold('torso_lift', 0.2) )
                 if arms == 'both':
                     calibrate_group(b_arm_group)
                 elif arms == 'right':
