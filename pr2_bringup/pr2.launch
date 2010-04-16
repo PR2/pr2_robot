@@ -1,13 +1,10 @@
 <launch>
+  <param name="/use_sim_time" value="false"/>
+  <include file="$(find pr2_machine)/pr2.machine" />
+
   <!-- Remap diagnostics if we are pushed into a namespace. -->
   <remap from="/diagnostics" to="/$(optenv ROS_NAMESPACE /)/diagnostics" />
   <remap from="/diagnostics_agg" to="/$(optenv ROS_NAMESPACE /)/diagnostics_agg" />
-
-  <include file="$(find pr2_machine)/pr2.machine" />
-  <param name="/use_sim_time" value="false"/>
-
-  <!-- Robot Description -->
-  <param name="robot_description" textfile="/etc/ros/urdf/robot.xml" />
 
   <!-- pr2_etherCAT -->
   <node name="realtime_loop" machine="c1" launch-prefix="pr2_grant" pkg="pr2_etherCAT" type="pr2_etherCAT" args="-i ecat0 -x robot_description"/>
@@ -109,9 +106,6 @@
   
   <!-- Diagnostics aggregation -->
   <node pkg="diagnostic_aggregator" type="aggregator_node"  name="diag_agg" />
-  <group ns="diag_agg">
-    <include file="/etc/ros/diagnostics/analyzers.launch" />
-  </group>
 
   <!-- Dashboard aggregation -->
   <node pkg="pr2_dashboard_aggregator" type="dashboard_aggregator.py" name="pr2_dashboard_aggregator"/>

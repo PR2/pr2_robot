@@ -102,7 +102,11 @@ class AsynchronousUpdater(threading.Thread):
                 allargs = self.allargs
                 self.allargs = None
             if allargs != None:
-                self.f(*allargs[0], **allargs[1])
+                try:
+                    self.f(*allargs[0], **allargs[1])
+                except Exception, e:
+                    rospy.logerr("AsynchronousUpdater failed with exception: %s"%str(e))
+                    pass
 
     def kill(self):
         #print "kill"
@@ -200,23 +204,25 @@ class SingleCameraTriggerController(MultiTriggerController):
     if self.camera.reset_cameras:
       self.camera_reset()
       return
-    if not self.camera.ext_trig:
-      return
     self.clear_waveform()
-    self.period = 2 * self.camera.period
-    self.zero_offset = -self.camera.imager_period - 1 * ETHERCAT_INTERVAL
-    first_pulse_start = self.camera.end_offset
-    second_pulse_start = self.camera.period + first_pulse_start
-    extra_pulse_start = (2 * first_pulse_start + 2 * second_pulse_start) / 4   # May cause problems at really low frame rates.
-    trigger_name = "trigger"
-    self.add_sample(first_pulse_start, 1, trigger_name)
-    self.add_sample((3 * first_pulse_start + second_pulse_start) / 4, 0, "-")
-    self.add_sample(extra_pulse_start, 1, "-")
-    self.add_sample((extra_pulse_start + second_pulse_start) / 3, 0, "-")
-    self.add_sample(second_pulse_start, 1, trigger_name)
-    self.add_sample((second_pulse_start + self.period) / 2, 0, "-")
-    self.camera.trig_rising = True
-    self.camera.trigger_name = self.name+"/"+trigger_name
+    if not self.camera.ext_trig:
+      self.period = 1
+      self.add_sample(0, 0, "-")
+    else:
+      self.period = 2 * self.camera.period
+      self.zero_offset = -self.camera.imager_period - 1 * ETHERCAT_INTERVAL
+      first_pulse_start = self.camera.end_offset
+      second_pulse_start = self.camera.period + first_pulse_start
+      extra_pulse_start = (2 * first_pulse_start + 2 * second_pulse_start) / 4   # May cause problems at really low frame rates.
+      trigger_name = "trigger"
+      self.add_sample(first_pulse_start, 1, trigger_name)
+      self.add_sample((3 * first_pulse_start + second_pulse_start) / 4, 0, "-")
+      self.add_sample(extra_pulse_start, 1, "-")
+      self.add_sample((extra_pulse_start + second_pulse_start) / 3, 0, "-")
+      self.add_sample(second_pulse_start, 1, trigger_name)
+      self.add_sample((second_pulse_start + self.period) / 2, 0, "-")
+      self.camera.trig_rising = True
+      self.camera.trigger_name = self.name+"/"+trigger_name
     
     #print "About to update trigger", self.name
     MultiTriggerController.update(self)
@@ -595,6 +601,7 @@ class CameraSynchronizer:
     try:
       reset_count = 0
       rospy.loginfo("Camera synchronizer is running...")
+      controller_update_count = 0
       while not rospy.is_shutdown():
           if self.config['camera_reset'] == True:
               reset_count = reset_count + 1
@@ -603,6 +610,12 @@ class CameraSynchronizer:
           else:
               reset_count = 0
           self.update_diagnostics()
+          # In case the controllers got restarted, refresh their state.
+          controller_update_count += 1
+          if controller_update_count >= 10:
+              controller_update_count = 0
+              for controller in self.controllers:
+                  controller.update();
           rospy.sleep(1)
     finally:
       rospy.signal_shutdown("Main thread exiting")

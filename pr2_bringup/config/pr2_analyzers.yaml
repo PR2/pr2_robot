@@ -66,7 +66,7 @@ analyzers:
       prosilica:
         type: GenericAnalyzer
         path: Prosilica
-        find_and_remove_prefix: prosilica
+        find_and_remove_prefix: prosilica_driver
         num_items: 4
       forearm_r:
         type: GenericAnalyzer
