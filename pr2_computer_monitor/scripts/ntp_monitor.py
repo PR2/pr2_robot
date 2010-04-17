@@ -47,7 +47,7 @@ import re
 
 NAME = 'ntp_monitor'
 
-def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None):
+def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None, error_offset = 5000000):
     pub = rospy.Publisher("/diagnostics", DiagnosticArray)
     rospy.init_node(NAME, anonymous=True)
     
@@ -86,17 +86,22 @@ def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None)
                 st.level = DiagnosticStatus.OK
                 st.message = "OK"
                 st.values = [ KeyValue("Offset (us)", str(measured_offset)),
-                              KeyValue("Offset tolerance (us)", str(off)) ]
+                              KeyValue("Offset tolerance (us)", str(off)),
+                              KeyValue("Offset tolerance (us) for Error", str(error_offset)) ]
             
                 if (abs(measured_offset) > off):
                     st.level = DiagnosticStatus.WARN
+                    st.message = "NTP Offset Too High"
+                if (abs(measured_offset) > error_offset):
+                    st.level = DiagnosticStatus.ERROR
                     st.message = "NTP Offset Too High"
                                 
             else:
                 st.level = DiagnosticStatus.ERROR
                 st.message = "Error Running ntpupdate"
                 st.values = [ KeyValue("Offset (us)", "N/A"),
-                              KeyValue("Offset tolerance (us)", str(off)) ]
+                              KeyValue("Offset tolerance (us)", str(error_offset)),
+                              KeyValue("Offset tolerance (us) for Error", str(off)) ]
 
 
         msg = DiagnosticArray()
@@ -111,6 +116,9 @@ def ntp_monitor_main(argv=sys.argv):
     parser.add_option("--offset-tolerance", dest="offset_tol",
                       action="store", default=500,
                       help="Offset from NTP host", metavar="OFFSET-TOL")
+    parser.add_option("--error-offset-tolerance", dest="error_offset_tol",
+                      action="store", default=5000000,
+                      help="Offset from NTP host. Above this is error", metavar="OFFSET-TOL")
     parser.add_option("--self_offset-tolerance", dest="self_offset_tol", 
                       action="store", default=500,
                       help="Offset from self", metavar="SELF_OFFSET-TOL")
@@ -120,15 +128,19 @@ def ntp_monitor_main(argv=sys.argv):
                       action="store", default=None)
     options, args = parser.parse_args(rospy.myargv())
 
-    if (len(args) == 2):
-        try:
-            offset = int(options.offset_tol)
-            self_offset = int(options.self_offset_tol)
-        except:
-            parser.error("Offsets must be numbers")        
-        ntp_monitor(args[1], offset, self_offset, options.diag_hostname)
-    else:
+    if (len(args) != 2):
         parser.error("Invalid arguments. Must have HOSTNAME [args]. %s" % args)
+
+
+    try:
+        offset = int(options.offset_tol)
+        self_offset = int(options.self_offset_tol)
+        error_offset = int(options.error_offset_tol)
+    except:
+        parser.error("Offsets must be numbers")        
+    
+    ntp_monitor(args[1], offset, self_offset, options.diag_hostname, error_offset)
+    
 
 if __name__ == "__main__":
     try:
