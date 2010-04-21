@@ -71,12 +71,17 @@ publishers = []
 calibration_params_namespace = "calibration_controllers"
 
 
-last_joint_states = None
 def joint_states_cb(msg):
     global last_joint_states
     last_joint_states = msg
 rospy.Subscriber('joint_states', JointState, joint_states_cb)
     
+def motor_state_cb(msg):
+    global motors_halted
+    motors_halted = msg.data
+    rospy.logdebug("motors halted = %d"%motors_halted)
+rospy.Subscriber('pr2_etherCAT/motors_halted', Bool, motor_state_cb)
+
 
 def calibrate(joints):
     if type(joints) is not list:
@@ -99,7 +104,11 @@ def calibrate(joints):
                 rospy.loginfo("Finished calibrating joint %s"%j) 
                 remove.append(j)
             except:
-                if rospy.Time.now() > start_time + delay:
+                if motors_halted:
+                    rospy.logwarn('Calibration is on hold because motors are halted. Enable the run-stop')
+                    start_time = rospy.Time.now()
+                    rospy.sleep(1.0)
+                elif rospy.Time.now() > start_time + delay:
                     rospy.logwarn("Joint %s is taking a long time to calibrate. It might be stuck and need some human help"%j)
                     rospy.sleep(1.0)
         for r in remove:
