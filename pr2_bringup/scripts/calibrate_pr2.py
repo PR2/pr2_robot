@@ -347,12 +347,17 @@ def main():
             # calibrate arms
             if not arm_group_calibrated:
                 publishers.append( hold('torso_lift', 0.25) )
+                rospy.sleep(5.0)
+                rospy.loginfo('Moving up spine to allow arms to calibrate')
                 if arms == 'both':
                     calibrate_group(b_arm_group)
                 elif arms == 'right':
                     calibrate_group(r_arm_group)
                 elif arms == 'left':
                     calibrate_group(l_arm_group)
+                rospy.loginfo('Moving down spine after arm calibration')
+                publishers.append( hold('torso_lift', 0.01) )
+                rospy.sleep(20.0)
 
             # calibrate grippers
             if not gripper_group_calibrated:
