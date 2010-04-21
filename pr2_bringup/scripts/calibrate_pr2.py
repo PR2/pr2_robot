@@ -63,13 +63,17 @@ switch_controller = rospy.ServiceProxy('pr2_controller_manager/switch_controller
 controllers_up = []
 calibration_params_namespace = "calibration_controllers"
 
-
-last_joint_states = None
 def joint_states_cb(msg):
     global last_joint_states
     last_joint_states = msg
 rospy.Subscriber('joint_states', JointState, joint_states_cb)
     
+def motor_state_cb(msg):
+    global motors_halted
+    motors_halted = msg.data
+
+rospy.Subscriber('pr2_etherCAT/motors_halted', Bool, motor_state_cb)
+
 
 def calibrate(joints):
     if type(joints) is not list:
@@ -110,9 +114,12 @@ def calibrate(joints):
             count += 1
             if count % 20 == 0:
                 rospy.logdebug("Waiting for: %s" % ', '.join(waiting_for))
-                #wait 20 seconds for calibration to complete, if this doesn't happen, warn the user
-                if (rospy.Time.now() - launch_time) > rospy.Duration(15.0):
-                  rospy.logwarn("Calibration on the %s joint(s) is taking longer than expected, something may be stuck and the robot may require human help." % ', '.join(waiting_for))
+                # Waits 20 seconds for calibration to complete, if this doesn't happen, warns the user
+                if motors_halted:
+                    rospy.logwarn("Calibration is on hold because motors are halted. Enable the run-stop")
+                    launch_time = rospy.Time.now()
+                elif (rospy.Time.now() - launch_time) > rospy.Duration(15.0):
+                  rospy.logwarn("Calibration of %s joint(s) is taking longer than expected, something may be stuck and the robot may require human help." % ', '.join(waiting_for))
             sleep(0.1)
     finally:
         # Try to unload controllers several times
