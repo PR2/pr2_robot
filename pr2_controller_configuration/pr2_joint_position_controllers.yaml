@@ -100,8 +100,8 @@ torso_lift_position_controller:
   type: JointPositionController
   joint: torso_lift_joint
   pid:
-    p: 100000000
-    i: 10000
-    d: 0.0
-    i_clamp: 100000.0
+    p: 10000000.0
+    d: 1000000.0
+    i: 0.0
+    i_clamp: 0.0
 
