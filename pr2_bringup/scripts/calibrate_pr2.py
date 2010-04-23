@@ -387,8 +387,10 @@ def main():
                     resp_unload = unload_controller(name)
                     if (resp_unload == 0):
                         rospy.logerr("Failed to unload controller %s" % name)
-            except Exception, ex:
-                rospy.logerr("Failed to stop/unload controller %s" % name)
+            except rospy.ServiceException:
+                rospy.logerr("Call to switch_controller failed")
+            except KeyboardInterrupt:
+                raise
 
             # Unregister all holding publishers
             for p in publishers:
