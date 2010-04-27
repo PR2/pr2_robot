@@ -11,7 +11,8 @@
   </group>
   
   <!-- Spawns the forearm camera -->
-  <node name="r_forearm_cam" pkg="wge100_camera" type="wge100_camera_node">
+  <node name="r_forearm_cam" pkg="wge100_camera" type="wge100_camera_node"
+  respawn="true">
     <param name="camera_url" type="str" value="name://forearm_r#lan1@10.69.0.41"/>
     <param name="frame_id" type="str" value="r_forearm_cam_optical_frame" />
     <param name="imager_rate" type="double" value="25" />
