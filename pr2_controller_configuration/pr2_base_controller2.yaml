@@ -1,12 +1,30 @@
 base_controller:
   caster_names: fr_caster_rotation_link fl_caster_rotation_link bl_caster_rotation_link br_caster_rotation_link
 
-  type: Pr2BaseController
+  type: Pr2BaseController2
   publish_tf: false
 
-  caster_position_pid_gains: &caster_position_pid_gains
+  f_caster_velocity_pid_gains: &f_caster_velocity_pid_gains
+    p: 8.0
+    d: 0.0
+    i: 0.0
+    i_clamp: 4.0
+
+  f_caster_position_pid_gains: &f_caster_position_pid_gains
     p: 100.0
     d: 8.0
+    i: 0.0
+    i_clamp: 0.0
+
+  b_caster_velocity_pid_gains: &b_caster_velocity_pid_gains
+    p: 8.0
+    d: 0.0
+    i: 0.0
+    i_clamp: 4.0
+
+  b_caster_position_pid_gains: &b_caster_position_pid_gains
+    p: 100.0
+    d: 12.0
     i: 0.0
     i_clamp: 0.0
 
@@ -34,17 +52,25 @@ base_controller:
    *wheel_pid_gains
 
   fr_caster_rotation_joint:
+   velocity_controller:
+    *f_caster_velocity_pid_gains
    position_controller:
-    *caster_position_pid_gains
+    *f_caster_position_pid_gains
   fl_caster_rotation_joint:
+   velocity_controller:
+    *f_caster_velocity_pid_gains
    position_controller:
-    *caster_position_pid_gains
+    *f_caster_position_pid_gains
   bl_caster_rotation_joint:
+   velocity_controller:
+    *b_caster_velocity_pid_gains
    position_controller:
-    *caster_position_pid_gains
+    *b_caster_position_pid_gains
   br_caster_rotation_joint:
+   velocity_controller:
+    *b_caster_velocity_pid_gains
    position_controller:
-    *caster_position_pid_gains
+    *b_caster_position_pid_gains
 
   timeout: 0.2
   max_translational_acceleration: 

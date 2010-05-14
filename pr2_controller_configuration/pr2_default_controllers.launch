@@ -2,7 +2,7 @@
   <include file="$(find pr2_machine)/pr2.machine" />
 
   <!-- Base Control -->
-  <rosparam file="$(find pr2_controller_configuration)/pr2_base_controller.yaml" command="load" />
+  <rosparam file="$(find pr2_controller_configuration)/pr2_base_controller2.yaml" command="load" />
 
   <!-- Odometry -->
   <rosparam file="$(find pr2_controller_configuration)/pr2_odometry.yaml" command="load" />
