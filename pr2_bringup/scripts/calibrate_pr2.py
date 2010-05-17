@@ -52,6 +52,7 @@ roslib.load_manifest('pr2_bringup')
 import rospy
 from std_msgs.msg import *
 from pr2_mechanism_msgs.srv import LoadController, UnloadController, SwitchController, SwitchControllerRequest
+from pr2_controllers_msgs.srv import QueryCalibrationState
 from std_msgs.msg import Bool
 from std_srvs.srv import Empty
 from sensor_msgs.msg import *
@@ -61,14 +62,14 @@ load_controller = rospy.ServiceProxy('pr2_controller_manager/load_controller', L
 unload_controller = rospy.ServiceProxy('pr2_controller_manager/unload_controller', UnloadController)
 switch_controller = rospy.ServiceProxy('pr2_controller_manager/switch_controller', SwitchController)
 up_controllers = []
-hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': -2.0, 
-                 'l_elbow_flex': -2.0, 'r_upper_arm_roll': 0.0, 'l_upper_arm_roll': 0.0, 
-                 'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0}
 services = {}
 controllers = {}
 status = {}
 publishers = []
 calibration_params_namespace = "calibration_controllers"
+hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': -2.0, 
+                 'l_elbow_flex': -2.0, 'r_upper_arm_roll': 0.0, 'l_upper_arm_roll': 0.0, 
+                 'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0}
 
 
 def joint_states_cb(msg):
@@ -99,11 +100,10 @@ def calibrate(joints):
     while waiting_for and not rospy.is_shutdown():
         remove = []
         for j in waiting_for:
-            try:
-                services[j]()
+            if services[j]().is_calibrated:
                 rospy.loginfo("Finished calibrating joint %s"%j) 
                 remove.append(j)
-            except:
+            else:
                 if motors_halted:
                     rospy.logwarn('Calibration is on hold because motors are halted. Enable the run-stop')
                     start_time = rospy.Time.now()
@@ -159,40 +159,38 @@ def flatten(l, ltypes=(list, tuple)):
     return ltype(l)
 
 
+
 def is_calibrated_group(joints_group):
     all_joints = flatten(joints_group)
-    
-    # spawn calibration controllers for this group
+
+    res = True
     for j in all_joints:
+        # spawn calibration controllers 
         controllers[j] =  calibration_params_namespace+"/calibrate/cal_%s" % j
         rospy.logdebug("Launching: %s" %controllers[j])
         resp = load_controller(controllers[j])
-        if resp.ok == 0:
-            rospy.logerr("Failed: %s" %controllers[j])
-            return False
-        up_controllers.append(controllers[j])
+        if resp.ok:
+            # store service call for calibration controller
+            service_name = '%s/is_calibrated'%controllers[j]
+            rospy.logdebug("Waiting for service: %s" %service_name)
+            rospy.wait_for_service(service_name)
+            services[j] = rospy.ServiceProxy(service_name, QueryCalibrationState)
+            up_controllers.append(controllers[j])
+            # check if joint is calibrated
+            if services[j]().is_calibrated:
+                rospy.logdebug("joint %s is already calibrated"%j)
+            else:
+                rospy.logdebug("joint %s needs to be calibrated"%j)
+                res = False
+        else:
+            rospy.logwarn("Failed to load calibration controller: %s" %controllers[j])
 
-    # create service client to each controller
-    for j in all_joints:
-        service_name = '%s/is_calibrated'%controllers[j]
-        rospy.logdebug("Waiting for service: %s" %service_name)
-        rospy.wait_for_service(service_name)
-        services[j] = rospy.ServiceProxy(service_name, Empty)
 
-    # check if all joints are calibrated
-    rospy.logdebug('Checking which joints need calibration')
-    for j in all_joints:
-        try:
-            services[j]()
-            rospy.logdebug("joint %s is already calibrated"%j)
-        except:
-            rospy.logdebug("joint %s needs to be calibrated"%j)
-            rospy.loginfo("These joints will get calibrated: %s"%all_joints)
-            return False
-
-    rospy.loginfo("These joints are already calibrated: %s"%all_joints)
-    return True
-
+    if not res:
+        rospy.loginfo("These joints will get calibrated: %s"%all_joints)
+    else:
+        rospy.loginfo("These joints are already calibrated: %s"%all_joints)
+    return res
 
 
 def calibrate_group(joints_group):
@@ -205,7 +203,6 @@ def calibrate_group(joints_group):
             if j in hold_position:
                 publishers.append( hold(j, hold_position[j]) )
         status["done"].extend(status["active"])
-
 
 
 
