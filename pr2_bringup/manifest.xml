@@ -44,6 +44,9 @@
   <depend package="pr2_computer_monitor"/>
   <depend package="diagnostic_aggregator"/>
   <depend package="pr2_dashboard_aggregator"/>
+  <platform os="ubuntu" version="9.04"/>
+  <platform os="ubuntu" version="9.10"/>
+  <platform os="ubuntu" version="10.04"/>
 </package>
 
 

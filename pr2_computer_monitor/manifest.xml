@@ -11,4 +11,7 @@ Monitors the computer's processor and hard drives of the PR2 and publishes data 
   <rosdep name="ipmitool" />
   <rosdep name="hddtemp" />
   <rosdep name="sysstat" />
+  <platform os="ubuntu" version="9.04"/>
+  <platform os="ubuntu" version="9.10"/>
+  <platform os="ubuntu" version="10.04"/>
 </package>

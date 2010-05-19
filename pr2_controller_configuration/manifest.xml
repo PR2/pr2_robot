@@ -10,6 +10,9 @@
   <url>http://ros.org/wiki/pr2_controller_configuration</url>
 
   <depend package="pr2_machine"/>
+  <platform os="ubuntu" version="9.04"/>
+  <platform os="ubuntu" version="9.10"/>
+  <platform os="ubuntu" version="10.04"/>
 </package>
 
 
