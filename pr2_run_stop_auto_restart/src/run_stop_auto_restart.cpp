@@ -38,7 +38,7 @@ static bool last_e_stop_state_ = true;
 void powerStateCallback(const pr2_msgs::PowerBoardStateConstPtr& msg)
 {
   if (!last_e_stop_state_ && msg->run_stop){
-    ROS_INFO("E stop re-enabled. Bringing up power and resetting motors.");
+    ROS_INFO("Run stop re-enabled. Bringing up power and resetting motors.");
 
     // enable power
     if (!ros::service::waitForService("power_board/control", ros::Duration(5.0))){
@@ -71,7 +71,7 @@ void powerStateCallback(const pr2_msgs::PowerBoardStateConstPtr& msg)
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "e_stop_helper");
+  ros::init(argc, argv, "run_stop_helper");
   ros::NodeHandle node;
 
   // subscribe to state of power board
