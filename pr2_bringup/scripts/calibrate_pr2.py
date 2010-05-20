@@ -32,7 +32,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Author: Kevin Watts
+# Author: Kevin Watts, Wim Meeussen
 
 # Calibrates the PR-2 in a safe sequence
 
@@ -52,6 +52,7 @@ roslib.load_manifest('pr2_bringup')
 import rospy
 from std_msgs.msg import *
 from pr2_mechanism_msgs.srv import LoadController, UnloadController, SwitchController, SwitchControllerRequest
+from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from std_msgs.msg import Bool
 from sensor_msgs.msg import *
 
@@ -62,6 +63,7 @@ switch_controller = rospy.ServiceProxy('pr2_controller_manager/switch_controller
 
 controllers_up = []
 calibration_params_namespace = "calibration_controllers"
+pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray)
 
 def joint_states_cb(msg):
     global last_joint_states
@@ -119,7 +121,15 @@ def calibrate(joints):
                     rospy.logwarn("Calibration is on hold because motors are halted. Enable the run-stop")
                     launch_time = rospy.Time.now()
                 elif (rospy.Time.now() - launch_time) > rospy.Duration(15.0):
-                  rospy.logwarn("Calibration of %s joint(s) is taking longer than expected, something may be stuck and the robot may require human help." % ', '.join(waiting_for))
+                  rospy.logerr("Calibration of %s joint(s) is taking longer than expected, something may be stuck and the robot may require human help." % ', '.join(waiting_for))
+                  d = DiagnosticArray()
+                  d.header.stamp = rospy.Time.now()
+                  ds = DiagnosticStatus()
+                  ds.level = 2
+                  ds.message = 'Calibration of joints %s is taking longer than expected. They might be stuck and require human help to finish calibration'% ', '.join(waiting_for)
+                  ds.name = "Calibration of joints failing"
+                  d.status = [ds]
+                  pub_diag.publish(d)
             sleep(0.1)
     finally:
         # Try to unload controllers several times
