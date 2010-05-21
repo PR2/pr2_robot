@@ -145,8 +145,8 @@ def check_ipmi():
                     rpm = ipmi_val.rstrip(' RPM').lstrip()
                     if unicode(rpm).isnumeric():
                         if int(rpm) == 0:
-                            diag_level = max(diag_level, DiagnosticStatus.WARN)
-                            diag_msgs.append('Fan Warning')
+                            diag_level = max(diag_level, DiagnosticStatus.ERROR)
+                            diag_msgs.append('CPU Fan Off')
                             
                         diag_vals.append(KeyValue(key = name + ' RPM', value = rpm))
                     else:
