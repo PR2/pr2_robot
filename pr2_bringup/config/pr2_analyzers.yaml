@@ -210,5 +210,6 @@ analyzers:
       'Controller (r_forearm_cam_trigger)',
       'Controller (l_forearm_cam_trigger)' ]
     startswith: [
-      'Controller']
+      'Controller',
+      'Calibration']
     discard_stale: true
