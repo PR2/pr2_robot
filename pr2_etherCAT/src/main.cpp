@@ -104,6 +104,7 @@ static struct
   int overruns;
   int recent_overruns;
   int last_overrun;
+  int last_severe_overrun;
   double overrun_ec;
   double overrun_cm;
 } g_stats;
@@ -144,7 +145,10 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     status.name = "Realtime Control Loop";
     if (g_stats.overruns > 0 && g_stats.last_overrun < 30)
     {
-      status.level = 1;
+      if (g_stats.last_severe_overrun < 30)
+	status.level = 1;
+      else
+	status.level = 0;
       status.message = "Realtime loop used too much time in the last 30 seconds.";
     }
     else
@@ -154,6 +158,7 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     }
     g_stats.recent_overruns = 0;
     g_stats.last_overrun++;
+    g_stats.last_severe_overrun++;
 
     statuses.push_back(status);
     publisher.msg_.set_status_vec(statuses);
@@ -320,9 +325,18 @@ void *controlLoop(void *)
       tick.tv_nsec = (before.tv_nsec / period) * period;
       timespecInc(tick, period);
 
+      // initialize overruns
+      if (g_stats.overruns == 0){
+	g_stats.last_overrun = 1000;
+	g_stats.last_severe_overrun = 1000;
+      }
+      // check for overruns
+      if (g_stats.recent_overruns > 10)
+	g_stats.last_severe_overrun = 0;
+      g_stats.last_overrun = 0;
+
       g_stats.overruns++;
       g_stats.recent_overruns++;
-      g_stats.last_overrun = 0;
       g_stats.overrun_ec = after_ec - start;
       g_stats.overrun_cm = end - after_ec;
     }
