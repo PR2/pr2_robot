@@ -74,8 +74,10 @@ hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': 
                  'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0}
 
 
+global last_joint_states
+last_joint_states = None
+
 def joint_states_cb(msg):
-    global last_joint_states
     last_joint_states = msg
 rospy.Subscriber('joint_states', JointState, joint_states_cb)
     
@@ -283,7 +285,6 @@ def main():
             # Determines whether to calibrate the arms based on which joints exist.
             if arms == 'auto':
                 started_waiting = rospy.get_rostime()
-                global last_joint_states
                 while rospy.get_rostime() <= started_waiting + rospy.Duration(5.0):
                     if last_joint_states:
                         break
