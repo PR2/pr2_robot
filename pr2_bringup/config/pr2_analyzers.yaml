@@ -197,6 +197,7 @@ analyzers:
       'Power board',
       'IBPS',
       'Smart Battery']
+    discard_stale: true
 
   controllers:
     type: GenericAnalyzer
@@ -210,7 +211,6 @@ analyzers:
       'Controller (r_forearm_cam_trigger)',
       'Controller (l_forearm_cam_trigger)' ]
     startswith: [
-      'Controller']
-    startswith: [
+      'Controller',
       'Calibration']
     discard_stale: true
