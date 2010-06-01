@@ -32,7 +32,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Author: Kevin Watts
+# Author: Kevin Watts, Wim Meeussen
 
 # Calibrates the PR-2 in a safe sequence
 
@@ -52,6 +52,7 @@ roslib.load_manifest('pr2_bringup')
 import rospy
 from std_msgs.msg import *
 from pr2_mechanism_msgs.srv import LoadController, UnloadController, SwitchController, SwitchControllerRequest
+from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from pr2_controllers_msgs.srv import QueryCalibrationState
 from std_msgs.msg import Bool
 from std_srvs.srv import Empty
@@ -65,7 +66,8 @@ up_controllers = []
 services = {}
 controllers = {}
 status = {}
-publishers = []
+pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray) 
+publishers = [pub_diag]
 calibration_params_namespace = "calibration_controllers"
 hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': -2.0, 
                  'l_elbow_flex': -2.0, 'r_upper_arm_roll': 0.0, 'l_upper_arm_roll': 0.0, 
@@ -99,6 +101,7 @@ def calibrate(joints):
     rospy.logdebug("waiting for calibration")
     while waiting_for and not rospy.is_shutdown():
         remove = []
+        taking_too_long = False
         for j in waiting_for:
             if services[j]().is_calibrated:
                 rospy.loginfo("Finished calibrating joint %s"%j) 
@@ -109,8 +112,18 @@ def calibrate(joints):
                     start_time = rospy.Time.now()
                     rospy.sleep(1.0)
                 elif rospy.Time.now() > start_time + delay:
-                    rospy.logwarn("Joint %s is taking a long time to calibrate. It might be stuck and need some human help"%j)
-                    rospy.sleep(1.0)
+                    rospy.logerr("Joint %s is taking a long time to calibrate. It might be stuck and need some human help"%j)
+                    taking_too_long = True
+        if taking_too_long:
+            d = DiagnosticArray() 
+            d.header.stamp = rospy.Time.now() 
+            ds = DiagnosticStatus() 
+            ds.level = 2 
+            ds.message = 'Calibration of joints %s is taking longer than expected. They might be stuck and require human help to finish calibration'% ', '.join(waiting_for) 
+            ds.name = "Calibration of joints failing" 
+            d.status = [ds] 
+            pub_diag.publish(d) 
+            rospy.sleep(1.0)
         for r in remove:
             waiting_for.remove(r)
         rospy.sleep(0.05)
