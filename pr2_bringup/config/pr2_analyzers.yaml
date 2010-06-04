@@ -82,6 +82,7 @@ analyzers:
   computers:
     type: GenericAnalyzer
     path: Computers
+    expected: 'Wifi Status (ddwrt)'
     contains: [
       'HD Temp',
       'CPU Usage',
