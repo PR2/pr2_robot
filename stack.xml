@@ -26,5 +26,6 @@
   <depend stack="robot_model" /> <!-- robot_state_publisher -->
   <depend stack="ros" /> <!-- std_msgs, rospy, rosrecord, std_srvs, roscpp -->
   <depend stack="sound_drivers" /> <!-- sound_play -->
+  <depend stack="wifi_drivers" /> <!-- wifi_ddwrt -->
 
 </stack>

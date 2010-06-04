@@ -30,6 +30,7 @@
   <depend package="stereo_image_proc"/>
 
   <depend package="hokuyo_node"/>
+  <depend package="wifi_ddwrt"/>
   <depend package="microstrain_3dmgx2_imu"/>
   <depend package="wge100_camera" />
   <depend package="prosilica_camera"/>
