@@ -24,6 +24,7 @@ class Trigger:
         return True
 
     def callback(self, msg):
+        #print >> sys.stderr, "Trigger callback", self.name
         self.period = msg.period
         self.ready = True
         offset = msg.zero_offset
@@ -67,7 +68,8 @@ class Camera:
                 if reg_set == 2:
                     reg_set = 0 if d1 < imager_period else 1
                 trigpts.append((pretrigpts[i], reg_set))
-        
+        print sys.stderr, trigpts, pretrigpts
+
         # Figure out exposure times for each register set.
         cfg_suffix = [ "", "_alternate" ]
         exposure_min = []
@@ -84,7 +86,7 @@ class Camera:
             exposure_min.append(cur_min)
             exposure_max.append(cur_max)
 
-        # Generate the exposure ponits.
+        # Generate the exposure points.
         for (t, rs) in trigpts:
             exp_end = t + imager_period
             exp_start_early = exp_end - exposure_max[rs]
@@ -97,6 +99,7 @@ class Camera:
         return True
         
     def callback(self, config):
+        #print >> sys.stderr, "Camera callback", self.name
         self.config = copy.deepcopy(config)
         self.ready = True
         self.parent.update()
@@ -104,6 +107,7 @@ class Camera:
 class TriggerPlotter:
     def __init__(self):
         self.triggers = []
+        self.mutex = threading.Lock()
 
     def add(self, trigger):
         self.triggers.append(trigger)
@@ -114,15 +118,16 @@ class TriggerPlotter:
             rospy.sleep(rate)
 
     def update(self):
+      with self.mutex:
         n = len(self.triggers)
         for i in range(0, n):
             if not self.triggers[i].compute():
-                print 'No data for %s'%self.triggers[i].name
+                print >> sys.stderr, 'No data for %s'%self.triggers[i].name
                 return
         period = self.triggers[0].period
         for i in range(0, n):
             if self.triggers[i].period != period:
-                print 'Period for %s is %f, expected %f'%(self.triggers[i].name,
+                print >> sys.stderr, 'Period for %s is %f, expected %f'%(self.triggers[i].name,
                         self.triggers[i].period, period)
                 return
         
@@ -144,7 +149,6 @@ class TriggerPlotter:
             print "e"
             print
             sys.stdout.flush()
-        sys.exit(0) 
 
 rospy.init_node('trigger_plotter', anonymous = True)
 tp = TriggerPlotter()
