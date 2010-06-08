@@ -173,6 +173,7 @@ analyzers:
     path: 'Power System'
     timeout: 10
     num_items: 21
+    discard_stale: true
     expected: [
       'IBPS 0',
       'IBPS 1',
