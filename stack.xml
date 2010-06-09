@@ -18,13 +18,13 @@
   <depend stack="joystick_drivers" /> <!-- joy -->
   <depend stack="laser_drivers" /> <!-- hokuyo_node -->
   <depend stack="navigation" /> <!-- robot_pose_ekf -->
-  <depend stack="pr2_common" /> <!-- pr2_description, pr2_msgs, pr2_machine -->
+  <depend stack="pr2_common" /> <!-- pr2_description, pr2_dashboard_aggregator, pr2_msgs, pr2_machine -->
   <depend stack="pr2_controllers" /> <!-- single_joint_position_action, ethercat_trigger_controllers, pr2_calibration_controllers, joint_trajectory_action, robot_mechanism_controllers, pr2_gripper_action, pr2_head_action -->
   <depend stack="pr2_ethercat_drivers" /> <!-- ethercat_hardware -->
   <depend stack="pr2_mechanism" /> <!-- pr2_controller_manager, realtime_tools, pr2_hardware_interface, pr2_mechanism_model -->
   <depend stack="pr2_power_drivers" /> <!-- pr2_power_board, ocean_battery_driver, power_monitor -->
   <depend stack="robot_model" /> <!-- robot_state_publisher -->
-  <depend stack="ros" /> <!-- std_msgs, rospy, rosrecord, std_srvs, roscpp -->
+  <depend stack="ros" /> <!-- rospy, std_srvs, roscpp, rosrecord -->
   <depend stack="sound_drivers" /> <!-- sound_play -->
   <depend stack="wifi_drivers" /> <!-- wifi_ddwrt -->
 
