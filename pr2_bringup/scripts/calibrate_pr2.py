@@ -32,24 +32,15 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Author: Kevin Watts, Wim Meeussen
-
+# Author: Wim Meeussen
 # Calibrates the PR-2 in a safe sequence
 
-from __future__ import with_statement
 
 import roslib
-import copy
-import yaml
-import threading
-import sys, os
-import time
-from time import sleep
-import getopt
-
-# Loads interface with the robot.
 roslib.load_manifest('pr2_bringup')
 import rospy
+import getopt
+import yaml
 from std_msgs.msg import *
 from pr2_mechanism_msgs.srv import LoadController, UnloadController, SwitchController, SwitchControllerRequest
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
@@ -59,376 +50,364 @@ from std_srvs.srv import Empty
 from sensor_msgs.msg import *
 
 
+
+calibration_params_namespace = "calibration_controllers"
 load_controller = rospy.ServiceProxy('pr2_controller_manager/load_controller', LoadController)
 unload_controller = rospy.ServiceProxy('pr2_controller_manager/unload_controller', UnloadController)
 switch_controller = rospy.ServiceProxy('pr2_controller_manager/switch_controller', SwitchController)
-up_controllers = []
-services = {}
-controllers = {}
-status = {}
-pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray) 
-publishers = [pub_diag]
-calibration_params_namespace = "calibration_controllers"
+
 hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': -2.0, 
                  'l_elbow_flex': -2.0, 'r_upper_arm_roll': 0.0, 'l_upper_arm_roll': 0.0, 
                  'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0}
 
+def get_controller_name(joint_name):
+    return calibration_params_namespace+"/calibrate/cal_%s" % joint_name
+
+def get_holding_name(joint_name):
+    return "%s/hold/%s_position_controller" % (calibration_params_namespace, joint_name)
+
+def get_service_name(joint_name):
+    return '%s/is_calibrated'%get_controller_name(joint_name)
 
 global last_joint_states
 last_joint_states = None
-
 def joint_states_cb(msg):
     last_joint_states = msg
 rospy.Subscriber('joint_states', JointState, joint_states_cb)
     
+global motors_halted
+motors_halted = None
 def motor_state_cb(msg):
-    global motors_halted
     motors_halted = msg.data
     rospy.logdebug("motors halted = %d"%motors_halted)
 rospy.Subscriber('pr2_etherCAT/motors_halted', Bool, motor_state_cb)
 
-
-def calibrate(joints):
-    if type(joints) is not list:
-        joints = [joints]
-
-    # Starts the calibration controllers
-    rospy.logdebug("Calibrating joints %s"%joints)
-    switch_controller([controllers[j] for j in joints], [], SwitchControllerRequest.BEST_EFFORT)
-
-    # Waits for the calibration controllers to complete
-    start_time = rospy.Time.now()
-    delay = rospy.Duration(20.0)
-    waiting_for = joints[:]
-    rospy.logdebug("waiting for calibration")
-    while waiting_for and not rospy.is_shutdown():
-        remove = []
-        taking_too_long = False
-        for j in waiting_for:
-            if services[j]().is_calibrated:
-                rospy.loginfo("Finished calibrating joint %s"%j) 
-                remove.append(j)
-            else:
-                if motors_halted:
-                    rospy.logwarn('Calibration is on hold because motors are halted. Enable the run-stop')
-                    start_time = rospy.Time.now()
-                    rospy.sleep(1.0)
-                elif rospy.Time.now() > start_time + delay:
-                    rospy.logerr("Joint %s is taking a long time to calibrate. It might be stuck and need some human help"%j)
-                    taking_too_long = True
-        if taking_too_long:
-            d = DiagnosticArray() 
-            d.header.stamp = rospy.Time.now() 
-            ds = DiagnosticStatus() 
-            ds.level = 2 
-            ds.message = 'Calibration of joints %s is taking longer than expected. They might be stuck and require human help to finish calibration'% ', '.join(waiting_for) 
-            ds.name = "Calibration of joints failing" 
-            d.status = [ds] 
-            pub_diag.publish(d) 
-            rospy.sleep(1.0)
-        for r in remove:
-            waiting_for.remove(r)
-        rospy.sleep(0.05)
-
-    # Stops the calibration controllers
-    switch_controller([], [controllers[j] for j in joints], SwitchControllerRequest.BEST_EFFORT)
-
-
-def hold(joint, command):
-    controller = "%s/hold/%s_position_controller" % (calibration_params_namespace, joint)
-    if controller not in up_controllers:
-        try:
-            # loads the holding controllers
-            resp = load_controller(controller)
-            if resp.ok == 0:
-                rospy.logerr('Failed to start controller %s'%controller)
-                return
-            up_controllers.append(controller)
-
-            # Starts the holding controllers
-            resp = switch_controller([controller], [], SwitchControllerRequest.BEST_EFFORT)
-            if resp.ok == 0:
-                rospy.logerr('Failed to start controller %s'%controller)
-                return
-        except Exception, ex:
-            rospy.logerr("Failed to load holding controller %s: %s" % (controller, str(ex)))
-
-    pub = rospy.Publisher("%s/command" % controller, Float64, latch=True)
-    pub.publish(Float64(command))
-    return pub
-
-
-def flatten(l, ltypes=(list, tuple)):
-    ltype = type(l)
-    l = list(l)
-    i = 0
-    while i < len(l):
-        while isinstance(l[i], ltypes):
-            if not l[i]:
-                l.pop(i)
-                i -= 1
-                break
-            else:
-                l[i:i + 1] = l[i]
-        i += 1
-    return ltype(l)
+pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray) 
+def diagnostics(level, msg_short, msg_long):
+    if level == 0:
+        rospy.loginfo(msg_long)        
+    elif level == 1:
+        rospy.logwarn(msg_long)
+    elif level == 2:
+        rospy.logerr(msg_long)
+    d = DiagnosticArray() 
+    d.header.stamp = rospy.Time.now() 
+    ds = DiagnosticStatus() 
+    ds.level = level
+    ds.message = msg_long
+    ds.name = msg_short
+    d.status = [ds] 
+    pub_diag.publish(d) 
 
 
 
-def is_calibrated_group(joints_group):
-    all_joints = flatten(joints_group)
-
-    res = True
-    for j in all_joints:
-        # spawn calibration controllers 
-        controllers[j] =  calibration_params_namespace+"/calibrate/cal_%s" % j
-        rospy.logdebug("Launching: %s" %controllers[j])
-        resp = load_controller(controllers[j])
+class HoldingController:
+    def __init__(self, joint_name):
+        self.joint_name = joint_name
+        rospy.logdebug("Loading holding controller: %s" %get_holding_name(joint_name))
+        resp = load_controller(get_holding_name(joint_name)) 
         if resp.ok:
-            # store service call for calibration controller
-            service_name = '%s/is_calibrated'%controllers[j]
-            rospy.logdebug("Waiting for service: %s" %service_name)
-            rospy.wait_for_service(service_name)
-            services[j] = rospy.ServiceProxy(service_name, QueryCalibrationState)
-            up_controllers.append(controllers[j])
-            # check if joint is calibrated
-            if services[j]().is_calibrated:
+            rospy.logdebug("Starting holding controller for joint %s."%joint_name)
+            switch_controller([get_holding_name(joint_name)], [], SwitchControllerRequest.STRICT)
+            self.pub_cmd = rospy.Publisher("%s/command" %get_holding_name(joint_name), Float64, latch=True)
+        else:
+            rospy.logerr("Failed to load holding controller for joint %s."%joint_name)
+            raise Exception('Failure to load holding controller')
+                                  
+    def __del__(self):
+        switch_controller([], [get_holding_name(self.joint_name)], SwitchControllerRequest.STRICT)
+        unload_controller(get_holding_name(self.joint_name))
+        self.pub_cmd.unregister()
+                               
+    def hold(self, position):
+        self.pub_cmd.publish(Float64(position))
+
+
+
+class StatusPub:
+    def __init__(self):
+        self.pub_status = rospy.Publisher('calibration_status', String)
+        self.status = {}
+        self.status['active'] = []
+        self.status['done'] = []
+        
+    def publish(self, active=None):
+        if active:
+            self.status['active'] = active
+        else:
+            self.status['done'].extend(self.status['active'])
+            self.status['active'] = []
+            
+        str = "====\n"
+        str += "Calibrating: %s\n"%", ".join(self.status["active"])
+        str += "Calibrated: %s\n"%", ".join(self.status["done"])
+        self.pub_status.publish(str)
+
+
+
+class CalibrateParallel:
+    def __init__(self, joints, status):
+        self.joints = []
+        self.hold_controllers = []
+        self.services = {}
+        self.status = status
+
+        # spawn calibration controllers for all joints
+        for j in joints:
+            rospy.logdebug("Loading controller: %s" %get_controller_name(j))
+            resp = load_controller(get_controller_name(j)) 
+            if resp.ok:
+                # get service call to calibration controller to check calibration state
+                rospy.logdebug("Waiting for service: %s" %get_service_name(j))
+                rospy.wait_for_service(get_service_name(j))
+                self.services[j] = rospy.ServiceProxy(get_service_name(j), QueryCalibrationState)
+                self.joints.append(j)
+            else:
+                rospy.logerr("Failed to load calibration for joint %s. Skipping this joint"%j)
+
+
+    def __del__(self):
+        # stop controllers that were started
+        switch_controller([], [get_controller_name(j) for j in self.joints], SwitchControllerRequest.BEST_EFFORT)        
+
+        # kill controllers that were loaded
+        for j in self.joints:
+            unload_controller(get_controller_name(j))
+
+    def is_calibrated(self):
+        # check if joints are calibrated
+        for j in self.joints:
+            if self.services[j]().is_calibrated:
                 rospy.logdebug("joint %s is already calibrated"%j)
             else:
                 rospy.logdebug("joint %s needs to be calibrated"%j)
-                res = False
-        else:
-            rospy.logwarn("Failed to load calibration controller: %s" %controllers[j])
+                return False
+        return True
 
 
-    if not res:
-        rospy.loginfo("These joints will get calibrated: %s"%all_joints)
-    else:
-        rospy.loginfo("These joints are already calibrated: %s"%all_joints)
-    return res
+    def calibrate(self):
+        # start all calibration controllers
+        rospy.logdebug("Start calibrating joints %s"%self.joints)
+        switch_controller([get_controller_name(j) for j in self.joints], [], SwitchControllerRequest.STRICT)
 
+        # wait for joints to calibrate
+        self.status.publish(self.joints)
+        start_time = rospy.Time.now()
+        while not self.is_calibrated():
+            if motors_halted:
+                diagnostics(1, 'Calibration on hold', 'Calibration is on hold because motors are halted. Enable the run-stop')
+                start_time = rospy.Time.now()
+                rospy.sleep(1.0)
+            elif rospy.Time.now() > start_time + rospy.Duration(15.0):
+                diagnostics(1, 'Calibration stuck', 'Joint %s is taking a long time to calibrate. It might be stuck and need some human help'%self.joints)
+                rospy.sleep(1.0)                    
+            rospy.sleep(0.1)
 
-def calibrate_group(joints_group):
-    # calibrate all joints in group
-    for joints  in joints_group:
-        status["active"] = joints
-        publish_status(status, status_pub)
-        calibrate(joints)
-        for j in joints:
+        rospy.logdebug("Stop calibration controllers for joints %s"%self.joints)
+        switch_controller([], [get_controller_name(j) for j in self.joints], SwitchControllerRequest.BEST_EFFORT)
+
+        # hold joints in place
+        rospy.logdebug("Loading holding controllers for joints %s"%self.joints)
+        self.hold_controllers = []
+        for j in self.joints:
             if j in hold_position:
-                publishers.append( hold(j, hold_position[j]) )
-        status["done"].extend(status["active"])
+                holder = HoldingController(j)
+                holder.hold(hold_position[j])
+                self.hold_controllers.append(holder)
+        self.status.publish()
 
 
 
-def publish_status(status, pub):
-  str = "====\n"
-  str += "Calibrating: %s\n"%", ".join(status["active"])
-  str += "Calibrated: %s\n"%", ".join(status["done"])
-  pub.publish(str)
+class CalibrateSequence:
+    def __init__(self, sequence, status):
+        self.status = status
+
+        # create CalibrateParallel for all groups in sequence
+        self.groups = []
+        for s in sequence:
+            self.groups.append(CalibrateParallel(s, status))
 
 
-
-def main():
-    rospy.init_node('calibration', anonymous=True, disable_signals=True)
-    calibration_start_time = rospy.Time.now()
-
-    imustatus = True
-    joints_status = False
-    try:
-        try:
-            pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True)
-            pub_calibrated.publish(False)
-            global status_pub
-            status_pub = rospy.Publisher('calibration_status', String)
-            status["active"] = []
-            status["done"] = []
-
-            allowed_flags = ['alpha-casters', 'alpha-head', 'alpha2b-head', 'arms=']
-            opts, args = getopt.gnu_getopt(rospy.myargv(), 'h', allowed_flags)
-
-            casters = ['caster_fl', 'caster_fr', 'caster_bl', 'caster_br']
-            head = ['head_pan', 'head_tilt']
-            arms = 'auto'
-
-            for o, a in opts:
-                if o == '-h':
-                    rospy.loginfo("Flags:", ' '.join(['--'+f for f in allowed_flags]))
-                    sys.exit(0)
-                elif o == '--alpha-casters':
-                    casters = ['caster_fl_alpha2', 'caster_fr_alpha2',
-                               'caster_bl_alpha2', 'caster_br_alpha2']
-                elif o == '--alpha-head':
-                    head = ['head_pan_alpha2', 'head_tilt']
-                elif o == '--alpha2b-head':
-                    head = ['head_pan_alpha2', 'head_tilt_alpha2b']
-                elif o == '--arms':
-                    arms = a
-
-            if arms not in ['both', 'none', 'left', 'right', 'auto']:
-                print 'Arms must be "both", "none", "left", "right", or "auto"'
-                sys.exit(1)
-
-            pr2_controller_configuration_dir = roslib.packages.get_pkg_dir('pr2_controller_configuration')
-            calibration_yaml = '%s/pr2_calibration_controllers.yaml' % pr2_controller_configuration_dir
-            hold_yaml = '%s/pr2_joint_position_controllers.yaml' % pr2_controller_configuration_dir
-
-            if len(args) < 3:
-               rospy.loginfo("No yaml files specified for calibration and holding controllers, using defaults")
-            else:
-               calibration_yaml = args[1]
-               hold_yaml  = args[2]
-            rospy.wait_for_service('pr2_controller_manager/load_controller')
-            rospy.wait_for_service('pr2_controller_manager/switch_controller')
-            rospy.wait_for_service('pr2_controller_manager/unload_controller')
-
-            # Determines whether to calibrate the arms based on which joints exist.
-            if arms == 'auto':
-                started_waiting = rospy.get_rostime()
-                while rospy.get_rostime() <= started_waiting + rospy.Duration(5.0):
-                    if last_joint_states:
-                        break
-                js = last_joint_states
-                if not js:
-                    arms = 'both'
-                else:
-                    if 'r_shoulder_pan_joint' in js.name and 'l_shoulder_pan_joint' in js.name:
-                        arms = 'both'
-                    elif 'r_shoulder_pan_joint' in js.name:
-                        arms = 'right'
-                    elif 'l_shoulder_pan_joint' in js.name:
-                        arms = 'left'
-                    else:
-                        arms = 'none'
-                rospy.logout("Arm selection was set to \"auto\".  Chose to calibrate using \"%s\"" % arms)
-
-            # define calibration groups
-            r_arm_group = [['r_shoulder_pan'], ['r_elbow_flex'], ['r_upper_arm_roll'], ['r_shoulder_lift'], ['r_forearm_roll', 'r_wrist']]
-            l_arm_group = [['l_shoulder_pan'], ['l_elbow_flex'], ['l_upper_arm_roll'], ['l_shoulder_lift'], ['l_forearm_roll', 'l_wrist']]
-            b_arm_group = [['r_shoulder_pan', 'l_shoulder_pan'], ['r_elbow_flex', 'l_elbow_flex'],
-                           ['r_upper_arm_roll', 'l_upper_arm_roll'], ['r_shoulder_lift', 'l_shoulder_lift'],
-                           ['r_forearm_roll', 'r_wrist', 'l_forearm_roll', 'l_wrist']]
-            torso_group = [['torso_lift']]
-            gripper = []
-            if arms in ['right', 'both']:
-                gripper.append('r_gripper')
-            if arms in ['left', 'both']:
-                gripper.append('l_gripper')
-            gripper_group = [gripper]
-            head_group = [head, 'laser_tilt']
-            casters_group = [casters]
-
-            # load calibration controllers configuration
-            rospy.loginfo("Loading controller configuration on parameter server...")
-            rospy.set_param(calibration_params_namespace+"/calibrate", yaml.load(open(calibration_yaml)))
-            rospy.set_param(calibration_params_namespace+"/hold", yaml.load(open(hold_yaml)))
-
-            # check which groups need calibration
-            arm_group_calibrated = False
-            if arms == 'both':
-                arm_group_calibrated = is_calibrated_group(b_arm_group)
-            elif arms == 'right':
-                arm_group_calibrated = is_calibrated_group(r_arm_group)
-            elif arms == 'left':
-                arm_group_calibrated = is_calibrated_group(l_arm_group)
-            torso_group_calibrated = is_calibrated_group(torso_group)
-            gripper_group_calibrated = is_calibrated_group(gripper_group)
-            casters_group_calibrated = is_calibrated_group(casters_group)
-            head_group_calibrated = is_calibrated_group(head_group)
-
-            # calibrate imu and torso
-            if not torso_group_calibrated:
-                rospy.loginfo('Calibrating imu')
-                status["active"] = ["imu"]
-                imu_calibrate_srv_name = '/torso_lift_imu/calibrate'
-                rospy.wait_for_service(imu_calibrate_srv_name)  
-                imu_calibrate_srv = rospy.ServiceProxy(imu_calibrate_srv_name, Empty)
-                try:
-                    imu_calibrate_srv()
-                    imustatus = True
-                    # only calibrate torso when imu calibration succeeds
-                    calibrate_group(torso_group)
-                except:
-                    imustatus = False
-                status["done"].extend(status["active"])
-                rospy.loginfo('Calibrating imu finished')
-            else:
-                rospy.loginfo('Not calibrating imu')
-
-            # calibrate arms
-            if not arm_group_calibrated:
-                publishers.append( hold('torso_lift', 0.25) )
-                rospy.sleep(5.0)
-                rospy.loginfo('Moving up spine to allow arms to calibrate')
-                if arms == 'both':
-                    calibrate_group(b_arm_group)
-                elif arms == 'right':
-                    calibrate_group(r_arm_group)
-                elif arms == 'left':
-                    calibrate_group(l_arm_group)
-                rospy.loginfo('Moving down spine after arm calibration')
-                publishers.append( hold('torso_lift', 0.01) )
-                rospy.sleep(20.0)
-
-            # calibrate grippers
-            if not gripper_group_calibrated:
-                calibrate_group(gripper_group)
-
-            # calibrate head
-            if not head_group_calibrated:
-                calibrate_group(head_group)
-
-            # calibrate casters
-            if not casters_group_calibrated:
-                calibrate_group(casters_group)
-
-            joints_status = True
-            status_pub.publish("CALIBRATION COMPLETE")
-
-
-
-        finally:
-            rospy.loginfo("Bringing down calibration node")
-
-            # stop/unload all controllers
-            try:
-                switch_controller([], up_controllers, SwitchControllerRequest.BEST_EFFORT)
-                # Unload all controllers
-                for name in up_controllers:
-                    resp_unload = unload_controller(name)
-                    if (resp_unload == 0):
-                        rospy.logerr("Failed to unload controller %s" % name)
-            except rospy.ServiceException:
-                rospy.logerr("Call to switch_controller failed")
-            except KeyboardInterrupt:
-                raise
-
-            # Unregister all holding publishers
-            for p in publishers:
-                p.unregister()
-
-            # clears controller parameters
-            rospy.set_param(calibration_params_namespace, "")
-
-            if not imustatus and not joints_status:
-                rospy.logerr("Both mechanism and IMU calibration failed")
-            elif not joints_status:
-                rospy.logerr("IMU calibration complete, but mechanism calibration failed")
-            elif not imustatus:
-                rospy.logerr("Mechanism calibration complete, but IMU calibration failed.")
-            else:
-                rospy.loginfo('Calibration completed in %f sec' %(rospy.Time.now() - calibration_start_time).to_sec())
-
-            if joints_status:
-                pub_calibrated.publish(True)
-
-        # Spin
-        while True:
-            time.sleep(1e6)
-    except KeyboardInterrupt:
-        pass
-    finally:
-        rospy.signal_shutdown("interrupted")
+    def is_calibrated(self):
+        # check if all groups in sequence are calibrated
+        for g in self.groups:
+            if not g.is_calibrated():
+                return False
+        return True
         
+
+    def calibrate(self):
+        # Check if this sequence needs calibration
+        if self.is_calibrated():
+            return True
+        
+        # calibrate all groups in sequence
+        for g in self.groups:
+            g.calibrate()
+
+
+
+
+
+
+            
+def main():
+    try:
+        rospy.init_node('calibration', anonymous=True, disable_signals=True)
+        calibration_start_time = rospy.Time.now()
+
+        rospy.wait_for_service('pr2_controller_manager/load_controller')
+        rospy.wait_for_service('pr2_controller_manager/switch_controller')
+        rospy.wait_for_service('pr2_controller_manager/unload_controller')
+
+        
+        # parse options
+        allowed_flags = ['alpha-casters', 'alpha-head', 'alpha2b-head', 'arms=']
+        opts, args = getopt.gnu_getopt(rospy.myargv(), 'h', allowed_flags)
+        caster_list = ['caster_fl', 'caster_fr', 'caster_bl', 'caster_br']
+        head_list = ['head_pan', 'head_tilt']
+        arms = 'auto'
+        for o, a in opts:
+            if o == '-h':
+                rospy.loginfo("Flags:", ' '.join(['--'+f for f in allowed_flags]))
+                sys.exit(0)
+            elif o == '--alpha-casters':
+                caster_list = ['caster_fl_alpha2', 'caster_fr_alpha2', 'caster_bl_alpha2', 'caster_br_alpha2']
+            elif o == '--alpha-head':
+                head_list = ['head_pan_alpha2', 'head_tilt']
+            elif o == '--alpha2b-head':
+                head_list = ['head_pan_alpha2', 'head_tilt_alpha2b']
+            elif o == '--arms':
+                arms = a
+
+        if arms not in ['both', 'none', 'left', 'right', 'auto']:
+            print 'Arms must be "both", "none", "left", "right", or "auto"'
+            sys.exit(1)
+
+        # load controller configuration
+        rospy.loginfo("Loading controller configuration on parameter server...")
+        pr2_controller_configuration_dir = roslib.packages.get_pkg_dir('pr2_controller_configuration')
+        calibration_yaml = '%s/pr2_calibration_controllers.yaml' % pr2_controller_configuration_dir
+        hold_yaml = '%s/pr2_joint_position_controllers.yaml' % pr2_controller_configuration_dir
+        if len(args) < 3:
+            rospy.loginfo("No yaml files specified for calibration and holding controllers, using defaults")
+        else:
+            calibration_yaml = args[1]
+            hold_yaml  = args[2]
+        rospy.set_param(calibration_params_namespace+"/calibrate", yaml.load(open(calibration_yaml)))
+        rospy.set_param(calibration_params_namespace+"/hold", yaml.load(open(hold_yaml)))
+
+        # status publishing
+        imustatus = True
+        joints_status = False
+        pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True)
+        pub_calibrated.publish(False)
+        status = StatusPub()
+
+        # Auto arm selection, determined based on which joints exist.
+        if arms == 'auto':
+            started_waiting = rospy.get_rostime()
+            while rospy.get_rostime() <= started_waiting + rospy.Duration(5.0):
+                if last_joint_states:
+                    break
+            js = last_joint_states
+            if not js:
+                arms = 'both'
+            else:
+                if 'r_shoulder_pan_joint' in js.name and 'l_shoulder_pan_joint' in js.name:
+                    arms = 'both'
+                elif 'r_shoulder_pan_joint' in js.name:
+                    arms = 'right'
+                elif 'l_shoulder_pan_joint' in js.name:
+                    arms = 'left'
+                else:
+                    arms = 'none'
+            rospy.logout("Arm selection was set to \"auto\".  Chose to calibrate using \"%s\"" % arms)
+
+        # define calibration sequence objects
+        torso = CalibrateSequence([['torso_lift']], status)
+        gripper_list = []
+        arm_list = []
+        if arms == 'both':
+            arm_list = [['r_shoulder_pan', 'l_shoulder_pan'], ['r_elbow_flex', 'l_elbow_flex'],
+                        ['r_upper_arm_roll', 'l_upper_arm_roll'], ['r_shoulder_lift', 'l_shoulder_lift'],
+                        ['r_forearm_roll', 'r_wrist', 'l_forearm_roll', 'l_wrist']]
+            gripper_list = ['r_gripper', 'l_gripper']
+        if arms == 'left':
+            arm_list = [['l_shoulder_pan'], ['l_elbow_flex'], ['l_upper_arm_roll'], ['l_shoulder_lift'], ['l_forearm_roll', 'l_wrist']]
+            gripper_list = ['l_gripper']
+        if arms == 'right':
+            arm_list = [['r_shoulder_pan'], ['r_elbow_flex'], ['r_upper_arm_roll'], ['r_shoulder_lift'], ['r_forearm_roll', 'r_wrist']]
+            gripper_list = ['r_gripper']
+        arm = CalibrateSequence(arm_list, status)
+        gripper = CalibrateSequence([gripper_list], status)
+        head = CalibrateSequence([head_list, ['laser_tilt']], status)
+        caster = CalibrateSequence([caster_list], status)
+
+        
+        # calibrate imu and torso
+        if not torso.is_calibrated():
+            rospy.loginfo('Calibrating imu')
+            status.publish(['imu'])
+            imu_calibrate_srv_name = 'torso_lift_imu/calibrate'
+            rospy.wait_for_service(imu_calibrate_srv_name)  
+            imu_calibrate_srv = rospy.ServiceProxy(imu_calibrate_srv_name, Empty)
+            try:
+                imu_calibrate_srv()
+                status.publish()
+                # only calibrate torso when imu calibration succeeds
+            except:
+                imustatus = False
+            rospy.loginfo('Calibrating imu finished')
+        else:
+            rospy.loginfo('Not calibrating imu')
+
+        # calibrate torso
+        torso.calibrate()
+
+        # calibrate arms
+        if not arm.is_calibrated():
+            torso_holder = HoldingController('torso_lift')
+            torso_holder.hold(0.25)
+            rospy.sleep(5.0)
+            rospy.loginfo('Moving up spine to allow arms to calibrate')
+            arm.calibrate()
+            rospy.loginfo('Moving down spine after arm calibration')
+            torso_holder.hold(0.01)
+            rospy.sleep(20.0)
+
+        # calibrate rest of robot
+        gripper.calibrate()
+        head.calibrate()
+        caster.calibrate()
+
+        joints_status = True
+        status.publish()
+
+
+        
+    finally:
+        rospy.loginfo("Bringing down calibration node")
+
+        rospy.set_param(calibration_params_namespace, "")
+        del arm
+        del gripper
+        del torso
+        del caster
+        del head
+
+        if not imustatus and not joints_status:
+            rospy.logerr("Both mechanism and IMU calibration failed")
+        elif not joints_status:
+            rospy.logerr("IMU calibration complete, but mechanism calibration failed")
+        elif not imustatus:
+            rospy.logerr("Mechanism calibration complete, but IMU calibration failed.")
+        else:
+            rospy.loginfo('Calibration completed in %f sec' %(rospy.Time.now() - calibration_start_time).to_sec())
+
+        if joints_status:
+            pub_calibrated.publish(True)
+        rospy.spin()
+            
 
 if __name__ == '__main__': main()
