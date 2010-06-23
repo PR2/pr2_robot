@@ -173,7 +173,7 @@ cal_l_gripper:
   joint: l_gripper_joint
   other_joints:
     - l_gripper_l_parallel_root_joint
-    - r_gripper_r_parallel_root_joint
+    - l_gripper_r_parallel_root_joint
     - l_gripper_l_finger_joint
     - l_gripper_l_finger_tip_joint
     - l_gripper_r_finger_joint
