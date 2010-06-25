@@ -1,5 +1,5 @@
 r_shoulder_pan_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: r_shoulder_pan_joint
   pid: &shoulder_pan_position_gains
     p: 60.0
@@ -7,7 +7,7 @@ r_shoulder_pan_position_controller:
     i: 10.0
     i_clamp: 4.0
 r_shoulder_lift_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: r_shoulder_lift_joint
   pid: &shoulder_lift_position_gains
     p: 60.0
@@ -15,7 +15,7 @@ r_shoulder_lift_position_controller:
     i: 10.0
     i_clamp: 4.0
 r_upper_arm_roll_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: r_upper_arm_roll_joint
   pid: &upper_arm_roll_position_gains
     p: 25.0
@@ -23,7 +23,7 @@ r_upper_arm_roll_position_controller:
     i: 1.0
     i_clamp: 1.0
 r_elbow_flex_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: r_elbow_flex_joint
   pid: &elbow_flex_position_gains
     p: 100.0
@@ -31,7 +31,7 @@ r_elbow_flex_position_controller:
     i: 20.0
     i_clamp: 2.0
 r_forearm_roll_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: r_forearm_roll_joint
   pid: &forearm_roll_position_gains
     p: 300.0
@@ -39,7 +39,7 @@ r_forearm_roll_position_controller:
     i: 0.0
     i_clamp: 0.0
 r_wrist_flex_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: r_wrist_flex_joint
   pid: &wrist_flex_position_gains
     p: 200
@@ -47,7 +47,7 @@ r_wrist_flex_position_controller:
     d: 8.0
     i_clamp: 0.0
 r_wrist_roll_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: r_wrist_roll_joint
   pid: &wrist_roll_position_gains
     p: 200
@@ -55,7 +55,7 @@ r_wrist_roll_position_controller:
     d: 8.0
     i_clamp: 0.0
 r_gripper_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: r_gripper_joint
   pid: &gripper_position_gains
     p: 200
@@ -64,40 +64,40 @@ r_gripper_position_controller:
     i_clamp: 0.0
 
 l_shoulder_pan_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: l_shoulder_pan_joint
   pid: *shoulder_pan_position_gains
 l_shoulder_lift_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: l_shoulder_lift_joint
   pid: *shoulder_lift_position_gains
 l_upper_arm_roll_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: l_upper_arm_roll_joint
   pid: *upper_arm_roll_position_gains
 l_elbow_flex_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: l_elbow_flex_joint
   pid: *elbow_flex_position_gains
 l_forearm_roll_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: l_forearm_roll_joint
   pid: *forearm_roll_position_gains
 l_wrist_flex_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: l_wrist_flex_joint
   pid: *wrist_flex_position_gains
 l_wrist_roll_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: l_wrist_roll_joint
   pid: *wrist_roll_position_gains
 l_gripper_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: l_gripper_joint
   pid: *gripper_position_gains
 
 torso_lift_position_controller:
-  type: JointPositionController
+  type: robot_mechanism_controllers/JointPositionController
   joint: torso_lift_joint
   pid:
     p: 10000000.0

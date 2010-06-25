@@ -1,54 +1,54 @@
 torso_lift_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: torso_lift_joint
 
 r_shoulder_pan_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: r_shouler_pan_joint
 r_shoulder_lift_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: r_shoulder_lift_joint
 r_upper_arm_roll_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: r_upper_arm_roll_joint
 r_elbow_flex_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: r_elbow_flex_joint
 r_forearm_roll_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: r_forearm_roll_joint
 r_wrist_flex_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: r_wrist_flex_joint
 r_wrist_roll_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: r_wrist_roll_joint
 
 l_shoulder_pan_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: l_shouler_pan_joint
 l_shoulder_lift_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: l_shoulder_lift_joint
 l_upper_arm_roll_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: l_upper_arm_roll_joint
 l_elbow_flex_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: l_elbow_flex_joint
 l_forearm_roll_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: l_forearm_roll_joint
 l_wrist_flex_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: l_wrist_flex_joint
 l_wrist_roll_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: l_wrist_roll_joint
 
 r_gripper_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: r_gripper_joint
 l_gripper_effort_controller:
-  type: JointEffortController
+  type: robot_mechanism_controllers/JointEffortController
   joint: l_gripper_joint

@@ -1,5 +1,5 @@
 torso_controller:
-  type: JointSplineTrajectoryController
+  type: robot_mechanism_controllers/JointSplineTrajectoryController
   joints:
     - torso_lift_joint
   gains:

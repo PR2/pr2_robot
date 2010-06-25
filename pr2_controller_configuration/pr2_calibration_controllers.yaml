@@ -1,5 +1,5 @@
 cal_torso_lift:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: torso_lift_joint
   actuator: torso_lift_motor
   transmission: torso_lift_trans
@@ -10,7 +10,7 @@ cal_torso_lift:
     i: 0
     i_clamp: 12000
 cal_r_shoulder_pan:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: r_shoulder_pan_joint
   actuator: r_shoulder_pan_motor
   transmission: r_shoulder_pan_trans
@@ -21,7 +21,7 @@ cal_r_shoulder_pan:
     d: 0
     i_clamp: 1.0
 cal_l_shoulder_pan:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: l_shoulder_pan_joint
   actuator: l_shoulder_pan_motor
   transmission: l_shoulder_pan_trans
@@ -32,7 +32,7 @@ cal_l_shoulder_pan:
     d: 0
     i_clamp: 1.0
 cal_r_shoulder_lift:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: r_shoulder_lift_joint
   actuator: r_shoulder_lift_motor
   transmission: r_shoulder_lift_trans
@@ -43,7 +43,7 @@ cal_r_shoulder_lift:
     d: 0
     i_clamp: 6
 cal_l_shoulder_lift:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: l_shoulder_lift_joint
   actuator: l_shoulder_lift_motor
   transmission: l_shoulder_lift_trans
@@ -54,7 +54,7 @@ cal_l_shoulder_lift:
     d: 0
     i_clamp: 6
 cal_r_upper_arm_roll:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: r_upper_arm_roll_joint
   actuator: r_upper_arm_roll_motor
   transmission: r_upper_arm_roll_trans
@@ -65,7 +65,7 @@ cal_r_upper_arm_roll:
     d: 0
     i_clamp: 2
 cal_l_upper_arm_roll:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: l_upper_arm_roll_joint
   actuator: l_upper_arm_roll_motor
   transmission: l_upper_arm_roll_trans
@@ -76,7 +76,7 @@ cal_l_upper_arm_roll:
     d: 0
     i_clamp: 2
 cal_r_elbow_flex:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: r_elbow_flex_joint
   actuator: r_elbow_flex_motor
   transmission: r_elbow_flex_trans
@@ -87,7 +87,7 @@ cal_r_elbow_flex:
     d: 0
     i_clamp: 1
 cal_l_elbow_flex:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: l_elbow_flex_joint
   actuator: l_elbow_flex_motor
   transmission: l_elbow_flex_trans
@@ -99,7 +99,7 @@ cal_l_elbow_flex:
     i_clamp: 1
 
 cal_r_forearm_roll:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: r_forearm_roll_joint
   actuator: r_forearm_roll_motor
   transmission: r_forearm_roll_trans
@@ -110,7 +110,7 @@ cal_r_forearm_roll:
     d: 0.0
     i_clamp: 0.0
 cal_r_wrist:
-  type: WristCalibrationController
+  type: pr2_calibration_controllers/WristCalibrationController
   actuator_l: r_wrist_l_motor
   actuator_r: r_wrist_r_motor
   flex_joint: r_wrist_flex_joint
@@ -124,7 +124,7 @@ cal_r_wrist:
     i: 0.2
     i_clamp: 2.0
 cal_r_gripper:
-  type: GripperCalibrationController
+  type: pr2_calibration_controllers/GripperCalibrationController
   actuator: r_gripper_motor
   joint: r_gripper_joint
   other_joints:
@@ -141,7 +141,7 @@ cal_r_gripper:
 
 
 cal_l_forearm_roll:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   joint: l_forearm_roll_joint
   actuator: l_forearm_roll_motor
   transmission: l_forearm_roll_trans
@@ -152,7 +152,7 @@ cal_l_forearm_roll:
     d: 0.0
     i_clamp: 0.0
 cal_l_wrist:
-  type: WristCalibrationController
+  type: pr2_calibration_controllers/WristCalibrationController
   actuator_l: l_wrist_l_motor
   actuator_r: l_wrist_r_motor
   flex_joint: l_wrist_flex_joint
@@ -166,7 +166,7 @@ cal_l_wrist:
     i: 0.2
     i_clamp: 2.0
 cal_l_gripper:
-  type: GripperCalibrationController
+  type: pr2_calibration_controllers/GripperCalibrationController
   actuator: l_gripper_motor
   joint: l_gripper_joint
   other_joints:
@@ -184,7 +184,7 @@ cal_l_gripper:
 
 
 cal_laser_tilt:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   actuator: laser_tilt_mount_motor
   joint: laser_tilt_mount_joint
   transmission: laser_tilt_mount_trans
@@ -201,7 +201,7 @@ caster_calibration: &caster_calibration
   velocity: 2.0
 
 cal_caster_fl:
-  type: CasterCalibrationController
+  type: pr2_calibration_controllers/CasterCalibrationController
   <<: *caster_calibration
   actuator: fl_caster_rotation_motor
   joint: fl_caster_rotation_joint
@@ -211,7 +211,7 @@ cal_caster_fl:
     wheel_l: fl_caster_l_wheel_joint
     wheel_r: fl_caster_r_wheel_joint
 cal_caster_fr:
-  type: CasterCalibrationController
+  type: pr2_calibration_controllers/CasterCalibrationController
   <<: *caster_calibration
   actuator: fr_caster_rotation_motor
   joint: fr_caster_rotation_joint
@@ -221,7 +221,7 @@ cal_caster_fr:
     wheel_l: fr_caster_l_wheel_joint
     wheel_r: fr_caster_r_wheel_joint
 cal_caster_bl:
-  type: CasterCalibrationController
+  type: pr2_calibration_controllers/CasterCalibrationController
   <<: *caster_calibration
   actuator: bl_caster_rotation_motor
   joint: bl_caster_rotation_joint
@@ -231,7 +231,7 @@ cal_caster_bl:
     wheel_l: bl_caster_l_wheel_joint
     wheel_r: bl_caster_r_wheel_joint
 cal_caster_br:
-  type: CasterCalibrationController
+  type: pr2_calibration_controllers/CasterCalibrationController
   <<: *caster_calibration
   actuator: br_caster_rotation_motor
   joint: br_caster_rotation_joint
@@ -245,7 +245,7 @@ cal_caster_br:
 
 
 cal_head_pan:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   actuator: head_pan_motor
   joint: head_pan_joint
   transmission: head_pan_trans
@@ -256,7 +256,7 @@ cal_head_pan:
     i: 0.0
     i_clamp: 1.0
 cal_head_tilt:
-  type: JointCalibrationController
+  type: pr2_calibration_controllers/JointCalibrationController
   actuator: head_tilt_motor
   joint: head_tilt_joint
   transmission: head_tilt_trans

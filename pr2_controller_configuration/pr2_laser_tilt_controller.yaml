@@ -1,5 +1,5 @@
 laser_tilt_controller:
-  type: LaserScannerTrajController
+  type:  pr2_mechanism_controllers/LaserScannerTrajController
   joint: laser_tilt_mount_joint
   gains:
     p: 8.0
