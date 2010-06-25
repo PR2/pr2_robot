@@ -128,8 +128,6 @@ cal_r_gripper:
   actuator: r_gripper_motor
   joint: r_gripper_joint
   other_joints:
-    - r_gripper_l_parallel_root_joint
-    - r_gripper_r_parallel_root_joint
     - r_gripper_l_finger_joint
     - r_gripper_l_finger_tip_joint
     - r_gripper_r_finger_joint
@@ -172,8 +170,6 @@ cal_l_gripper:
   actuator: l_gripper_motor
   joint: l_gripper_joint
   other_joints:
-    - l_gripper_l_parallel_root_joint
-    - l_gripper_r_parallel_root_joint
     - l_gripper_l_finger_joint
     - l_gripper_l_finger_tip_joint
     - l_gripper_r_finger_joint
