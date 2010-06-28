@@ -195,8 +195,7 @@ class CalibrateParallel:
         self.status.publish(self.joints)
         start_time = rospy.Time.now()
         while not self.is_calibrated():
-            ros
-            if motors_halted:
+            if motors_halted and motors_halted == 1:
                 diagnostics(2, 'Calibration on hold', 'Calibration is on hold because motors are halted. Enable the run-stop')
                 start_time = rospy.Time.now()
                 rospy.sleep(1.0)
