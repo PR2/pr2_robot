@@ -78,6 +78,7 @@ rospy.Subscriber('joint_states', JointState, joint_states_cb)
 global motors_halted
 motors_halted = None
 def motor_state_cb(msg):
+    global motors_halted
     motors_halted = msg.data
     rospy.logdebug("motors halted = %d"%motors_halted)
 rospy.Subscriber('pr2_etherCAT/motors_halted', Bool, motor_state_cb)
@@ -194,12 +195,13 @@ class CalibrateParallel:
         self.status.publish(self.joints)
         start_time = rospy.Time.now()
         while not self.is_calibrated():
+            ros
             if motors_halted:
-                diagnostics(1, 'Calibration on hold', 'Calibration is on hold because motors are halted. Enable the run-stop')
+                diagnostics(2, 'Calibration on hold', 'Calibration is on hold because motors are halted. Enable the run-stop')
                 start_time = rospy.Time.now()
                 rospy.sleep(1.0)
             elif rospy.Time.now() > start_time + rospy.Duration(15.0):
-                diagnostics(1, 'Calibration stuck', 'Joint %s is taking a long time to calibrate. It might be stuck and need some human help'%self.joints)
+                diagnostics(2, 'Calibration stuck', 'Joint %s is taking a long time to calibrate. It might be stuck and need some human help'%self.joints)
                 rospy.sleep(1.0)                    
             rospy.sleep(0.1)
 
@@ -366,6 +368,7 @@ def main():
         torso.calibrate()
 
         # calibrate arms
+        torso_holder = None
         if not arm.is_calibrated():
             torso_holder = HoldingController('torso_lift')
             torso_holder.hold(0.25)
@@ -393,6 +396,7 @@ def main():
         del arm
         del gripper
         del torso
+        del torso_holder
         del caster
         del head
 
