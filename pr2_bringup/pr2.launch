@@ -7,7 +7,7 @@
   <remap from="/diagnostics_agg" to="/$(optenv ROS_NAMESPACE /)/diagnostics_agg" />
 
   <!-- pr2_etherCAT -->
-  <node name="realtime_loop" machine="c1" launch-prefix="pr2_grant" pkg="pr2_etherCAT" type="pr2_etherCAT" args="-i ecat0 -x robot_description"/>
+  <node name="realtime_loop" machine="c1" launch-prefix="pr2_grant" pkg="pr2_etherCAT" type="pr2_etherCAT" args="-i ecat0 -x robot_description" output="screen" />
 
   <!-- PR2 Calibration -->
   <node name="calibrate_pr2" pkg="pr2_bringup" type="calibrate_pr2.py" output="screen" 
