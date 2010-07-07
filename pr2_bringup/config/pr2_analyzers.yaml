@@ -82,14 +82,20 @@ analyzers:
   computers:
     type: GenericAnalyzer
     path: Computers
-    expected: 'Wifi Status (ddwrt)'
-    contains: [
-      'HD Temp',
-      'CPU Usage',
-      'CPU Temperature',
-      'HD Usage',
-      'NTP',
-      'NFS']
+    expected: [
+      'Wifi Status (ddwrt)',
+      'c1 CPU Temperature',
+      'c1 CPU Usage',
+      'c1 HD Temperature',
+      'c1 HD Usage',
+      'c2 CPU Temperature',
+      'c2 CPU Usage',
+      'c2 HD Temperature',
+      'NTP offset from c1 to 10.68.255.1',
+      'NTP offset from c2 to c1',
+      'NTP self-offset for c1',
+      'NTP self-offset for c2']
+
   motors:
     type: GenericAnalyzer
     path: Motors
