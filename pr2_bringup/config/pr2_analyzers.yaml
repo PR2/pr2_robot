@@ -1,86 +1,86 @@
 analyzers:
   devices:
-    type: AnalyzerGroup
+    type: diagnostic_aggregator/AnalyzerGroup
     path: Devices
     analyzers:
       joystick:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Joystick
         expected: 'joy: Joystick Driver Status'
         num_items: 1
         remove_prefix: 'joy'
       sound:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Sound
         num_items: 1
         contains: 'sound_play'
       imu:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: IMU
         find_and_remove_prefix: 'imu_node'
         num_items: 3
   lasers:
-    type: AnalyzerGroup
+    type: diagnostic_aggregator/AnalyzerGroup
     path: Lasers
     analyzers:
       base_hk:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Base Hokuyo
         find_and_remove_prefix: base_hokuyo_node
         num_items: 2
       tilt_hk:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Tilt Hokuyo
         find_and_remove_prefix: tilt_hokuyo_node
         num_items: 2
 
   cameras:
-    type: AnalyzerGroup
+    type: diagnostic_aggregator/AnalyzerGroup
     path: Cameras
     analyzers:
       camera_synchronizer:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Camera Synchronizer
         find_and_remove_prefix: camera_synchronizer_node
         num_items: 1
       narrow_left:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Narrow (Left)
         find_and_remove_prefix: narrow_stereo_left
         num_items: 2
       narrow_right:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Narrow (Right)
         find_and_remove_prefix: narrow_stereo_right
         num_items: 2
       wide_left:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Wide (Left)
         find_and_remove_prefix: wide_stereo_left
         num_items: 2
       wide_right:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Wide (Right)
         find_and_remove_prefix: wide_stereo_right
         num_items: 2
       prosilica:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Prosilica
         find_and_remove_prefix: prosilica_driver
         num_items: 4
       forearm_r:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Forearm (Right)
         find_and_remove_prefix: r_forearm_cam
         num_items: 2
       forearm_l:
-        type: GenericAnalyzer
+        type: diagnostic_aggregator/GenericAnalyzer
         path: Forearm (Left)
         find_and_remove_prefix: l_forearm_cam
         num_items: 2
         
   computers:
-    type: GenericAnalyzer
+    type: diagnostic_aggregator/GenericAnalyzer
     path: Computers
     expected: [
       'Wifi Status (ddwrt)',
@@ -97,7 +97,7 @@ analyzers:
       'NTP self-offset for c2']
 
   motors:
-    type: GenericAnalyzer
+    type: diagnostic_aggregator/GenericAnalyzer
     path: Motors
     startswith: [
       'EtherCAT Device']
@@ -137,7 +137,7 @@ analyzers:
       'EtherCAT Device (l_shoulder_lift_motor)',
       'EtherCAT Device (l_shoulder_pan_motor)']
   joints:
-    type: GenericAnalyzer
+    type: diagnostic_aggregator/GenericAnalyzer
     path: Joints
     startswith: [
       'Joint']
@@ -175,7 +175,7 @@ analyzers:
       'Joint (l_shoulder_lift_joint)',
       'Joint (l_shoulder_pan_joint)']
   power:
-    type: GenericAnalyzer
+    type: diagnostic_aggregator/GenericAnalyzer
     path: 'Power System'
     timeout: 10
     num_items: 21
@@ -207,7 +207,7 @@ analyzers:
       'Smart Battery']
 
   controllers:
-    type: GenericAnalyzer
+    type: diagnostic_aggregator/GenericAnalyzer
     path: 'Realtime Controllers'
     expected: [ 
       'Realtime Control Loop',

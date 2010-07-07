@@ -1,0 +1,5 @@
+<launch>
+  <rosparam command="load" file="$(find pr2_bringup)/config/pr2_analyzers.yaml" ns="analyzer_load_test" />
+
+  <test pkg="diagnostic_aggregator" type="analyzer_loader" test-name="analyzer_load_test" />
+</launch>
