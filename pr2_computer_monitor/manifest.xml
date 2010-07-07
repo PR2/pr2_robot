@@ -1,6 +1,6 @@
 <package>
   <description brief='Monitors computers on PR2 for temperature and usage'>
-Monitors the computer's processor and hard drives of the PR2 and publishes data to diagnostics. These tools are PR2 specific, but it can be configured with optional parameters to monitor almost any computer.
+Monitors the computer's processor and hard drives of the PR2 and publishes data to diagnostics. 
   </description>
   <author>Kevin Watts (watts@willowgarage.com)</author>
   <license>BSD</license>
