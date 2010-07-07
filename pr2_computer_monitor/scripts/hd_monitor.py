@@ -135,6 +135,8 @@ class hd_monitor():
         
         self._hostname = hostname
         self._no_temp_warn = rospy.get_param('~no_hd_temp_warn', False)
+        if self._no_temp_warn:
+            rospy.logwarn('Not warning for HD temperatures is deprecated. This will be removed in D-turtle')
         self._home_dir = home_dir
 
         self._diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray)

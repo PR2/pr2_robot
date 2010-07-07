@@ -491,10 +491,15 @@ class CPUMonitor():
 
         self._mutex = threading.Lock()
 
-        self._check_core_temps = rospy.get_param('~check_core_temps', True)
         self._check_ipmi = rospy.get_param('~check_ipmi_tool', True)
         self._enforce_speed = rospy.get_param('~enforce_clock_speed', True)
+
+        self._check_core_temps = rospy.get_param('~check_core_temps', False)
+        if self._check_core_temps:
+            rospy.logwarn('Checking CPU core temperatures is deprecated. This will be removed in D-turtle')
         self._check_nfs = rospy.get_param('~check_nfs', False)
+        if self._check_nfs:
+            rospy.logwarn('NFS checking is deprecated for CPU monitor. This will be removed in D-turtle')
 
         self._temps_timer = None
         self._usage_timer = None
@@ -533,9 +538,6 @@ class CPUMonitor():
         self._last_nfs_time = 0
         self._last_publish_time = 0
 
-
-        ##@todo Need wireless stuff, at some point, put NFS in usage status
-        
         # Start checking everything
         self.check_temps()
         if self._check_nfs:
@@ -630,9 +632,8 @@ class CPUMonitor():
     ## Call every 10sec at minimum
     def check_temps(self):
         if rospy.is_shutdown():
-            self._mutex.acquire()
-            self.cancel_timers()
-            self._mutex.release()
+            with self._mutex:
+                self.cancel_timers()
             return
 
         diag_vals = [ KeyValue(key = 'Update Status', value = 'OK' ),
@@ -680,7 +681,7 @@ class CPUMonitor():
         if rospy.is_shutdown():
             with self._mutex:
                 self.cancel_timers()
-                return 
+            return 
 
         diag_level = 0
         diag_vals = [ KeyValue(key = 'Update Status', value = 'OK' ),
@@ -750,7 +751,7 @@ if __name__ == '__main__':
     try:
         rospy.init_node('cpu_monitor_%s' % hostname)
     except rospy.exceptions.ROSInitException:
-        print 'CPU monitor is unable to initialize node. Master may not be running.'
+        print >> sys.stderr, 'CPU monitor is unable to initialize node. Master may not be running.'
         sys.exit(0)
 
     cpu_node = CPUMonitor(hostname, options.diag_hostname)
