@@ -1,11 +1,11 @@
 <launch>
   <group ns="projector_controller">
-    <param name="type" type="string" value="ProjectorController" />
+    <param name="type" type="string" value="ethercat_trigger_controllers/ProjectorController" />
     <param name="actuator" type="string" value="led_projector" />
     <param name="current" type="double" value="27" />
   </group>
   <group ns="projector_trigger">
-    <param name="type" type="string" value="MultiTriggerController" />
+    <param name="type" type="string" value="ethercat_trigger_controllers/MultiTriggerController" />
     <param name="digital_output" type="string" value="led_projector_digital_out_M" />
     <param name="period" type="double" value="1" />
     <param name="times" type="string" value="0" />
@@ -13,7 +13,7 @@
     <param name="values" type="string" value="14" />
   </group>
   <group ns="head_camera_trigger">
-    <param name="type" type="string" value="MultiTriggerController" />
+    <param name="type" type="string" value="ethercat_trigger_controllers/MultiTriggerController" />
     <param name="digital_output" type="string" value="led_projector" />
     <param name="period" type="double" value="0.08" />
     <param name="times" type="string" value="0" />
@@ -21,7 +21,7 @@
     <param name="values" type="string" value="0" />
   </group>
   <group ns="prosilica_inhibit_projector_controller">
-    <param name="type" type="string" value="MultiTriggerController" />
+    <param name="type" type="string" value="ethercat_trigger_controllers/MultiTriggerController" />
     <param name="digital_output" type="string" value="led_projector_digital_out_L0" />
     <param name="period" type="double" value="1" />
     <param name="times" type="string" value="0" />
