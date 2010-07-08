@@ -1,5 +1,5 @@
 head_traj_controller:
-  type: JointSplineTrajectoryController
+  type: robot_mechanism_controllers/JointSplineTrajectoryController
   joints: ['head_pan_joint', 'head_tilt_joint']
   gains:
     head_pan_joint:

@@ -84,14 +84,14 @@ base_controller:
 
   caster_velocity_filter:
    name: caster_velocity_filter
-   type: MultiChannelTransferFunctionFilterDouble
+   type: filters/MultiChannelTransferFunctionFilterDouble
    params:
     a: [1.0, -0.5]
     b: [0.5]
 
   wheel_velocity_filter:
    name: wheel_velocity_filter
-   type: MultiChannelTransferFunctionFilterDouble
+   type: filters/MultiChannelTransferFunctionFilterDouble
    params:
     a: [1.0, -0.5]
     b: [0.5]
