@@ -356,8 +356,9 @@ def check_memory():
     
     return level, values
 
+
+
 ##\brief Use mpstat to find CPU usage
-##
 ##
 usage_old = 0
 has_warned_mpstat = False
@@ -384,6 +385,13 @@ def check_mpstat():
             vals.append(KeyValue(key = '\"mpstat\" Call Error', value = str(retcode)))
             return mp_level, vals
 
+        # Check which column '%idle' is, #4539
+        # mpstat output changed between 8.06 and 8.1
+        rows = stdout.split('\n')
+        col_names = rows[2].split()
+        idle_col = -1 if (len(col_names) > 2 and col_names[-1] == '%idle') else -2
+        rospy.loginfo('idle col: %d' % idle_col)
+
         num_cores = 0
         cores_loaded = 0
         for index, row in enumerate(stdout.split('\n')):
@@ -391,17 +399,15 @@ def check_mpstat():
                 continue
             
             lst = row.split()
-            if len(lst) < 10:
+            if len(lst) < 8:
                 continue
 
             ## Ignore 'Average: ...' data
             if lst[0].startswith('Average'):
                 continue
 
-            cpu_name = lst[2]
-            if cpu_name.strip() == 'all':
-                cpu_name == 'ALL'
-            idle = lst[-2]
+            cpu_name = '%d' % (num_cores)
+            idle = lst[idle_col]
             user = lst[3]
             nice = lst[4]
             system = lst[5]
@@ -413,18 +419,19 @@ def check_mpstat():
                 usage = usage_old
             usage_old = usage
 
-            num_cores += 1
             if usage > 90.0:
                 cores_loaded += 1
                 core_level = DiagnosticStatus.WARN
-            if usage > 100.0:
+            if usage > 110.0:
                 core_level = DiagnosticStatus.ERROR
 
             vals.append(KeyValue(key = 'CPU %s Status' % cpu_name, value = load_dict[core_level]))
-            vals.append(KeyValue(key = 'CPU %s User' % cpu_name.strip(), value = user))
+            vals.append(KeyValue(key = 'CPU %s User' % cpu_name, value = user))
             vals.append(KeyValue(key = 'CPU %s Nice' % cpu_name, value = nice))
             vals.append(KeyValue(key = 'CPU %s System' % cpu_name, value = system))
             vals.append(KeyValue(key = 'CPU %s Idle' % cpu_name, value = idle))
+
+            num_cores += 1
         
         # Warn for high load only if we have <= 2 cores that aren't loaded
         if num_cores - cores_loaded <= 2 and num_cores > 2:
