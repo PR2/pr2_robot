@@ -390,7 +390,6 @@ def check_mpstat():
         rows = stdout.split('\n')
         col_names = rows[2].split()
         idle_col = -1 if (len(col_names) > 2 and col_names[-1] == '%idle') else -2
-        rospy.loginfo('idle col: %d' % idle_col)
 
         num_cores = 0
         cores_loaded = 0
@@ -398,6 +397,10 @@ def check_mpstat():
             if index < 3:
                 continue
             
+            # Skip row containing 'all' data
+            if row.find('all') > -1:
+                continue
+
             lst = row.split()
             if len(lst) < 8:
                 continue
