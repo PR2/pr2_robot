@@ -72,6 +72,7 @@ def get_service_name(joint_name):
 global last_joint_states
 last_joint_states = None
 def joint_states_cb(msg):
+    global last_joint_states
     last_joint_states = msg
 rospy.Subscriber('joint_states', JointState, joint_states_cb)
     
@@ -250,7 +251,6 @@ class CalibrateSequence:
 
 
 
-
             
 def main():
     try:
@@ -308,11 +308,13 @@ def main():
         # Auto arm selection, determined based on which joints exist.
         if arms == 'auto':
             started_waiting = rospy.get_rostime()
-            while rospy.get_rostime() <= started_waiting + rospy.Duration(5.0):
+            global last_joint_states
+            while rospy.get_rostime() <= started_waiting + rospy.Duration(50.0):
                 if last_joint_states:
                     break
             js = last_joint_states
             if not js:
+                rospy.logwarn('Could not do auto arm selection because no joint state was received')
                 arms = 'both'
             else:
                 if 'r_shoulder_pan_joint' in js.name and 'l_shoulder_pan_joint' in js.name:
@@ -323,7 +325,7 @@ def main():
                     arms = 'left'
                 else:
                     arms = 'none'
-            rospy.logout("Arm selection was set to \"auto\".  Chose to calibrate using \"%s\"" % arms)
+            rospy.loginfo("Arm selection was set to \"auto\".  Chose to calibrate using \"%s\"" % arms)
 
         # define calibration sequence objects
         torso = CalibrateSequence([['torso_lift']], status)
