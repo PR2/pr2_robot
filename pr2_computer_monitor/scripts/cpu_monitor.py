@@ -69,7 +69,7 @@ def check_ipmi():
                         
         if retcode != 0:
             diag_level = DiagnosticStatus.ERROR
-            diag_msg = [ 'ipmitool Error' ]
+            diag_msgs = [ 'ipmitool Error' ]
             diag_vals = [ KeyValue(key = 'IPMI Error', value = stderr) ]
             return diag_vals, diag_msgs, diag_level
 
@@ -83,10 +83,13 @@ def check_ipmi():
             return diag_vals, diag_msgs, diag_level
 
         for ln in lines:
-            if len(ln) < 2:
+            if len(ln) < 3:
                 continue
 
             words = ln.split('|')
+            if len(words) < 3:
+                continue 
+
             name = words[0].strip()
             ipmi_val = words[1].strip()
             stat_byte = words[2].strip()
