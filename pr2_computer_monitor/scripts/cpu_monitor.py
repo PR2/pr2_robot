@@ -557,6 +557,13 @@ class CPUMonitor():
             self.check_nfs_stat()
         self.check_usage()
 
+    # Restart temperature checking 
+    def _restart_temp_check(self):
+        if self._temps_timer:
+            self._temps_timer.cancel()
+
+        self.check_temps()
+
     ## Must have the lock to cancel everything
     def cancel_timers(self):
         if self._temps_timer:
@@ -748,6 +755,10 @@ class CPUMonitor():
             if rospy.get_time() - self._last_publish_time > 0.5:
                 self._diag_pub.publish(msg)
                 self._last_publish_time = rospy.get_time()
+
+            # Restart temperature checking if it goes stale, #4171
+            if rospy.get_time() - self._last_temp_time > 60:
+                self._restart_temp_check()
 
 
 if __name__ == '__main__':
