@@ -38,7 +38,7 @@
   <depend package="joy"/>
   <depend package="std_srvs"/>
   <depend package="pr2_run_stop_auto_restart"/>
-  <depend package="rosrecord"/>
+  <depend package="rosbag"/>
   <depend package="pr2_power_board"/>
   <depend package="ocean_battery_driver"/>
   <depend package="power_monitor"/>

@@ -86,11 +86,11 @@
   <node pkg="sound_play" type="soundplay_node.py" machine="c1" name="sound_play" /> 
 
   <!-- Runtime Diagnostics Logging -->
-  <node name="runtime_logger" machine="c1"  pkg="rosrecord" type="rosrecord"
+  <node name="runtime_logger" machine="c1"  pkg="rosbag" type="record"
       args="-f /hwlog/pr2_diagnostics /diagnostics -S 2000" />
 
   <!-- Motor Trace Logging -->
-  <node name="motor_trace_logger" machine="c1"  pkg="rosrecord" type="rosrecord"
+  <node name="motor_trace_logger" machine="c1"  pkg="rosbag" type="record"
       args="-f /hwlog/pr2_motor_trace /motor_trace/bl_caster_l_wheel_motor /motor_trace/bl_caster_r_wheel_motor /motor_trace/bl_caster_rotation_motor /motor_trace/br_caster_l_wheel_motor /motor_trace/br_caster_r_wheel_motor /motor_trace/br_caster_rotation_motor /motor_trace/fl_caster_l_wheel_motor /motor_trace/fl_caster_r_wheel_motor /motor_trace/fl_caster_rotation_motor /motor_trace/fr_caster_l_wheel_motor /motor_trace/fr_caster_r_wheel_motor /motor_trace/fr_caster_rotation_motor /motor_trace/head_pan_motor /motor_trace/head_tilt_motor /motor_trace/l_elbow_flex_motor /motor_trace/l_forearm_roll_motor /motor_trace/l_shoulder_lift_motor /motor_trace/l_shoulder_pan_motor /motor_trace/l_upper_arm_roll_motor /motor_trace/l_wrist_l_motor /motor_trace/l_wrist_r_motor /motor_trace/laser_tilt_mount_motor /motor_trace/r_elbow_flex_motor /motor_trace/r_forearm_roll_motor /motor_trace/r_shoulder_lift_motor /motor_trace/r_shoulder_pan_motor /motor_trace/r_upper_arm_roll_motor /motor_trace/r_wrist_l_motor /motor_trace/r_wrist_r_motor /motor_trace/torso_lift_motor" />
 
   <!-- NTP monitoring script reports clock sync on diagnostics -->
