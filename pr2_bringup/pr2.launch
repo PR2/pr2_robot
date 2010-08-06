@@ -87,7 +87,7 @@
 
   <!-- Runtime Diagnostics Logging -->
   <node name="runtime_logger" machine="c1"  pkg="rosbag" type="record"
-      args="-O /hwlog/pr2_diagnostics /diagnostics" />
+      args="-O /hwlog/pr2_diagnostics /diagnostics --split=2000" />
 
   <!-- Motor Trace Logging -->
   <node name="motor_trace_logger" machine="c1"  pkg="rosbag" type="record"
