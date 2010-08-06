@@ -200,7 +200,7 @@ class CalibrateParallel:
                 diagnostics(2, 'Calibration on hold', 'Calibration is on hold because motors are halted. Enable the run-stop')
                 start_time = rospy.Time.now()
                 rospy.sleep(1.0)
-            elif rospy.Time.now() > start_time + rospy.Duration(15.0):
+            elif rospy.Time.now() > start_time + rospy.Duration(30.0):  # time for spine to go up is 29 seconds
                 diagnostics(2, 'Calibration stuck', 'Joint %s is taking a long time to calibrate. It might be stuck and need some human help'%self.joints)
                 rospy.sleep(1.0)                    
             rospy.sleep(0.1)
