@@ -2,7 +2,7 @@
   <!-- Spwns the controllers -->
   <node name="r_forearm_cam_trigger_spawner" pkg="pr2_controller_manager" type="spawner" args="r_forearm_cam_trigger" />
   <group ns="r_forearm_cam_trigger">
-    <param name="type" type="string" value="MultiTriggerController" />
+    <param name="type" type="string" value="ethercat_trigger_controllers/MultiTriggerController" />
     <param name="digital_output" type="string" value="r_wrist_l_motor" />
     <param name="period" type="double" value="0.08" />
     <param name="times" type="string" value="0" />
