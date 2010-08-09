@@ -95,6 +95,7 @@ static int g_quit = 0;
 static bool g_reset_motors = true;
 static bool g_halt_motors = false;
 static bool g_halt_requested = false;
+static volatile bool g_publish_trace_requested = false;
 static const int NSEC_PER_SEC = 1e+9;
 
 static struct
@@ -299,6 +300,11 @@ void *controlLoop(void *)
     {
       ec.update(false, g_halt_motors);
     }
+    if (g_publish_trace_requested)
+    {
+      g_publish_trace_requested = false;
+      ec.publishTrace(-1,"",0,0);
+    }
     g_halt_motors = false;
     double after_ec = now();
     cm.update();
@@ -398,6 +404,12 @@ bool resetMotorsService(std_srvs::Empty::Request &req, std_srvs::Empty::Response
 bool haltMotorsService(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
 {
   g_halt_requested = true;
+  return true;
+}
+
+bool publishTraceService(std_srvs::Empty::Request &req, std_srvs::Empty::Response &resp)
+{
+  g_publish_trace_requested = true;
   return true;
 }
 
@@ -569,6 +581,7 @@ int main(int argc, char *argv[])
 
   ros::ServiceServer reset = node.advertiseService("reset_motors", resetMotorsService);
   ros::ServiceServer halt = node.advertiseService("halt_motors", haltMotorsService);
+  ros::ServiceServer publishTrace = node.advertiseService("publish_trace", publishTraceService);
 
   //Start thread
   int rv;
