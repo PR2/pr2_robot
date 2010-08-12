@@ -559,6 +559,8 @@ class CPUMonitor():
 
     # Restart temperature checking 
     def _restart_temp_check(self):
+        rospy.logerr('Restarting temperature check thread in cpu_monitor. This should not happen')
+
         if self._temps_timer:
             self._temps_timer.cancel()
 
