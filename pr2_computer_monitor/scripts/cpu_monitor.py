@@ -274,7 +274,7 @@ def check_clock_speed(enforce_speed):
 
 # Add msgs output, too
 ##\brief Uses 'uptime' to see load average
-def check_uptime():
+def check_uptime(load1_threshold, load5_threshold):
     level = DiagnosticStatus.OK
     vals = []
     
@@ -297,12 +297,14 @@ def check_uptime():
         num_users = upvals[-7]
 
         # Give warning if we go over load limit 
-        if float(load1) > 5 or float(load5) > 3:
+        if float(load1) > load1_threshold or float(load5) > load5_threshold:
             level = DiagnosticStatus.WARN
 
         vals.append(KeyValue(key = 'Load Average Status', value = load_dict[level]))
         vals.append(KeyValue(key = '1 min Load Average', value = load1))
+        vals.append(KeyValue(key = '1 min Load Average Threshold', value = str(load1_threshold)))
         vals.append(KeyValue(key = '5 min Load Average', value = load5))
+        vals.append(KeyValue(key = '5 min Load Average Threshold', value = str(load5_threshold)))
         vals.append(KeyValue(key = '15 min Load Average', value = load15))
         vals.append(KeyValue(key = 'Number of Users', value = num_users))
 
@@ -514,6 +516,9 @@ class CPUMonitor():
         if self._check_nfs:
             rospy.logwarn('NFS checking is deprecated for CPU monitor. This will be removed in D-turtle')
 
+        self._load1_threshold = rospy.get_param('~load1_threshold', 5.0)
+        self._load5_threshold = rospy.get_param('~load5_threshold', 3.0)
+
         self._temps_timer = None
         self._usage_timer = None
         self._nfs_timer = None
@@ -715,7 +720,7 @@ class CPUMonitor():
         diag_level = max(diag_level, mp_level)
             
         # Check uptime
-        uptime_level, up_vals = check_uptime()
+        uptime_level, up_vals = check_uptime(self._load1_threshold, self._load5_threshold)
         diag_vals.extend(up_vals)
         diag_level = max(diag_level, uptime_level)
         
