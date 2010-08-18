@@ -397,9 +397,6 @@ class Camera:
       self.end_offset = -1
       projector_limits_exposure = False
     else:
-      self.imager_period = self.proj.repeat_period / 2 - ETHERCAT_INTERVAL
-      self.max_exposure = 0.95 * self.imager_period
-
       if self.proj.mode == Config.CameraSynchronizer_ProjectorOff:
           trig_mode = Config.CameraSynchronizer_IgnoreProjector
 
@@ -415,6 +412,8 @@ class Camera:
         n = max(n, 0)
         self.period = (n + 0.5) * self.proj.repeat_period
         #print "Case 1", n
+      elif trig_mode == Config.CameraSynchronizer_IgnoreProjector:
+        self.period = roundToEthercat(self.period)
       else:
         n = round(2 * self.period / self.proj.repeat_period - 1)
         n = max(n, 0)
@@ -433,6 +432,12 @@ class Camera:
         self.register_set = WGEConfig.WGE100Camera_AlternateRegisterSet
       else:
         self.end_offset = self.proj.noproj_end_offset
+
+      # Pick the imager period
+      if trig_mode == Config.CameraSynchronizer_IgnoreProjector:
+          self.imager_period = self.period - ETHERCAT_INTERVAL
+      else:
+          self.imager_period = self.proj.repeat_period / 2 - ETHERCAT_INTERVAL
 
     #print "Camera period", self.name, self.period, self.imager_period, self.proj.repeat_period
     if projector_limits_exposure:
