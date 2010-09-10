@@ -313,7 +313,7 @@ def check_uptime(load1_threshold, load5_threshold):
         level = DiagnosticStatus.ERROR
         vals.append(KeyValue(key = 'Load Average Status', value = traceback.format_exc()))
         
-    return level, vals
+    return level, load_dict[level], vals
 
 # Add msgs output
 ##\brief Uses 'free -m' to check free memory
@@ -359,7 +359,7 @@ def check_memory():
         values.append(KeyValue(key = msg, value = str(e)))
         level = DiagnosticStatus.ERROR
     
-    return level, values
+    return level, mem_dict[level], values
 
 
 
@@ -449,7 +449,7 @@ def check_mpstat():
         mp_level = DiagnosticStatus.ERROR
         vals.append(KeyValue(key = 'mpstat Exception', value = str(e)))
 
-    return mp_level, vals
+    return mp_level, load_dict[mp_level], vals
 
 ## Returns names for core temperature files
 ## Returns list of names, each name can be read like file
@@ -713,22 +713,33 @@ class CPUMonitor():
         diag_level = 0
         diag_vals = [ KeyValue(key = 'Update Status', value = 'OK' ),
                       KeyValue(key = 'Time Since Last Update', value = 0 )]
-        
+        diag_msgs = []
+
         # Check mpstat
-        mp_level, mp_vals = check_mpstat()
+        mp_level, mp_msg, mp_vals = check_mpstat()
         diag_vals.extend(mp_vals)
+        if mp_level > 0:
+            diag_msgs.append(mp_msg)
         diag_level = max(diag_level, mp_level)
             
         # Check uptime
-        uptime_level, up_vals = check_uptime(self._load1_threshold, self._load5_threshold)
+        uptime_level, up_msg, up_vals = check_uptime(self._load1_threshold, self._load5_threshold)
         diag_vals.extend(up_vals)
+        if uptime_level > 0:
+            diag_msgs.append(up_msg)
         diag_level = max(diag_level, uptime_level)
         
         # Check memory
-        mem_level, mem_vals = check_memory()
+        mem_level, mem_msg, mem_vals = check_memory()
         diag_vals.extend(mem_vals)
+        if mem_level > 0:
+            diag_msgs.append(mem_msg)
         diag_level = max(diag_level, mem_level)
-            
+
+        if diag_msgs and diag_level > 0:
+            usage_msg = ', '.join(set(diag_msgs))
+        else:
+            usage_msg = stat_dict[diag_level]
 
         # Update status
         with self._mutex:
@@ -736,7 +747,7 @@ class CPUMonitor():
             self._usage_stat.level = diag_level
             self._usage_stat.values = diag_vals
             
-            self._usage_stat.message = stat_dict[diag_level]
+            self._usage_stat.message = usage_msg
             
             if not rospy.is_shutdown():
                 self._usage_timer = threading.Timer(5.0, self.check_usage)
