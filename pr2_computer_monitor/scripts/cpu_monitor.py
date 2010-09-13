@@ -570,6 +570,7 @@ class CPUMonitor():
             self._temps_timer.cancel()
 
         self.check_temps()
+        rospy.loginfo('Temp thread restarted successfully')
 
     ## Must have the lock to cancel everything
     def cancel_timers(self):
@@ -699,8 +700,8 @@ class CPUMonitor():
             self._temp_stat.values = diag_vals
             
             if not rospy.is_shutdown():
-                self._temp_timer = threading.Timer(5.0, self.check_temps)
-                self._temp_timer.start()
+                self._temps_timer = threading.Timer(5.0, self.check_temps)
+                self._temps_timer.start()
             else:
                 self.cancel_timers()
 
@@ -806,6 +807,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         pass
     except Exception, e:
+        traceback.print_exc()
         rospy.logerr(traceback.format_exc())
 
     cpu_node.cancel_timers()
