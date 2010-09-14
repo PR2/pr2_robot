@@ -565,12 +565,15 @@ class CPUMonitor():
     # Restart temperature checking 
     def _restart_temp_check(self):
         rospy.logerr('Restarting temperature check thread in cpu_monitor. This should not happen')
-
-        if self._temps_timer:
-            self._temps_timer.cancel()
-
-        self.check_temps()
-        rospy.loginfo('Temp thread restarted successfully')
+        try:
+            with self._mutex:
+                if self._temps_timer:
+                    self._temps_timer.cancel()
+                
+            self.check_temps()
+        except Exception, e:
+            rospy.logerr('Unable to restart temp thread. Error: %s' % traceback.format_exc())
+            
 
     ## Must have the lock to cancel everything
     def cancel_timers(self):
@@ -775,9 +778,11 @@ class CPUMonitor():
                 self._diag_pub.publish(msg)
                 self._last_publish_time = rospy.get_time()
 
-            # Restart temperature checking if it goes stale, #4171
-            if rospy.get_time() - self._last_temp_time > 60:
-                self._restart_temp_check()
+        
+        # Restart temperature checking if it goes stale, #4171
+        # Need to run this without mutex
+        if rospy.get_time() - self._last_temp_time > 60: 
+            self._restart_temp_check()
 
 
 if __name__ == '__main__':
