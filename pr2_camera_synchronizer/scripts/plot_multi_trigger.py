@@ -61,14 +61,13 @@ class Camera:
                 pretrigpts.append(self.trigger.pts[i][0])
         trigpts = []
         for i in range(0, len(pretrigpts)):
-            d1 = (pretrigpts[i] - pretrigpts[i-1]) % self.period
-            d2 = (pretrigpts[i-len(pretrigpts)+1] - pretrigpts[i]) % self.period
-            if d1 > imager_period or d2 > imager_period:
+            d1 = (pretrigpts[i] - pretrigpts[i-1] + self.period) % self.period
+            #d2 = (pretrigpts[i-len(pretrigpts)+1] - pretrigpts[i]) % self.period
+            if d1 > imager_period:# or d2 > imager_period:
                 reg_set = self.config['register_set']
                 if reg_set == 2:
                     reg_set = 0 if d1 < imager_period else 1
                 trigpts.append((pretrigpts[i], reg_set))
-        print sys.stderr, trigpts, pretrigpts
 
         # Figure out exposure times for each register set.
         cfg_suffix = [ "", "_alternate" ]
@@ -81,8 +80,8 @@ class Camera:
             cur_min = 0
             cur_max = max_exp
             if not auto_exp:
-                cur_min = set_exp
-                cur_max = set_exp
+                cur_min = min(max_exp, set_exp)
+                cur_max = cur_min
             exposure_min.append(cur_min)
             exposure_max.append(cur_max)
 
@@ -95,6 +94,7 @@ class Camera:
                 self.pts.append(((exp_start_early - 1e-4) % self.period, 0.5))
             self.pts.append((exp_start_late % self.period, 1))
             self.pts.append(((exp_end + 1e-4) % self.period, 0))
+            print >> sys.stderr, t, exp_start_late % self.period, (exp_end + 1e-4) % self.period
         self.pts.sort()
         return True
         
@@ -124,10 +124,10 @@ class TriggerPlotter:
             if not self.triggers[i].compute():
                 print >> sys.stderr, 'No data for %s'%self.triggers[i].name
                 return
-        period = self.triggers[0].period
+        period = max(t.period for t in self.triggers)
         for i in range(0, n):
-            if self.triggers[i].period != period:
-                print >> sys.stderr, 'Period for %s is %f, expected %f'%(self.triggers[i].name,
+            if (period / self.triggers[i].period) % 1:
+                print >> sys.stderr, 'Period for %s is %f, expected divisor of %f'%(self.triggers[i].name,
                         self.triggers[i].period, period)
                 return
         
@@ -138,13 +138,16 @@ class TriggerPlotter:
         print
         for i in range(0, n):
             t = self.triggers[i]
+            reps = int(period / t.period)
             pts = t.pts
             def plot_pt(x, y):
                 print x, (n - i - 1) * 1.1 + y%2
             plot_pt(0, pts[-1][1])
-            for j in range(0, len(pts)):
-                plot_pt(pts[j][0], pts[j-1][1])
-                plot_pt(pts[j][0], pts[j][1])
+            for k in range(reps):
+                xoffs = t.period * k
+                for j in range(0, len(pts)):
+                    plot_pt(pts[j][0] + xoffs, pts[j-1][1])
+                    plot_pt(pts[j][0] + xoffs, pts[j][1])
             plot_pt(period, pts[-1][1])
             print "e"
             print

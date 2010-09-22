@@ -213,12 +213,13 @@ class SingleCameraTriggerController(MultiTriggerController):
       self.zero_offset = -self.camera.imager_period - 1 * ETHERCAT_INTERVAL
       first_pulse_start = self.camera.end_offset
       second_pulse_start = self.camera.period + first_pulse_start
-      extra_pulse_start = (2 * first_pulse_start + 2 * second_pulse_start) / 4   # May cause problems at really low frame rates.
+      first_frame_end = first_pulse_start + self.camera.imager_period
+      extra_pulse_start = (first_pulse_start + first_frame_end) / 2   # May cause problems at really low frame rates.
       trigger_name = "trigger"
       self.add_sample(first_pulse_start, 1, trigger_name)
-      self.add_sample((3 * first_pulse_start + second_pulse_start) / 4, 0, "-")
+      self.add_sample((first_pulse_start + extra_pulse_start) / 2, 0, "-")
       self.add_sample(extra_pulse_start, 1, "-")
-      self.add_sample((extra_pulse_start + second_pulse_start) / 3, 0, "-")
+      self.add_sample((extra_pulse_start + first_pulse_end) / 2, 0, "-")
       self.add_sample(second_pulse_start, 1, trigger_name)
       self.add_sample((second_pulse_start + self.period) / 2, 0, "-")
       self.camera.trig_rising = True
@@ -274,10 +275,11 @@ class DualCameraTriggerController(SingleCameraTriggerController):
 
     first_rise = self.cameras[0].end_offset
     first_fall = self.cameras[1].end_offset
+    first_rise_end = first_rise + self.cameras[0].imager_period
     second_rise = self.cameras[0].end_offset + self.cameras[0].period
     second_fall = self.cameras[1].end_offset + self.cameras[1].period
-    extra_rise = (2 * first_fall + second_rise) / 3                            # May cause problems at really low frame rates.
-    extra_fall = (first_fall + 2 * second_rise) / 3
+    extra_rise = (2 * first_fall + first_rise_end) / 3                            # May cause problems at really low frame rates.
+    extra_fall = (first_fall + 2 * first_rise_end) / 3
                                               
     trigger_name = [ "trigger_"+camera.name for camera in self.cameras ]
     self.add_sample(first_rise,  1, trigger_name[0])
