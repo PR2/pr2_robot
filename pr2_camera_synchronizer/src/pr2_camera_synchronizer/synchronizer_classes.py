@@ -219,7 +219,7 @@ class SingleCameraTriggerController(MultiTriggerController):
       self.add_sample(first_pulse_start, 1, trigger_name)
       self.add_sample((first_pulse_start + extra_pulse_start) / 2, 0, "-")
       self.add_sample(extra_pulse_start, 1, "-")
-      self.add_sample((extra_pulse_start + first_pulse_end) / 2, 0, "-")
+      self.add_sample((extra_pulse_start + first_frame_end) / 2, 0, "-")
       self.add_sample(second_pulse_start, 1, trigger_name)
       self.add_sample((second_pulse_start + self.period) / 2, 0, "-")
       self.camera.trig_rising = True
