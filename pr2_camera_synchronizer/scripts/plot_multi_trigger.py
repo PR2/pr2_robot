@@ -94,7 +94,6 @@ class Camera:
                 self.pts.append(((exp_start_early - 1e-4) % self.period, 0.5))
             self.pts.append((exp_start_late % self.period, 1))
             self.pts.append(((exp_end + 1e-4) % self.period, 0))
-            print >> sys.stderr, t, exp_start_late % self.period, (exp_end + 1e-4) % self.period
         self.pts.sort()
         return True
         
