@@ -210,11 +210,11 @@ class SingleCameraTriggerController(MultiTriggerController):
       self.add_sample(0, 0, "-")
     else:
       self.period = 2 * self.camera.period
-      self.zero_offset = -self.camera.imager_period - 1 * ETHERCAT_INTERVAL
+      self.zero_offset = -self.camera.imager_period 
       first_pulse_start = self.camera.end_offset
       second_pulse_start = self.camera.period + first_pulse_start
       first_frame_end = first_pulse_start + self.camera.imager_period
-      extra_pulse_start = (first_pulse_start + first_frame_end) / 2   # May cause problems at really low frame rates.
+      extra_pulse_start = (first_pulse_start + first_frame_end) / 2  
       trigger_name = "trigger"
       self.add_sample(first_pulse_start, 1, trigger_name)
       self.add_sample((first_pulse_start + extra_pulse_start) / 2, 0, "-")
@@ -271,14 +271,14 @@ class DualCameraTriggerController(SingleCameraTriggerController):
 
     self.clear_waveform()
     self.period = 2 * self.cameras[1].period
-    self.zero_offset = -self.cameras[0].imager_period - 1 * ETHERCAT_INTERVAL
+    self.zero_offset = -self.cameras[0].imager_period 
 
     first_rise = self.cameras[0].end_offset
     first_fall = self.cameras[1].end_offset
     first_rise_end = first_rise + self.cameras[0].imager_period
     second_rise = self.cameras[0].end_offset + self.cameras[0].period
     second_fall = self.cameras[1].end_offset + self.cameras[1].period
-    extra_rise = (2 * first_fall + first_rise_end) / 3                            # May cause problems at really low frame rates.
+    extra_rise = (2 * first_fall + first_rise_end) / 3                            
     extra_fall = (first_fall + 2 * first_rise_end) / 3
                                               
     trigger_name = [ "trigger_"+camera.name for camera in self.cameras ]
@@ -337,7 +337,7 @@ class Projector:
         0,
         second_start,
         2 * base_period,
-        2 * base_period + second_start + self.pulse_length + ETHERCAT_INTERVAL
+        2 * base_period + second_start + self.pulse_length + 2 * ETHERCAT_INTERVAL
         ]
     self.pulse_ends = [ start + self.pulse_length for start in self.pulse_starts ]
 
@@ -345,8 +345,8 @@ class Projector:
     self.alt_end_offset = second_start + self.pulse_length + ETHERCAT_INTERVAL
     self.noproj_end_offset = second_start - ETHERCAT_INTERVAL
 
-    self.proj_exposure_duration = self.pulse_length + ETHERCAT_INTERVAL
-    self.noproj_max_exposure = second_start - self.pulse_length - ETHERCAT_INTERVAL
+    self.proj_exposure_duration = self.pulse_length + ETHERCAT_INTERVAL * 1.5
+    self.noproj_max_exposure = second_start - self.pulse_length - ETHERCAT_INTERVAL * 1.5
 
     config["projector_rate"] = 1 / base_period
     config["projector_pulse_length"] = self.pulse_length
