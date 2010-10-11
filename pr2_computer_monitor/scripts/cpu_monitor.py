@@ -507,9 +507,7 @@ class CPUMonitor():
         self._mutex = threading.Lock()
 
         self._check_ipmi = rospy.get_param('~check_ipmi_tool', True)
-        self._enforce_speed = rospy.get_param('~enforce_clock_speed', False)
-        if self._enforce_speed:
-            rospy.logwarn('Enforcing CPU clock speed is deprecated. This will be removed in D-turtle')
+        self._enforce_speed = rospy.get_param('~enforce_clock_speed', True)
 
         self._check_core_temps = rospy.get_param('~check_core_temps', False)
         if self._check_core_temps:
@@ -571,10 +569,8 @@ class CPUMonitor():
             with self._mutex:
                 if self._temps_timer:
                     self._temps_timer.cancel()
-                    self._temps_timer = None
-            rospy.logdebug('Canceled existing temperature thread in CPU monitor')
+                
             self.check_temps()
-            rospy.logdebug('Restarted temperature thread in CPU monitor')
         except Exception, e:
             rospy.logerr('Unable to restart temp thread. Error: %s' % traceback.format_exc())
             
