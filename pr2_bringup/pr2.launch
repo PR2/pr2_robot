@@ -74,13 +74,16 @@
 
   <!-- Prosilica camera -->
   <!-- Camera isn't robust to dropped links, so it should respawn -->
-  <node name="prosilica_driver" pkg="prosilica_camera" type="prosilica_node"
-        respawn="true" output="screen">
-    <param name="ip_address" type="str" value="10.68.0.20"/>
-    <param name="trigger_mode" type="str" value="polled"/>
-    <remap from="camera" to="prosilica" />
-    <rosparam command="load" file="$(find prosilica_camera)/cam_settings.yaml" />
-  </node>
+  <arg name="no-prosilica" default="false" />
+  <group unless="$(arg no-prosilica)" >
+    <node name="prosilica_driver" pkg="prosilica_camera"
+          type="prosilica_node" respawn="true" output="screen">
+      <param name="ip_address" type="str" value="10.68.0.20"/>
+      <param name="trigger_mode" type="str" value="polled"/>
+      <remap from="camera" to="prosilica" />
+      <rosparam command="load" file="$(find prosilica_camera)/cam_settings.yaml" />
+    </node>
+  </group
 
   <!-- Stereo Camera and synchronization -->
   <include file="$(find pr2_bringup)/config/dualstereo_camera.launch"/>
