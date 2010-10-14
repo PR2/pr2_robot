@@ -83,7 +83,7 @@
       <remap from="camera" to="prosilica" />
       <rosparam command="load" file="$(find prosilica_camera)/cam_settings.yaml" />
     </node>
-  </group
+  </group>
 
   <!-- Stereo Camera and synchronization -->
   <include file="$(find pr2_bringup)/config/dualstereo_camera.launch"/>
