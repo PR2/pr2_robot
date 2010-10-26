@@ -367,11 +367,12 @@ def check_memory():
 ##
 usage_old = 0
 has_warned_mpstat = False
-def check_mpstat():
+has_error_core_count = False
+def check_mpstat(core_count = -1):
     vals = []
     mp_level = DiagnosticStatus.OK
     
-    load_dict = { 0: 'OK', 1: 'High Load', 2: 'Very High Load' }
+    load_dict = { 0: 'OK', 1: 'High Load', 2: 'Error' }
 
     try:
         p = subprocess.Popen('mpstat -P ALL 1 1',
@@ -388,7 +389,7 @@ def check_mpstat():
 
             mp_level = DiagnosticStatus.ERROR
             vals.append(KeyValue(key = '\"mpstat\" Call Error', value = str(retcode)))
-            return mp_level, vals
+            return mp_level, 'Unable to Check CPU Usage', vals
 
         # Check which column '%idle' is, #4539
         # mpstat output changed between 8.06 and 8.1
@@ -444,6 +445,16 @@ def check_mpstat():
         # Warn for high load only if we have <= 2 cores that aren't loaded
         if num_cores - cores_loaded <= 2 and num_cores > 2:
             mp_level = DiagnosticStatus.WARN
+
+        # Check the number of cores if core_count > 0, #4850
+        if core_count > 0 and core_count != num_cores:
+            mp_level = DiagnosticStatus.ERROR
+            global has_error_core_count
+            if not has_error_core_count:
+                rospy.logerr('Error checking number of cores. Expected %d, got %d. Computer may have not booted properly.',
+                              core_count, num_cores)
+                has_error_core_count = True
+            return DiagnosticStatus.ERROR, 'Incorrect number of CPU cores', vals
             
     except Exception, e:
         mp_level = DiagnosticStatus.ERROR
@@ -518,6 +529,8 @@ class CPUMonitor():
 
         self._load1_threshold = rospy.get_param('~load1_threshold', 5.0)
         self._load5_threshold = rospy.get_param('~load5_threshold', 3.0)
+
+        self._num_cores = rospy.get_param('~num_cores', 8.0)
 
         self._temps_timer = None
         self._usage_timer = None
@@ -720,7 +733,7 @@ class CPUMonitor():
         diag_msgs = []
 
         # Check mpstat
-        mp_level, mp_msg, mp_vals = check_mpstat()
+        mp_level, mp_msg, mp_vals = check_mpstat(self._num_cores)
         diag_vals.extend(mp_vals)
         if mp_level > 0:
             diag_msgs.append(mp_msg)

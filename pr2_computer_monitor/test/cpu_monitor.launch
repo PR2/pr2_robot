@@ -3,6 +3,6 @@
         args="--diag-hostname=my_machine" >
     <param name="check_ipmi_tool" value="false" type="bool" />
     <param name="enforce_clock_speed" value="false" type="bool" />
-  <!--  <param name="check_nfs" value="true" type="bool" />   -->
+    <param name="num_cores" value="-1" type="int" />
   </node>
 </launch>
