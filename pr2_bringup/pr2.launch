@@ -71,6 +71,7 @@
     <param name="assume_calibrated" type="bool" value="true" />
     <param name="orientation_stdev" type="double" value="0.00017" />
   </node>
+  <node machine="c1" pkg="imu_monitor" type="imu_monitor.py" name="imu_monitor" />
 
   <!-- Prosilica camera -->
   <!-- Camera isn't robust to dropped links, so it should respawn -->
