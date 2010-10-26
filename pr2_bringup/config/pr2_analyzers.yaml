@@ -18,7 +18,7 @@ analyzers:
         type: diagnostic_aggregator/GenericAnalyzer
         path: IMU
         find_and_remove_prefix: 'imu_node'
-        num_items: 3
+        num_items: 4
   lasers:
     type: diagnostic_aggregator/AnalyzerGroup
     path: Lasers

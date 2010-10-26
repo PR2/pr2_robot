@@ -1,0 +1,14 @@
+<package>
+  <description brief="imu_monitor">
+
+     imu_monitor
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/imu_monitor</url>
+
+</package>
+
+
