@@ -59,7 +59,7 @@ class ImuMonitor:
             d = DiagnosticArray()
             d.header.stamp = rospy.Time.now()
             ds = DiagnosticStatus()
-            ds.name = "Imu Drift Monitor"
+            ds.name = "imu_node: Imu Drift Monitor"
             if self.drift < 0.5:
                 ds.level = DiagnosticStatus.OK
                 ds.message = 'OK'
