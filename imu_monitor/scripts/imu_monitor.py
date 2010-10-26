@@ -24,7 +24,7 @@ class ImuMonitor:
 
         # subscribe to topics
         self.imu_sub = rospy.Subscriber('torso_lift_imu/data', Imu, self.imu_cb)
-        self.imu_sub = rospy.Subscriber('base_odometry/odometer', Odometer, self.odom_cb)
+        self.odom_sub = rospy.Subscriber('base_odometry/odometer', Odometer, self.odom_cb)
 
         # diagnostics
         self.pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray)
@@ -35,7 +35,6 @@ class ImuMonitor:
             rot = PyKDL.Rotation.Quaternion(msg.orientation.x, msg.orientation.y,
                                             msg.orientation.z, msg.orientation.w)
             (r, p, self.last_angle) = rot.GetRPY()
-            #print self.last_angle*180/3.14
 
     def odom_cb(self, msg):
         with self.lock:
@@ -43,7 +42,6 @@ class ImuMonitor:
 
             # check if base moved
             if dist > self.dist + EPS:
-                print 'Reset imu monitor because base moved'
                 self.start_time = rospy.Time.now()
                 self.start_angle = self.last_angle
                 self.dist = dist
@@ -69,13 +67,21 @@ class ImuMonitor:
             else:
                 ds.level = DiagnosticStatus.ERROR
                 ds.message = 'Drifting'
+            drift = self.drift
             if self.drift < 0:
                 last_measured = 'No measurements yet, waiting for base to stop moving before measuring'
+                drift = 'N/A'
             else:
-                last_measured = str(self.last_measured.to_sec())
+                age = (rospy.Time.now() - self.last_measured).to_sec()
+                if age < 60:
+                    last_measured = '%f seconds ago'%age
+                elif age < 3600:
+                    last_measured = '%f minutes ago'%(age/60)
+                else:
+                    last_measured = '%f hours ago'%(age/3600)                    
             ds.values = [
                 KeyValue('Last measured', last_measured),
-                KeyValue('Drift (deg/sec)', str(self.drift)) ]
+                KeyValue('Drift (deg/sec)', str(drift)) ]
             d.status = [ds]
             self.pub_diag.publish(d)
 
