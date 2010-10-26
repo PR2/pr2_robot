@@ -9,6 +9,11 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/imu_monitor</url>
 
+  <depend package="sensor_msgs"/>
+  <depend package="pr2_mechanism_controllers"/>
+  <depend package="kdl"/>
+  <depend package="rospy"/>
+
 </package>
 
 
