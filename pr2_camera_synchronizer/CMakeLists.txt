@@ -22,6 +22,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 rosbuild_add_pyunit(test/test_classes.py)
+rosbuild_add_rostest(test/test_consistency.test)
 
 rosbuild_find_ros_package(dynamic_reconfigure)
 include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)

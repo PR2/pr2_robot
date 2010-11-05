@@ -69,7 +69,7 @@ def check_ipmi():
                         
         if retcode != 0:
             diag_level = DiagnosticStatus.ERROR
-            diag_msg = [ 'ipmitool Error' ]
+            diag_msgs = [ 'ipmitool Error' ]
             diag_vals = [ KeyValue(key = 'IPMI Error', value = stderr) ]
             return diag_vals, diag_msgs, diag_level
 
@@ -83,10 +83,13 @@ def check_ipmi():
             return diag_vals, diag_msgs, diag_level
 
         for ln in lines:
-            if len(ln) < 2:
+            if len(ln) < 3:
                 continue
 
             words = ln.split('|')
+            if len(words) < 3:
+                continue 
+
             name = words[0].strip()
             ipmi_val = words[1].strip()
             stat_byte = words[2].strip()
@@ -271,7 +274,7 @@ def check_clock_speed(enforce_speed):
 
 # Add msgs output, too
 ##\brief Uses 'uptime' to see load average
-def check_uptime():
+def check_uptime(load1_threshold, load5_threshold):
     level = DiagnosticStatus.OK
     vals = []
     
@@ -294,12 +297,14 @@ def check_uptime():
         num_users = upvals[-7]
 
         # Give warning if we go over load limit 
-        if float(load1) > 5 or float(load5) > 3:
+        if float(load1) > load1_threshold or float(load5) > load5_threshold:
             level = DiagnosticStatus.WARN
 
         vals.append(KeyValue(key = 'Load Average Status', value = load_dict[level]))
         vals.append(KeyValue(key = '1 min Load Average', value = load1))
+        vals.append(KeyValue(key = '1 min Load Average Threshold', value = str(load1_threshold)))
         vals.append(KeyValue(key = '5 min Load Average', value = load5))
+        vals.append(KeyValue(key = '5 min Load Average Threshold', value = str(load5_threshold)))
         vals.append(KeyValue(key = '15 min Load Average', value = load15))
         vals.append(KeyValue(key = 'Number of Users', value = num_users))
 
@@ -308,7 +313,7 @@ def check_uptime():
         level = DiagnosticStatus.ERROR
         vals.append(KeyValue(key = 'Load Average Status', value = traceback.format_exc()))
         
-    return level, vals
+    return level, load_dict[level], vals
 
 # Add msgs output
 ##\brief Uses 'free -m' to check free memory
@@ -354,7 +359,7 @@ def check_memory():
         values.append(KeyValue(key = msg, value = str(e)))
         level = DiagnosticStatus.ERROR
     
-    return level, values
+    return level, mem_dict[level], values
 
 
 
@@ -444,7 +449,7 @@ def check_mpstat():
         mp_level = DiagnosticStatus.ERROR
         vals.append(KeyValue(key = 'mpstat Exception', value = str(e)))
 
-    return mp_level, vals
+    return mp_level, load_dict[mp_level], vals
 
 ## Returns names for core temperature files
 ## Returns list of names, each name can be read like file
@@ -511,6 +516,9 @@ class CPUMonitor():
         if self._check_nfs:
             rospy.logwarn('NFS checking is deprecated for CPU monitor. This will be removed in D-turtle')
 
+        self._load1_threshold = rospy.get_param('~load1_threshold', 5.0)
+        self._load5_threshold = rospy.get_param('~load5_threshold', 3.0)
+
         self._temps_timer = None
         self._usage_timer = None
         self._nfs_timer = None
@@ -553,6 +561,19 @@ class CPUMonitor():
         if self._check_nfs:
             self.check_nfs_stat()
         self.check_usage()
+
+    # Restart temperature checking 
+    def _restart_temp_check(self):
+        rospy.logerr('Restarting temperature check thread in cpu_monitor. This should not happen')
+        try:
+            with self._mutex:
+                if self._temps_timer:
+                    self._temps_timer.cancel()
+                
+            self.check_temps()
+        except Exception, e:
+            rospy.logerr('Unable to restart temp thread. Error: %s' % traceback.format_exc())
+            
 
     ## Must have the lock to cancel everything
     def cancel_timers(self):
@@ -682,8 +703,8 @@ class CPUMonitor():
             self._temp_stat.values = diag_vals
             
             if not rospy.is_shutdown():
-                self._temp_timer = threading.Timer(5.0, self.check_temps)
-                self._temp_timer.start()
+                self._temps_timer = threading.Timer(5.0, self.check_temps)
+                self._temps_timer.start()
             else:
                 self.cancel_timers()
 
@@ -696,22 +717,33 @@ class CPUMonitor():
         diag_level = 0
         diag_vals = [ KeyValue(key = 'Update Status', value = 'OK' ),
                       KeyValue(key = 'Time Since Last Update', value = 0 )]
-        
+        diag_msgs = []
+
         # Check mpstat
-        mp_level, mp_vals = check_mpstat()
+        mp_level, mp_msg, mp_vals = check_mpstat()
         diag_vals.extend(mp_vals)
+        if mp_level > 0:
+            diag_msgs.append(mp_msg)
         diag_level = max(diag_level, mp_level)
             
         # Check uptime
-        uptime_level, up_vals = check_uptime()
+        uptime_level, up_msg, up_vals = check_uptime(self._load1_threshold, self._load5_threshold)
         diag_vals.extend(up_vals)
+        if uptime_level > 0:
+            diag_msgs.append(up_msg)
         diag_level = max(diag_level, uptime_level)
         
         # Check memory
-        mem_level, mem_vals = check_memory()
+        mem_level, mem_msg, mem_vals = check_memory()
         diag_vals.extend(mem_vals)
+        if mem_level > 0:
+            diag_msgs.append(mem_msg)
         diag_level = max(diag_level, mem_level)
-            
+
+        if diag_msgs and diag_level > 0:
+            usage_msg = ', '.join(set(diag_msgs))
+        else:
+            usage_msg = stat_dict[diag_level]
 
         # Update status
         with self._mutex:
@@ -719,7 +751,7 @@ class CPUMonitor():
             self._usage_stat.level = diag_level
             self._usage_stat.values = diag_vals
             
-            self._usage_stat.message = stat_dict[diag_level]
+            self._usage_stat.message = usage_msg
             
             if not rospy.is_shutdown():
                 self._usage_timer = threading.Timer(5.0, self.check_usage)
@@ -745,6 +777,12 @@ class CPUMonitor():
             if rospy.get_time() - self._last_publish_time > 0.5:
                 self._diag_pub.publish(msg)
                 self._last_publish_time = rospy.get_time()
+
+        
+        # Restart temperature checking if it goes stale, #4171
+        # Need to run this without mutex
+        if rospy.get_time() - self._last_temp_time > 90: 
+            self._restart_temp_check()
 
 
 if __name__ == '__main__':
@@ -774,6 +812,7 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         pass
     except Exception, e:
+        traceback.print_exc()
         rospy.logerr(traceback.format_exc())
 
     cpu_node.cancel_timers()

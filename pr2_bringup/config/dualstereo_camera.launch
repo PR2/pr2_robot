@@ -31,7 +31,6 @@
     <param name="height" type="int" value="480" />  
     <param name="imager_rate" type="double" value="25" />
   
-    <param name="trig_timestamp_topic" type="str" value="head_camera_trigger/trigger" />
     <param name="frame_id" type="str" value="wide_stereo_optical_frame" />
     <param name="first_packet_offset" type="double" value="0.0025" />
     <param name="ext_trig" type="bool" value="True" />

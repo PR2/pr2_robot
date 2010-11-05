@@ -1,0 +1,22 @@
+<launch>
+  <node name="synchronizer" pkg="pr2_camera_synchronizer" type="pr2_camera_synchronizer" output="screen"/>
+  <node name="head_camera_trigger" pkg="pr2_camera_synchronizer" type="fake_multi_trigger_controller.py" />
+  <node name="l_forearm_cam_trigger" pkg="pr2_camera_synchronizer" type="fake_multi_trigger_controller.py" />
+  <node name="r_forearm_cam_trigger" pkg="pr2_camera_synchronizer" type="fake_multi_trigger_controller.py" />
+  <node name="projector_trigger" pkg="pr2_camera_synchronizer" type="fake_multi_trigger_controller.py" />
+  <node name="wide_stereo_both" pkg="wge100_camera" type="wge100_multi_configurator" respawn="true">
+    <param name="camera_nodes" value="" type="str"/>
+  </node>
+  <node name="narrow_stereo_both" pkg="wge100_camera" type="wge100_multi_configurator" respawn="true">
+    <param name="camera_nodes" value="" type="str"/>
+  </node>
+  <node name="l_forearm_cam" pkg="wge100_camera" type="wge100_multi_configurator" respawn="true">
+    <param name="camera_nodes" value="" type="str"/>
+  </node>
+  <node name="r_forearm_cam" pkg="wge100_camera" type="wge100_multi_configurator" respawn="true">
+    <param name="camera_nodes" value="" type="str"/>
+  </node>
+  <test test-name="consistency_checker" pkg="pr2_camera_synchronizer" type="plot_multi_trigger.py">
+    <param name="regression_test" value="true" type="bool"/>
+  </test>
+</launch>

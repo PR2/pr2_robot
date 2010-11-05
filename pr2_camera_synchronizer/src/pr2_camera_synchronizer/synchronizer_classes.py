@@ -210,15 +210,16 @@ class SingleCameraTriggerController(MultiTriggerController):
       self.add_sample(0, 0, "-")
     else:
       self.period = 2 * self.camera.period
-      self.zero_offset = -self.camera.imager_period - 1 * ETHERCAT_INTERVAL
+      self.zero_offset = -self.camera.imager_period 
       first_pulse_start = self.camera.end_offset
       second_pulse_start = self.camera.period + first_pulse_start
-      extra_pulse_start = (2 * first_pulse_start + 2 * second_pulse_start) / 4   # May cause problems at really low frame rates.
+      first_frame_end = first_pulse_start + self.camera.imager_period
+      extra_pulse_start = (first_pulse_start + first_frame_end) / 2  
       trigger_name = "trigger"
       self.add_sample(first_pulse_start, 1, trigger_name)
-      self.add_sample((3 * first_pulse_start + second_pulse_start) / 4, 0, "-")
+      self.add_sample((first_pulse_start + extra_pulse_start) / 2, 0, "-")
       self.add_sample(extra_pulse_start, 1, "-")
-      self.add_sample((extra_pulse_start + second_pulse_start) / 3, 0, "-")
+      self.add_sample((extra_pulse_start + first_frame_end) / 2, 0, "-")
       self.add_sample(second_pulse_start, 1, trigger_name)
       self.add_sample((second_pulse_start + self.period) / 2, 0, "-")
       self.camera.trig_rising = True
@@ -270,14 +271,15 @@ class DualCameraTriggerController(SingleCameraTriggerController):
 
     self.clear_waveform()
     self.period = 2 * self.cameras[1].period
-    self.zero_offset = -self.cameras[0].imager_period - 1 * ETHERCAT_INTERVAL
+    self.zero_offset = -self.cameras[0].imager_period 
 
     first_rise = self.cameras[0].end_offset
     first_fall = self.cameras[1].end_offset
+    first_rise_end = first_rise + self.cameras[0].imager_period
     second_rise = self.cameras[0].end_offset + self.cameras[0].period
     second_fall = self.cameras[1].end_offset + self.cameras[1].period
-    extra_rise = (2 * first_fall + second_rise) / 3                            # May cause problems at really low frame rates.
-    extra_fall = (first_fall + 2 * second_rise) / 3
+    extra_rise = (2 * first_fall + first_rise_end) / 3                            
+    extra_fall = (first_fall + 2 * first_rise_end) / 3
                                               
     trigger_name = [ "trigger_"+camera.name for camera in self.cameras ]
     self.add_sample(first_rise,  1, trigger_name[0])
@@ -335,7 +337,7 @@ class Projector:
         0,
         second_start,
         2 * base_period,
-        2 * base_period + second_start + self.pulse_length + ETHERCAT_INTERVAL
+        2 * base_period + second_start + self.pulse_length + 2 * ETHERCAT_INTERVAL
         ]
     self.pulse_ends = [ start + self.pulse_length for start in self.pulse_starts ]
 
@@ -343,8 +345,8 @@ class Projector:
     self.alt_end_offset = second_start + self.pulse_length + ETHERCAT_INTERVAL
     self.noproj_end_offset = second_start - ETHERCAT_INTERVAL
 
-    self.proj_exposure_duration = self.pulse_length + ETHERCAT_INTERVAL
-    self.noproj_max_exposure = second_start - self.pulse_length - ETHERCAT_INTERVAL
+    self.proj_exposure_duration = self.pulse_length + ETHERCAT_INTERVAL * 1.5
+    self.noproj_max_exposure = second_start - self.pulse_length - ETHERCAT_INTERVAL * 1.5
 
     config["projector_rate"] = 1 / base_period
     config["projector_pulse_length"] = self.pulse_length
@@ -397,9 +399,6 @@ class Camera:
       self.end_offset = -1
       projector_limits_exposure = False
     else:
-      self.imager_period = self.proj.repeat_period / 2 - ETHERCAT_INTERVAL
-      self.max_exposure = 0.95 * self.imager_period
-
       if self.proj.mode == Config.CameraSynchronizer_ProjectorOff:
           trig_mode = Config.CameraSynchronizer_IgnoreProjector
 
@@ -415,6 +414,8 @@ class Camera:
         n = max(n, 0)
         self.period = (n + 0.5) * self.proj.repeat_period
         #print "Case 1", n
+      elif trig_mode == Config.CameraSynchronizer_IgnoreProjector:
+        self.period = roundToEthercat(self.period)
       else:
         n = round(2 * self.period / self.proj.repeat_period - 1)
         n = max(n, 0)
@@ -433,6 +434,12 @@ class Camera:
         self.register_set = WGEConfig.WGE100Camera_AlternateRegisterSet
       else:
         self.end_offset = self.proj.noproj_end_offset
+
+      # Pick the imager period
+      if trig_mode == Config.CameraSynchronizer_IgnoreProjector:
+          self.imager_period = self.period - ETHERCAT_INTERVAL
+      else:
+          self.imager_period = self.proj.repeat_period / 2 - ETHERCAT_INTERVAL
 
     #print "Camera period", self.name, self.period, self.imager_period, self.proj.repeat_period
     if projector_limits_exposure:

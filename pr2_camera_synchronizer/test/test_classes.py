@@ -123,6 +123,12 @@ class TestCamera(unittest.TestCase):
 
 if __name__ == '__main__':
     import rostest
+    import rospy
+    import time
+
+    # Not starting a node, so we can't use rospy's time functions.
+    rospy.get_time = time.time
+    
     rostest.rosrun(PKG, 'test_projector', TestProjector)
     rostest.rosrun(PKG, 'test_camera', TestCamera)
     killAsynchronousUpdaters()
