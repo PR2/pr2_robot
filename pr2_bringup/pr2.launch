@@ -151,4 +151,9 @@
     <remap from="imu_data" to="torso_lift_imu/data" />
   </node>
 
+  <!-- Buffer Server -->
+  <node pkg="tf2_ros" type="buffer_server" name="tf2_buffer_server" output="screen">
+    <param name="buffer_size" value="120.0"/>
+  </node>
+
 </launch>

@@ -9,8 +9,6 @@
   <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_bringup</url>
 
-<!-- missing deps: pr2_head_controller, joint_trajectory_action -->
-
   <depend package="pr2_description"/>
   <depend package="pr2_machine"/>
   <depend package="pr2_etherCAT"/>
@@ -20,10 +18,12 @@
   <depend package="robot_mechanism_controllers"/>
   <depend package="ethercat_trigger_controllers" />
   <depend package="pr2_head_action"/>
+  <depend package="pr2_head_controller"/>
   <depend package="pr2_gripper_action"/>
   <depend package="joint_trajectory_action"/>
   <depend package="single_joint_position_action"/>
 
+  <depend package="tf2_ros"/>
   <depend package="robot_state_publisher"/>
   <depend package="robot_pose_ekf"/>
   <depend package="pr2_camera_synchronizer"/>
@@ -45,6 +45,7 @@
   <depend package="pr2_computer_monitor"/>
   <depend package="diagnostic_aggregator"/>
   <depend package="pr2_dashboard_aggregator"/>
+
   <platform os="ubuntu" version="9.04"/>
   <platform os="ubuntu" version="9.10"/>
   <platform os="ubuntu" version="10.04"/>
