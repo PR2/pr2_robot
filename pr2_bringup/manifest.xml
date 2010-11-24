@@ -18,7 +18,6 @@
   <depend package="robot_mechanism_controllers"/>
   <depend package="ethercat_trigger_controllers" />
   <depend package="pr2_head_action"/>
-  <depend package="pr2_head_controller"/>
   <depend package="pr2_gripper_action"/>
   <depend package="joint_trajectory_action"/>
   <depend package="single_joint_position_action"/>
