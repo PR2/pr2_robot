@@ -47,6 +47,7 @@
 #include <pr2_controller_manager/controller_manager.h>
 #include <ethercat_hardware/ethercat_hardware.h>
 #include <tirt/tirt.h>
+#include <nodelet/loader.h>
 
 #include <ros/ros.h>
 #include <std_srvs/Empty.h>
@@ -231,6 +232,7 @@ void *controlLoop(void *)
   TiXmlElement *root;
   TiXmlElement *root_element;
   boost::thread tirt_thread;
+  boost::shared_ptr<nodelet::Loader> nodelet_loader;
 
   ros::NodeHandle node(name);
   g_tirt_manager = tirt::ContextManager::instance();
@@ -296,6 +298,9 @@ void *controlLoop(void *)
     ROS_FATAL("Unable to create control thread: rv = %d", rv);
     goto end;
   }
+
+  // Starts a nodelet loader
+  nodelet_loader.reset(new nodelet::Loader(true));
 
   // Starts the non-realtime tirt thread
   tirt_thread = boost::thread(tirtLoop);

@@ -16,6 +16,7 @@ Main loop that runs the robot.
   <depend package="diagnostic_updater"/>
 
   <depend package="tirt_core" />
+  <depend package="nodelet" />
 
   <url>http://pr.willowgarage.com</url>
   <repository>http://pr.willowgarage.com/repos</repository>
