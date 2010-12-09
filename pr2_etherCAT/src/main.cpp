@@ -565,6 +565,7 @@ int main(int argc, char *argv[])
 
   // Initialize ROS and parse command-line arguments
   ros::init(argc, argv, "realtime_loop");
+  rosrt::init();
 
   // Parse options
   g_options.program_ = argv[0];
