@@ -234,8 +234,9 @@ void *controlLoop(void *)
   boost::thread tirt_thread;
 
   ros::NodeHandle node(name);
+  ros::NodeHandle public_nh;
   g_tirt_scheduler.reset(new tirt::TaskScheduler);
-  g_ethercat_tirt_context.reset(new tirt::Context(g_tirt_scheduler, node));
+  g_ethercat_tirt_context.reset(new tirt::Context(g_tirt_scheduler, public_nh));
   tirt::Container tirt_container(g_tirt_scheduler);
 
   realtime_tools::RealtimePublisher<diagnostic_msgs::DiagnosticArray> publisher(node, "/diagnostics", 2);
@@ -301,7 +302,7 @@ void *controlLoop(void *)
   }
 
   // Starts a tirt container
-  tirt_container.init(node);
+  tirt_container.init(ros::NodeHandle(public_nh, "tirt"));
 
   // Starts the non-realtime tirt thread
   tirt_thread = boost::thread(tirtLoop);
