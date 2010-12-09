@@ -192,15 +192,14 @@ void *diagnosticLoop(void *args)
   return NULL;
 }
 
-void tirtLoop()
+void tirtLoop(tirt::Container *container)
 {
   ros::Rate rate(10);
   int count = 0;
-  ros::NodeHandle nh;
-  ros::Publisher pub_tirt_state = nh.advertise<tirt_core::TirtState>("tirt_state", 10);
 
   while (!g_quit)
   {
+    container->publishState();
     /* TODO
     if (count % 10 == 0) {
       tirt_core::TirtState::Ptr state = g_tirt_manager->getStateMessage();
@@ -305,7 +304,7 @@ void *controlLoop(void *)
   tirt_container.init(ros::NodeHandle(public_nh, "tirt"));
 
   // Starts the non-realtime tirt thread
-  tirt_thread = boost::thread(tirtLoop);
+  tirt_thread = boost::thread(boost::bind(tirtLoop, &tirt_container));
 
   // Set to realtime scheduler for this thread
   struct sched_param thread_param;
