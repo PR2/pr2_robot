@@ -47,7 +47,7 @@
 #include <pr2_controller_manager/controller_manager.h>
 #include <ethercat_hardware/ethercat_hardware.h>
 #include <tirt/tirt.h>
-#include <nodelet/loader.h>
+#include <tirt/container.h>
 
 #include <ros/ros.h>
 #include <std_srvs/Empty.h>
@@ -232,11 +232,11 @@ void *controlLoop(void *)
   TiXmlElement *root;
   TiXmlElement *root_element;
   boost::thread tirt_thread;
-  boost::shared_ptr<nodelet::Loader> nodelet_loader;
 
   ros::NodeHandle node(name);
   g_tirt_scheduler.reset(new tirt::TaskScheduler);
   g_ethercat_tirt_context.reset(new tirt::Context(g_tirt_scheduler, node));
+  tirt::Container tirt_container(g_tirt_scheduler);
 
   realtime_tools::RealtimePublisher<diagnostic_msgs::DiagnosticArray> publisher(node, "/diagnostics", 2);
   realtime_tools::RealtimePublisher<std_msgs::Float64> *rtpublisher = 0;
@@ -300,8 +300,8 @@ void *controlLoop(void *)
     goto end;
   }
 
-  // Starts a nodelet loader
-  nodelet_loader.reset(new nodelet::Loader(true));
+  // Starts a tirt container
+  tirt_container.init(node);
 
   // Starts the non-realtime tirt thread
   tirt_thread = boost::thread(tirtLoop);
