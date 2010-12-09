@@ -73,7 +73,7 @@ static struct
 } g_options;
 
 std::string g_robot_desc;
-boost::shared_ptr<tirt::ContextManager> g_tirt_manager;
+boost::shared_ptr<tirt::TaskScheduler> g_tirt_scheduler;
 
 void Usage(string msg = "")
 {
@@ -201,12 +201,12 @@ void tirtLoop()
 
   while (!g_quit)
   {
-    g_tirt_manager->updateSchedule();
-
+    /* TODO
     if (count % 10 == 0) {
       tirt_core::TirtState::Ptr state = g_tirt_manager->getStateMessage();
       pub_tirt_state.publish(state);
     }
+    */
 
     ++count;
     rate.sleep();
@@ -235,7 +235,8 @@ void *controlLoop(void *)
   boost::shared_ptr<nodelet::Loader> nodelet_loader;
 
   ros::NodeHandle node(name);
-  g_tirt_manager = tirt::ContextManager::instance();
+  g_tirt_scheduler.reset(new tirt::TaskScheduler);
+  g_ethercat_tirt_context.reset(new tirt::Context(g_tirt_scheduler, node));
 
   realtime_tools::RealtimePublisher<diagnostic_msgs::DiagnosticArray> publisher(node, "/diagnostics", 2);
   realtime_tools::RealtimePublisher<std_msgs::Float64> *rtpublisher = 0;
@@ -341,8 +342,8 @@ void *controlLoop(void *)
     g_halt_motors = false;
     double after_ec = now();
     cm.update();
-    if (g_tirt_manager)
-      g_tirt_manager->update(ros::Time(now()));
+    if (g_tirt_scheduler)
+      g_tirt_scheduler->runTasks(ros::Time(now()));
     double end = now();
 
     g_stats.ec_acc(after_ec - start);
