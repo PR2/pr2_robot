@@ -14,6 +14,9 @@ Main loop that runs the robot.
   <depend package="realtime_tools"/>
   <depend package="diagnostic_msgs"/>
   <depend package="diagnostic_updater"/>
+
+  <depend package="tirt_core" />
+
   <url>http://pr.willowgarage.com</url>
   <repository>http://pr.willowgarage.com/repos</repository>
   <platform os="ubuntu" version="9.04"/>

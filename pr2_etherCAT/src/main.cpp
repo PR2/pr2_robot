@@ -46,6 +46,7 @@
 #include <diagnostic_updater/DiagnosticStatusWrapper.h>
 #include <pr2_controller_manager/controller_manager.h>
 #include <ethercat_hardware/ethercat_hardware.h>
+#include <tirt/tirt.h>
 
 #include <ros/ros.h>
 #include <std_srvs/Empty.h>
@@ -71,6 +72,7 @@ static struct
 } g_options;
 
 std::string g_robot_desc;
+boost::shared_ptr<tirt::ContextManager> g_tirt_manager;
 
 void Usage(string msg = "")
 {
@@ -189,6 +191,27 @@ void *diagnosticLoop(void *args)
   return NULL;
 }
 
+void tirtLoop()
+{
+  ros::Rate rate(10);
+  int count = 0;
+  ros::NodeHandle nh;
+  ros::Publisher pub_tirt_state = nh.advertise<tirt_core::TirtState>("tirt_state", 10);
+
+  while (!g_quit)
+  {
+    g_tirt_manager->updateSchedule();
+
+    if (count % 10 == 0) {
+      tirt_core::TirtState::Ptr state = g_tirt_manager->getStateMessage();
+      pub_tirt_state.publish(state);
+    }
+
+    ++count;
+    rate.sleep();
+  }
+}
+
 static void timespecInc(struct timespec &tick, int nsec)
 {
   tick.tv_nsec += nsec;
@@ -207,8 +230,10 @@ void *controlLoop(void *)
   int policy;
   TiXmlElement *root;
   TiXmlElement *root_element;
+  boost::thread tirt_thread;
 
   ros::NodeHandle node(name);
+  g_tirt_manager = tirt::ContextManager::instance();
 
   realtime_tools::RealtimePublisher<diagnostic_msgs::DiagnosticArray> publisher(node, "/diagnostics", 2);
   realtime_tools::RealtimePublisher<std_msgs::Float64> *rtpublisher = 0;
@@ -271,7 +296,10 @@ void *controlLoop(void *)
     ROS_FATAL("Unable to create control thread: rv = %d", rv);
     goto end;
   }
-  
+
+  // Starts the non-realtime tirt thread
+  tirt_thread = boost::thread(tirtLoop);
+
   // Set to realtime scheduler for this thread
   struct sched_param thread_param;
   policy = SCHED_FIFO;
@@ -308,6 +336,8 @@ void *controlLoop(void *)
     g_halt_motors = false;
     double after_ec = now();
     cm.update();
+    if (g_tirt_manager)
+      g_tirt_manager->update(ros::Time(now()));
     double end = now();
 
     g_stats.ec_acc(after_ec - start);
@@ -322,8 +352,8 @@ void *controlLoop(void *)
     // Compute end of next period
     timespecInc(tick, period);
 
-    struct timespec before; 
-    clock_gettime(CLOCK_REALTIME, &before); 
+    struct timespec before;
+    clock_gettime(CLOCK_REALTIME, &before);
     if ((before.tv_sec + before.tv_nsec/1e9) > (tick.tv_sec + tick.tv_nsec/1e9))
     {
       // We overran, snap to next "period"
@@ -353,13 +383,13 @@ void *controlLoop(void *)
     // Publish realtime loops statistics, if requested
     if (rtpublisher)
     {
-      struct timespec after; 
-      clock_gettime(CLOCK_REALTIME, &after); 
-      double jitter = (after.tv_sec - tick.tv_sec + double(after.tv_nsec-tick.tv_nsec)/1e9)*1e6; 
-      if (rtpublisher->trylock()) 
-      { 
-        rtpublisher->msg_.data  = jitter; 
-        rtpublisher->unlockAndPublish(); 
+      struct timespec after;
+      clock_gettime(CLOCK_REALTIME, &after);
+      double jitter = (after.tv_sec - tick.tv_sec + double(after.tv_nsec-tick.tv_nsec)/1e9)*1e6;
+      if (rtpublisher->trylock())
+      {
+        rtpublisher->msg_.data  = jitter;
+        rtpublisher->unlockAndPublish();
       }
     }
 
@@ -379,7 +409,7 @@ void *controlLoop(void *)
   }
   ec.update(false, true);
 
-  //pthread_join(diagnosticThread, 0);  
+  //pthread_join(diagnosticThread, 0);
 
 end:
   publisher.stop();
