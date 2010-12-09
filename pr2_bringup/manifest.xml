@@ -22,7 +22,7 @@
   <depend package="joint_trajectory_action"/>
   <depend package="single_joint_position_action"/>
 
-  <depend package="tf2_ros"/>
+  <!-- <depend package="tf2_ros"/> -->
   <depend package="robot_state_publisher"/>
   <depend package="robot_pose_ekf"/>
   <depend package="pr2_camera_synchronizer"/>
