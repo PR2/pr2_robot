@@ -588,7 +588,7 @@ int main(int argc, char *argv[])
   if ((rv = pthread_create(&controlThread, &controlThreadAttr, controlLoop, 0)) != 0)
   {
     ROS_FATAL("Unable to create control thread: rv = %d", rv);
-    ROS_ISSUE_BREAK();
+    exit(EXIT_FAILURE);
   }
 
   ros::spin();
