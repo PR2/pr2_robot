@@ -1,0 +1,18 @@
+
+==============NVSMI LOG==============
+
+
+Timestamp			: Wed Sep 29 10:45:16 2010
+
+Driver Version			: 260.24
+
+GPU 0:
+	Product Name		: Quadro 600
+	PCI Device/Vendor ID	: df810de
+	PCI Location ID		: 0:3:0
+	Display			: Connected
+	Temperature		: 92 C
+	Fan Speed		: 90%
+	Utilization
+	    GPU			: 95%
+	    Memory		: 22%
