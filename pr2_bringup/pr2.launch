@@ -156,7 +156,7 @@
     <param name="buffer_size" value="120.0"/>
   </node>
 
-  <node pkg="network_detector" type="network_detector" name="network_detector" output="screen">
+  <node pkg="pr2_computer_monitor" type="network_detector" name="network_detector" output="screen">
     <param name="interface_name" value="wan0"/>
   </node>
 
