@@ -1,12 +1,14 @@
 <package>
   <description brief="imu_monitor">
 
-     imu_monitor
+This package contains a single node that monitors the drift of the IMU
+gyroscopes. The results are published to the '/diagnostics' topic and
+are aggregated in the PR2 dashboard. 
 
   </description>
-  <author></author>
+  <author>Wim Meeussen</author>
   <license>BSD</license>
-  <review status="unreviewed" notes=""/>
+  <review status="Doc reviewed" notes=""/>
   <url>http://ros.org/wiki/imu_monitor</url>
 
   <depend package="sensor_msgs"/>
