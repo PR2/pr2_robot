@@ -108,6 +108,10 @@ static struct
   int last_severe_overrun;
   double overrun_ec;
   double overrun_cm;
+
+  // These values are set when realtime loop does not meet performace expections
+  bool rt_loop_not_making_timing; 
+  double rt_loop_frequency;
 } g_stats;
 
 static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs::DiagnosticArray> &publisher)
@@ -161,6 +165,11 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     g_stats.last_overrun++;
     g_stats.last_severe_overrun++;
 
+    if (g_stats.rt_loop_not_making_timing)
+    {
+      status.mergeSummaryf(status.ERROR, "Realtime loop only ran at %4f Hz", g_stats.rt_loop_frequency);
+    }
+
     statuses.push_back(status);
     publisher.msg_.set_status_vec(statuses);
     publisher.msg_.header.stamp = ros::Time::now();
@@ -212,6 +221,13 @@ void *controlLoop(void *)
 
   realtime_tools::RealtimePublisher<diagnostic_msgs::DiagnosticArray> publisher(node, "/diagnostics", 2);
   realtime_tools::RealtimePublisher<std_msgs::Float64> *rtpublisher = 0;
+
+  // Calculate realtime loop frequency every 700msec. 
+  // Realtime loop should be running at least 750Hz
+  double rt_loop_monitor_period = 0.7;
+  double min_acceptable_rt_loop_frequency = 750.0; 
+  unsigned rt_cycle_count = 0;
+  double last_rt_monitor_time;
 
   if (g_options.stats_){
     rtpublisher = new realtime_tools::RealtimePublisher<std_msgs::Float64>(node, "realtime", 2);
@@ -288,6 +304,7 @@ void *controlLoop(void *)
   clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &tick, NULL);
 
   last_published = now();
+  last_rt_monitor_time = now();
   while (!g_quit)
   {
     double start = now();
@@ -295,6 +312,8 @@ void *controlLoop(void *)
     {
       ec.update(true, g_halt_motors);
       g_reset_motors = false;
+      // Also, clear error flags when motor reset is requested
+      g_stats.rt_loop_not_making_timing = false;
     }
     else
     {
@@ -317,6 +336,23 @@ void *controlLoop(void *)
     {
       publishDiagnostics(publisher);
       last_published = end;
+    }
+
+    // Realtime loop should run about 1000Hz.  
+    // Missing timing on a control cycles usually causes a controller glitch and actuators to jerk.
+    // When realtime loop misses a lot of cycles controllers will perform poorly and may cause robot to shake.
+    // Halt motors if realtime loop does not run enough cycles over a given period.
+    ++rt_cycle_count;
+    if ((start - last_rt_monitor_time) > rt_loop_monitor_period)
+    {
+      if (rt_cycle_count < (rt_loop_monitor_period * min_acceptable_rt_loop_frequency))
+      {
+        g_halt_motors = true;
+        g_stats.rt_loop_not_making_timing = true;
+        g_stats.rt_loop_frequency = rt_cycle_count * rt_loop_monitor_period;
+      }
+      rt_cycle_count = 0;
+      last_rt_monitor_time = start;
     }
 
     // Compute end of next period
