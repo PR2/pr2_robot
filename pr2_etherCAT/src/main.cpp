@@ -111,6 +111,7 @@ static struct
 
   // These values are set when realtime loop does not meet performace expections
   bool rt_loop_not_making_timing; 
+  double halt_rt_loop_frequency;
   double rt_loop_frequency;
 } g_stats;
 
@@ -146,6 +147,7 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     status.addf("Control Loop Overruns", "%d", g_stats.overruns);
     status.addf("Recent Control Loop Overruns", "%d", g_stats.recent_overruns);
     status.addf("Last Control Loop Overrun Cause", "ec: %.2fus, cm: %.2fus", g_stats.overrun_ec*1e6, g_stats.overrun_cm*1e6);
+    status.addf("Realtime Loop Frequecy", "%.4f", g_stats.rt_loop_frequency);
 
     status.name = "Realtime Control Loop";
     if (g_stats.overruns > 0 && g_stats.last_overrun < 30)
@@ -167,7 +169,7 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
 
     if (g_stats.rt_loop_not_making_timing)
     {
-      status.mergeSummaryf(status.ERROR, "Realtime loop only ran at %4f Hz", g_stats.rt_loop_frequency);
+      status.mergeSummaryf(status.ERROR, "Halting, realtime loop only ran at %.4f Hz", g_stats.halt_rt_loop_frequency);
     }
 
     statuses.push_back(status);
@@ -208,6 +210,46 @@ static void timespecInc(struct timespec &tick, int nsec)
   }
 }
 
+
+class RTLoopHistory
+{
+public:
+  RTLoopHistory(unsigned length, double default_value) :
+    index_(0), 
+    length_(length),
+    history_(new double[length])
+  {
+    for (unsigned i=0; i<length_; ++i) 
+      history_[i] = default_value;
+  }
+
+  ~RTLoopHistory()
+  {
+    delete[] history_;
+    history_ = NULL;
+  }
+  
+  void sample(double value) 
+  {
+    index_ = (index_+1) % length_;
+    history_[index_] = value;
+  }
+
+  double average() const
+  {
+    double sum(0.0);
+    for (unsigned i=0; i<length_; ++i) 
+      sum+=history_[i];
+    return sum / double(length_);
+  }
+
+protected:
+  unsigned index_;
+  unsigned length_;
+  double *history_;
+};
+
+
 void *controlLoop(void *)
 {
   int rv = 0;
@@ -222,12 +264,15 @@ void *controlLoop(void *)
   realtime_tools::RealtimePublisher<diagnostic_msgs::DiagnosticArray> publisher(node, "/diagnostics", 2);
   realtime_tools::RealtimePublisher<std_msgs::Float64> *rtpublisher = 0;
 
-  // Calculate realtime loop frequency every 700msec. 
   // Realtime loop should be running at least 750Hz
-  double rt_loop_monitor_period = 0.7;
+  // Calculate realtime loop frequency every 200mseec
+  // Halt motors if average frequency over last 600msec is less than 750Hz
   double min_acceptable_rt_loop_frequency = 750.0; 
   unsigned rt_cycle_count = 0;
   double last_rt_monitor_time;
+  double rt_loop_monitor_period = 0.6 / 3;
+  // Keep history of last 3 calculation intervals.
+  RTLoopHistory rt_loop_history(3, 1000.0); 
 
   if (g_options.stats_){
     rtpublisher = new realtime_tools::RealtimePublisher<std_msgs::Float64>(node, "realtime", 2);
@@ -345,12 +390,23 @@ void *controlLoop(void *)
     ++rt_cycle_count;
     if ((start - last_rt_monitor_time) > rt_loop_monitor_period)
     {
-      if (rt_cycle_count < (rt_loop_monitor_period * min_acceptable_rt_loop_frequency))
+      // Calculate new average rt loop frequency       
+      double rt_loop_frequency = double(rt_cycle_count) / rt_loop_monitor_period;
+
+      // Use last X samples of frequency when deciding whether or not to halt
+      rt_loop_history.sample(rt_loop_frequency);
+      double avg_rt_loop_frequency = rt_loop_history.average();
+      if (avg_rt_loop_frequency < min_acceptable_rt_loop_frequency)
       {
         g_halt_motors = true;
+        if (!g_stats.rt_loop_not_making_timing)
+        {
+          // Only update this value if motors when this first occurs (used for diagnostics error message)
+          g_stats.halt_rt_loop_frequency = avg_rt_loop_frequency;
+        }
         g_stats.rt_loop_not_making_timing = true;
-        g_stats.rt_loop_frequency = rt_cycle_count * rt_loop_monitor_period;
       }
+      g_stats.rt_loop_frequency = avg_rt_loop_frequency;
       rt_cycle_count = 0;
       last_rt_monitor_time = start;
     }
