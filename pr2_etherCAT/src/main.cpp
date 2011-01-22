@@ -267,7 +267,15 @@ void *controlLoop(void *)
   // Realtime loop should be running at least 750Hz
   // Calculate realtime loop frequency every 200mseec
   // Halt motors if average frequency over last 600msec is less than 750Hz
-  double min_acceptable_rt_loop_frequency = 750.0; 
+  double min_acceptable_rt_loop_frequency;
+  if (!node.getParam("min_acceptable_rt_loop_frequency", min_acceptable_rt_loop_frequency))
+  {
+    min_acceptable_rt_loop_frequency = 750.0; 
+  } 
+  else 
+  {
+    ROS_WARN("min_acceptable_rt_loop_frequency changed to %f", min_acceptable_rt_loop_frequency);
+  }
   unsigned rt_cycle_count = 0;
   double last_rt_monitor_time;
   double rt_loop_monitor_period = 0.6 / 3;
