@@ -36,7 +36,7 @@
 
 from __future__ import division
 
-PKG = 'nvidia_gpu_monitor'
+PKG = 'pr2_computer_monitor'
 import roslib; roslib.load_manifest(PKG)
 
 import rospy
