@@ -61,6 +61,7 @@ using namespace boost::accumulators;
 
 static const std::string name = "pr2_etherCAT";
 
+
 static struct
 {
   char *program_;
@@ -96,16 +97,19 @@ static bool g_reset_motors = true;
 static bool g_halt_motors = false;
 static bool g_halt_requested = false;
 static volatile bool g_publish_trace_requested = false;
-static const int NSEC_PER_SEC = 1e+9;
+static const int NSEC_PER_SECOND = 1e+9;
+static const int USEC_PER_SECOND = 1e6;
 
 static struct
 {
   accumulator_set<double, stats<tag::max, tag::mean> > ec_acc;
   accumulator_set<double, stats<tag::max, tag::mean> > cm_acc;
+  accumulator_set<double, stats<tag::max, tag::mean> > loop_acc;
   int overruns;
   int recent_overruns;
   int last_overrun;
   int last_severe_overrun;
+  double overrun_loop_sec;
   double overrun_ec;
   double overrun_cm;
 
@@ -123,15 +127,19 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     vector<diagnostic_msgs::DiagnosticStatus> statuses;
     diagnostic_updater::DiagnosticStatusWrapper status;
 
-    static double max_ec = 0, max_cm = 0;
-    double avg_ec, avg_cm;
+    static double max_ec = 0, max_cm = 0, max_loop = 0;
+    double avg_ec, avg_cm, avg_loop;
 
-    avg_ec = extract_result<tag::mean>(g_stats.ec_acc);
-    avg_cm = extract_result<tag::mean>(g_stats.cm_acc);
-    max_ec = std::max(max_ec, extract_result<tag::max>(g_stats.ec_acc));
-    max_cm = std::max(max_cm, extract_result<tag::max>(g_stats.cm_acc));
-    g_stats.ec_acc = zero;
-    g_stats.cm_acc = zero;
+    avg_ec           = extract_result<tag::mean>(g_stats.ec_acc);
+    avg_cm           = extract_result<tag::mean>(g_stats.cm_acc);
+    avg_loop         = extract_result<tag::mean>(g_stats.loop_acc);
+    max_ec           = std::max(max_ec, extract_result<tag::max>(g_stats.ec_acc));
+    max_cm           = std::max(max_cm, extract_result<tag::max>(g_stats.cm_acc));
+    max_loop         = std::max(max_loop, extract_result<tag::max>(g_stats.loop_acc));
+    g_stats.ec_acc   = zero;
+    g_stats.cm_acc   = zero;
+    g_stats.loop_acc = zero;
+
 
     static bool first = true;
     if (first)
@@ -140,14 +148,18 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
       status.add("Robot Description", g_robot_desc);
     }
 
-    status.addf("Max EtherCAT roundtrip (us)", "%.2f", max_ec*1e+6);
-    status.addf("Avg EtherCAT roundtrip (us)", "%.2f", avg_ec*1e+6);
-    status.addf("Max Controller Manager roundtrip (us)", "%.2f", max_cm*1e+6);
-    status.addf("Avg Controller Manager roundtrip (us)", "%.2f", avg_cm*1e+6);
+    status.addf("Max EtherCAT roundtrip (us)", "%.2f", max_ec*USEC_PER_SECOND);
+    status.addf("Avg EtherCAT roundtrip (us)", "%.2f", avg_ec*USEC_PER_SECOND);
+    status.addf("Max Controller Manager roundtrip (us)", "%.2f", max_cm*USEC_PER_SECOND);
+    status.addf("Avg Controller Manager roundtrip (us)", "%.2f", avg_cm*USEC_PER_SECOND);
+    status.addf("Max Total Loop roundtrip (us)", "%.2f", max_loop*USEC_PER_SECOND);
+    status.addf("Avg Total Loop roundtrip (us)", "%.2f", avg_loop*USEC_PER_SECOND);
     status.addf("Control Loop Overruns", "%d", g_stats.overruns);
     status.addf("Recent Control Loop Overruns", "%d", g_stats.recent_overruns);
-    status.addf("Last Control Loop Overrun Cause", "ec: %.2fus, cm: %.2fus", g_stats.overrun_ec*1e6, g_stats.overrun_cm*1e6);
-    status.addf("Realtime Loop Frequecy", "%.4f", g_stats.rt_loop_frequency);
+    status.addf("Last Control Loop Overrun Cause", "ec: %.2fus, cm: %.2fus", 
+                g_stats.overrun_ec*USEC_PER_SECOND, g_stats.overrun_cm*USEC_PER_SECOND);
+    status.addf("Last Overrun Loop Time (us)", "%.2f", g_stats.overrun_loop_sec * USEC_PER_SECOND);
+    status.addf("Realtime Loop Frequency", "%.4f", g_stats.rt_loop_frequency);
 
     status.name = "Realtime Control Loop";
     if (g_stats.overruns > 0 && g_stats.last_overrun < 30)
@@ -173,7 +185,7 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     }
 
     statuses.push_back(status);
-    publisher.msg_.set_status_vec(statuses);
+    publisher.msg_.status = statuses;
     publisher.msg_.header.stamp = ros::Time::now();
     publisher.unlockAndPublish();
   }
@@ -182,8 +194,8 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
 static inline double now()
 {
   struct timespec n;
-  clock_gettime(CLOCK_MONOTONIC, &n);
-  return double(n.tv_nsec) / NSEC_PER_SEC + n.tv_sec;
+  clock_gettime(CLOCK_REALTIME, &n);
+  return double(n.tv_nsec) / NSEC_PER_SECOND + n.tv_sec;
 }
 
 
@@ -203,9 +215,9 @@ void *diagnosticLoop(void *args)
 static void timespecInc(struct timespec &tick, int nsec)
 {
   tick.tv_nsec += nsec;
-  while (tick.tv_nsec >= NSEC_PER_SEC)
+  while (tick.tv_nsec >= NSEC_PER_SECOND)
   {
-    tick.tv_nsec -= NSEC_PER_SEC;
+    tick.tv_nsec -= NSEC_PER_SECOND;
     tick.tv_sec++;
   }
 }
@@ -253,7 +265,7 @@ protected:
 void *controlLoop(void *)
 {
   int rv = 0;
-  double last_published;
+  double last_published, last_loop_start;
   int period;
   int policy;
   TiXmlElement *root;
@@ -349,7 +361,7 @@ void *controlLoop(void *)
 
   struct timespec tick;
   clock_gettime(CLOCK_REALTIME, &tick);
-  period = 1e+6; // 1 ms in nanoseconds
+  period = USEC_PER_SECOND; // 1 ms in nanoseconds
 
   // Snap to the nearest second
   tick.tv_sec = tick.tv_sec;
@@ -358,8 +370,14 @@ void *controlLoop(void *)
 
   last_published = now();
   last_rt_monitor_time = now();
+  last_loop_start = now();
   while (!g_quit)
   {
+    // Track how long the actual loop takes
+    double this_loop_start = now();
+    g_stats.loop_acc(this_loop_start - last_loop_start);
+    last_loop_start = this_loop_start;
+    
     double start = now();
     if (g_reset_motors)
     {
@@ -424,8 +442,12 @@ void *controlLoop(void *)
 
     struct timespec before; 
     clock_gettime(CLOCK_REALTIME, &before); 
-    if ((before.tv_sec + before.tv_nsec/1e9) > (tick.tv_sec + tick.tv_nsec/1e9))
+    if ((before.tv_sec + before.tv_nsec/NSEC_PER_SECOND) > (tick.tv_sec + tick.tv_nsec/NSEC_PER_SECOND))
     {
+      // Total amount of time the loop took to run
+      g_stats.overrun_loop_sec = (before.tv_sec + before.tv_nsec/NSEC_PER_SECOND) - 
+        (tick.tv_sec + tick.tv_nsec/NSEC_PER_SECOND);
+
       // We overran, snap to next "period"
       tick.tv_sec = before.tv_sec;
       tick.tv_nsec = (before.tv_nsec / period) * period;
@@ -455,7 +477,7 @@ void *controlLoop(void *)
     {
       struct timespec after; 
       clock_gettime(CLOCK_REALTIME, &after); 
-      double jitter = (after.tv_sec - tick.tv_sec + double(after.tv_nsec-tick.tv_nsec)/1e9)*1e6; 
+      double jitter = (after.tv_sec - tick.tv_sec + double(after.tv_nsec-tick.tv_nsec)/1e9)*USEC_PER_SECOND;
       if (rtpublisher->trylock()) 
       { 
         rtpublisher->msg_.data  = jitter; 
