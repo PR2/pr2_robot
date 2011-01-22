@@ -78,6 +78,7 @@ void Usage(string msg = "")
   fprintf(stderr, "Usage: %s [options]\n", g_options.program_);
   fprintf(stderr, "  Available options\n");
   fprintf(stderr, "    -i, --interface <interface> Connect to EtherCAT devices on this interface\n");
+  fprintf(stderr, "    -s, --stats                 Publish statistics on the RT loop jitter on \"pr2_etherCAT/realtime\" in seconds\n");
   fprintf(stderr, "    -x, --xml <file|param>      Load the robot description from this file or parameter name\n");
   fprintf(stderr, "    -u, --allow_unprogrammed    Allow control loop to run with unprogrammed devices\n");
   fprintf(stderr, "    -h, --help                  Print this message and exit\n");
@@ -105,6 +106,7 @@ static struct
   accumulator_set<double, stats<tag::max, tag::mean> > ec_acc;
   accumulator_set<double, stats<tag::max, tag::mean> > cm_acc;
   accumulator_set<double, stats<tag::max, tag::mean> > loop_acc;
+  accumulator_set<double, stats<tag::max, tag::mean> > jitter_acc;
   int overruns;
   int recent_overruns;
   int last_overrun;
@@ -127,8 +129,8 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     vector<diagnostic_msgs::DiagnosticStatus> statuses;
     diagnostic_updater::DiagnosticStatusWrapper status;
 
-    static double max_ec = 0, max_cm = 0, max_loop = 0;
-    double avg_ec, avg_cm, avg_loop;
+    static double max_ec = 0, max_cm = 0, max_loop = 0, max_jitter = 0;
+    double avg_ec, avg_cm, avg_loop, avg_jitter;
 
     avg_ec           = extract_result<tag::mean>(g_stats.ec_acc);
     avg_cm           = extract_result<tag::mean>(g_stats.cm_acc);
@@ -140,6 +142,10 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     g_stats.cm_acc   = zero;
     g_stats.loop_acc = zero;
 
+    // Publish average loop jitter
+    avg_jitter         = extract_result<tag::mean>(g_stats.jitter_acc);
+    max_jitter         = std::max(max_jitter, extract_result<tag::max>(g_stats.jitter_acc));
+    g_stats.jitter_acc = zero;
 
     static bool first = true;
     if (first)
@@ -154,6 +160,8 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     status.addf("Avg Controller Manager roundtrip (us)", "%.2f", avg_cm*USEC_PER_SECOND);
     status.addf("Max Total Loop roundtrip (us)", "%.2f", max_loop*USEC_PER_SECOND);
     status.addf("Avg Total Loop roundtrip (us)", "%.2f", avg_loop*USEC_PER_SECOND);
+    status.addf("Max Loop Jitter (us)", "%.2f", max_jitter * USEC_PER_SECOND);
+    status.addf("Avg Loop Jitter (us)", "%.2f", avg_jitter * USEC_PER_SECOND);
     status.addf("Control Loop Overruns", "%d", g_stats.overruns);
     status.addf("Recent Control Loop Overruns", "%d", g_stats.recent_overruns);
     status.addf("Last Control Loop Overrun Cause", "ec: %.2fus, cm: %.2fus", 
@@ -472,12 +480,16 @@ void *controlLoop(void *)
     // Sleep until end of period
     clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &tick, NULL);
 
+    // Calculate RT loop jitter
+    struct timespec after; 
+    clock_gettime(CLOCK_REALTIME, &after); 
+    double jitter = (after.tv_sec - tick.tv_sec + double(after.tv_nsec-tick.tv_nsec)/NSEC_PER_SECOND);
+
+    g_stats.jitter_acc(jitter);
+
     // Publish realtime loops statistics, if requested
     if (rtpublisher)
     {
-      struct timespec after; 
-      clock_gettime(CLOCK_REALTIME, &after); 
-      double jitter = (after.tv_sec - tick.tv_sec + double(after.tv_nsec-tick.tv_nsec)/1e9)*USEC_PER_SECOND;
       if (rtpublisher->trylock()) 
       { 
         rtpublisher->msg_.data  = jitter; 
@@ -658,6 +670,7 @@ int main(int argc, char *argv[])
   {
     static struct option long_options[] = {
       {"help", no_argument, 0, 'h'},
+      {"stats", no_argument, 0, 's'},
       {"allow_unprogrammed", no_argument, 0, 'u'},
       {"interface", required_argument, 0, 'i'},
       {"xml", required_argument, 0, 'x'},
