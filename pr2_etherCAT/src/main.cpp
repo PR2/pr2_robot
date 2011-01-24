@@ -369,7 +369,7 @@ void *controlLoop(void *)
 
   struct timespec tick;
   clock_gettime(CLOCK_REALTIME, &tick);
-  period = USEC_PER_SECOND; // 1 ms in nanoseconds
+  period = 1e+6; // 1 ms in nanoseconds
 
   // Snap to the nearest second
   tick.tv_sec = tick.tv_sec;
