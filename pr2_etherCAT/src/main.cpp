@@ -202,7 +202,7 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
 static inline double now()
 {
   struct timespec n;
-  clock_gettime(CLOCK_REALTIME, &n);
+  clock_gettime(CLOCK_MONOTONIC, &n);
   return double(n.tv_nsec) / NSEC_PER_SECOND + n.tv_sec;
 }
 
@@ -450,11 +450,11 @@ void *controlLoop(void *)
 
     struct timespec before; 
     clock_gettime(CLOCK_REALTIME, &before); 
-    if ((before.tv_sec + before.tv_nsec/NSEC_PER_SECOND) > (tick.tv_sec + tick.tv_nsec/NSEC_PER_SECOND))
+    if ((before.tv_sec + double(before.tv_nsec)/NSEC_PER_SECOND) > (tick.tv_sec + double(tick.tv_nsec)/NSEC_PER_SECOND))
     {
       // Total amount of time the loop took to run
-      g_stats.overrun_loop_sec = (before.tv_sec + before.tv_nsec/NSEC_PER_SECOND) - 
-        (tick.tv_sec + tick.tv_nsec/NSEC_PER_SECOND);
+      g_stats.overrun_loop_sec = (before.tv_sec + double(before.tv_nsec)/NSEC_PER_SECOND) - 
+        (tick.tv_sec + double(tick.tv_nsec)/NSEC_PER_SECOND);
 
       // We overran, snap to next "period"
       tick.tv_sec = before.tv_sec;
