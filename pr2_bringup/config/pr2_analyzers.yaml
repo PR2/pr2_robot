@@ -103,9 +103,11 @@ analyzers:
       network:
         type: diagnostic_aggregator/GenericAnalyzer
         path: Network
-        num_items: 5
-        find_and_remove_prefix: 'multi_interface_roam: '
+        num_items: 1
         expected: ['Wifi Status (ddwrt)']
+        #num_items: 5
+        #find_and_remove_prefix: 'multi_interface_roam: '
+
 
   motors:
     type: diagnostic_aggregator/GenericAnalyzer
