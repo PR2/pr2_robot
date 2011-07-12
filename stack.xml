@@ -13,13 +13,13 @@
   <depend stack="common_msgs" /> <!-- sensor_msgs, diagnostic_msgs -->
   <depend stack="diagnostics" /> <!-- diagnostic_updater, diagnostic_aggregator -->
   <depend stack="driver_common" /> <!-- dynamic_reconfigure -->
-  <depend stack="geometry" /> <!-- kdl -->
   <depend stack="geometry_experimental" /> <!-- tf2_ros -->
   <depend stack="image_pipeline" /> <!-- stereo_image_proc -->
   <depend stack="imu_drivers" /> <!-- microstrain_3dmgx2_imu -->
   <depend stack="joystick_drivers" /> <!-- joy -->
   <depend stack="laser_drivers" /> <!-- hokuyo_node -->
   <depend stack="navigation" /> <!-- robot_pose_ekf -->
+  <depend stack="orocos_kinematics_dynamics" /> <!-- kdl -->
   <depend stack="pr2_common" /> <!-- pr2_description, pr2_dashboard_aggregator, pr2_machine, pr2_msgs -->
   <depend stack="pr2_controllers" /> <!-- single_joint_position_action, ethercat_trigger_controllers, pr2_calibration_controllers, joint_trajectory_action, robot_mechanism_controllers, pr2_mechanism_controllers, pr2_gripper_action, pr2_head_action -->
   <depend stack="pr2_ethercat_drivers" /> <!-- ethercat_hardware -->
@@ -27,7 +27,7 @@
   <depend stack="pr2_power_drivers" /> <!-- pr2_power_board, ocean_battery_driver, power_monitor -->
   <depend stack="robot_model" /> <!-- robot_state_publisher -->
   <depend stack="ros" />
-  <depend stack="ros_comm" /> <!-- pr2_controller_manager, wge100_camera, pr2_power_board, robot_pose_ekf, roscpp, microstrain_3dmgx2_imu, ethercat_trigger_controllers, wifi_ddwrt, pr2_msgs, sound_play, ethercat_hardware, joy, sensor_msgs, rospy, pr2_gripper_action, std_msgs, diagnostic_msgs, dynamic_reconfigure, std_srvs, robot_mechanism_controllers, pr2_mechanism_controllers, rosbag -->
+  <depend stack="ros_comm" /> <!-- std_msgs, rosbag, std_srvs, roscpp, rospy -->
   <depend stack="sound_drivers" /> <!-- sound_play -->
   <depend stack="wifi_drivers" /> <!-- wifi_ddwrt -->
 
