@@ -1,0 +1,90 @@
+<launch>
+  <node name="unspawn_arms"
+        pkg="pr2_controller_manager" type="unspawner"
+        args="l_arm_controller r_arm_controller" />
+
+
+
+
+  <rosparam ns="r_cart">
+    type: robot_mechanism_controllers/JTCartesianController
+    root_name: torso_lift_link
+    tip_name: r_gripper_tool_frame
+    k_posture: 25.0
+    jacobian_inverse_damping: 0.01
+    pose_command_filter: 0.01
+    cart_gains:
+      trans:
+        p: 800.0
+        d: 15.0
+      rot:
+        p: 80.0
+        d: 1.2
+    joint_feedforward:
+      r_shoulder_pan_joint: 3.33
+      r_shoulder_lift_joint: 1.16
+      r_upper_arm_roll_joint: 0.1
+      r_elbow_flex_joint: 0.25
+      r_forearm_roll_joint: 0.133
+      r_wrist_flex_joint: 0.0727
+      r_wrist_roll_joint: 0.0727
+    joint_max_effort:
+      r_shoulder_pan_joint: 11.88
+      r_shoulder_lift_joint: 11.64
+      r_upper_arm_roll_joint: 6.143
+      r_elbow_flex_joint: 6.804
+      r_forearm_roll_joint: 8.376
+      r_wrist_flex_joint: 5.568
+      r_wrist_roll_joint: 5.568
+
+    vel_saturation_trans: 2.0
+    vel_saturation_rot: 4.0
+  </rosparam>
+  
+  <rosparam ns="l_cart">
+    type: robot_mechanism_controllers/JTCartesianController
+    root_name: torso_lift_link
+    tip_name: l_gripper_tool_frame
+    k_posture: 25.0
+    jacobian_inverse_damping: 0.01
+    pose_command_filter: 0.01
+    cart_gains:
+      trans:
+        p: 800.0
+        d: 15.0
+      rot:
+        p: 80.0
+        d: 1.2
+    joint_feedforward:
+      l_shoulder_pan_joint: 3.33
+      l_shoulder_lift_joint: 1.16
+      l_upper_arm_roll_joint: 0.1
+      l_elbow_flex_joint: 0.25
+      l_forearm_roll_joint: 0.133
+      l_wrist_flex_joint: 0.0727
+      l_wrist_roll_joint: 0.0727
+    joint_max_effort:
+      l_shoulder_pan_joint: 11.88
+      l_shoulder_lift_joint: 11.64
+      l_upper_arm_roll_joint: 6.143
+      l_elbow_flex_joint: 6.804
+      l_forearm_roll_joint: 8.376
+      l_wrist_flex_joint: 5.568
+      l_wrist_roll_joint: 5.568
+    vel_saturation_trans: 2.0
+    vel_saturation_rot: 4.0
+  </rosparam>
+  
+
+  <node name="spawn_cart"
+        pkg="pr2_controller_manager" type="spawner"
+        args="l_cart r_cart" />
+
+  <node name="r_posture"
+        pkg="robot_mechanism_controllers" type="posture.py"
+        args="r_cart elbowupr" />
+  <node name="l_posture"
+        pkg="robot_mechanism_controllers" type="posture.py"
+        args="l_cart elbowupl" />
+
+</launch>
