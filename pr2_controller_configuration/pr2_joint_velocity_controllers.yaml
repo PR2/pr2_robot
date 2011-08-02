@@ -32,7 +32,7 @@ r_elbow_flex_velocity_controller:
     i_clamp: 100.0
 r_forearm_roll_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
-  joint: r_forearm_roll_velocity
+  joint: r_forearm_roll_joint
   pid: &forearm_roll_velocity_gains
     p: 20.0
     i: 15.0
@@ -75,7 +75,7 @@ l_elbow_flex_velocity_controller:
   pid: *elbow_flex_velocity_gains
 l_forearm_roll_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
-  joint: l_forearm_roll_velocity
+  joint: l_forearm_roll_joint
   pid: *forearm_roll_velocity_gains
 l_wrist_flex_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
