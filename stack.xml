@@ -5,7 +5,7 @@
   a robot.
 
   </description>
-  <author>Maintained by Wim Meeussen</author>
+  <author>Wim Meeussen, Blaise Gassend, Brian Gerkey, Kevin Watts, Sachin Chitta, Vijay Pradeep, Stuart Glaser, Derek King</author>
   <license>BSD</license>  
   <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_robot</url>
