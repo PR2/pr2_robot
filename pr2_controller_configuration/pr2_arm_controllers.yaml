@@ -17,7 +17,7 @@ r_arm_controller:
       mass: 3.3
       proxy:
         lambda: 3.0
-        acc_limit: 2.36
+        acc_converge: 1.5
         vel_limit: 2.088
         effort_limit: 11.8
     r_shoulder_lift_joint:
@@ -25,12 +25,12 @@ r_arm_controller:
       d: 10.0
       i: 700.0
       i_clamp: 4.0
-      mass: 1.160
+      mass: 2.0
       proxy:
         lambda: 3.0
-        acc_limit: 2.667
+        acc_converge: 1.5
         vel_limit: 2.082
-        effort_limit: 11.645
+        effort_limit: 8.0
     r_upper_arm_roll_joint: {p: 1000.0, d: 6.0, i: 600.0, i_clamp: 4.0}
     r_elbow_flex_joint: {p: 700.0, d: 4.0, i: 450, i_clamp: 4.0}
     r_forearm_roll_joint: {p: 300.0, d: 6.0, i: 300, i_clamp: 2.0}
@@ -84,7 +84,7 @@ l_arm_controller:
       mass: 3.3
       proxy:
         lambda: 3.0
-        acc_limit: 2.36
+        acc_limit: 1.5
         vel_limit: 2.088
         effort_limit: 11.8
     l_shoulder_lift_joint:
@@ -92,12 +92,12 @@ l_arm_controller:
       d: 10.0
       i: 700.0
       i_clamp: 4.0
-      mass: 1.160
+      mass: 2.0
       proxy:
         lambda: 3.0
-        acc_limit: 2.667
+        acc_converge: 1.5
         vel_limit: 2.082
-        effort_limit: 11.645
+        effort_limit: 8.0
     l_upper_arm_roll_joint: {p: 1000.0, d: 6.0, i: 600.0, i_clamp: 4.0}
     l_elbow_flex_joint: {p: 700.0, d: 4.0, i: 450, i_clamp: 4.0}
     l_forearm_roll_joint: {p: 300.0, d: 6.0, i: 300, i_clamp: 2.0}
