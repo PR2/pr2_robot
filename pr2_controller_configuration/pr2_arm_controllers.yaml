@@ -84,7 +84,7 @@ l_arm_controller:
       mass: 3.3
       proxy:
         lambda: 3.0
-        acc_limit: 1.5
+        acc_converge: 1.5
         vel_limit: 2.088
         effort_limit: 11.8
     l_shoulder_lift_joint:
