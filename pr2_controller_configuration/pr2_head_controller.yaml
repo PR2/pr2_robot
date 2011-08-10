@@ -8,7 +8,7 @@ head_traj_controller:
       d: 2.0
       i_clamp: 0.5 
     head_tilt_joint:
-      p: 49.6
+      p: 100.0
       i: 2.0
-      d: 1.6
+      d: 3.0
       i_clamp: 0.1 
