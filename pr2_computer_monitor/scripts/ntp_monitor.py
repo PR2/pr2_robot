@@ -98,10 +98,12 @@ def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None,
                                 
             else:
                 st.level = DiagnosticStatus.ERROR
-                st.message = "Error Running ntpupdate. Returned %d" % res
+                st.message = "Error Running ntpdate. Returned %d" % res
                 st.values = [ KeyValue("Offset (us)", "N/A"),
-                              KeyValue("Offset tolerance (us)", str(error_offset)),
-                              KeyValue("Offset tolerance (us) for Error", str(off)) ]
+                              KeyValue("Offset tolerance (us)", str(off)),
+                              KeyValue("Offset tolerance (us) for Error", str(error_offset)),
+                              KeyValue("Output", o),
+                              KeyValue("Errors", e) ]
 
 
         msg = DiagnosticArray()
