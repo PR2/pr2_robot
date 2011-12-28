@@ -2,7 +2,7 @@ r_shoulder_pan_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
   joint: r_shoulder_pan_joint
   pid: &shoulder_pan_velocity_gains
-    p: 30
+    p: 18.0
     i: 4.67
     d: 0.0
     i_clamp: 100.0
@@ -10,7 +10,7 @@ r_shoulder_lift_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
   joint: r_shoulder_lift_joint
   pid: &shoulder_lift_velocity_gains
-    p: 30.0
+    p: 10.0
     i: 5.67
     d: 0
     i_clamp: 100.0
@@ -18,7 +18,7 @@ r_upper_arm_roll_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
   joint: r_upper_arm_roll_joint
   pid: &upper_arm_roll_velocity_gains
-    p: 7
+    p: 6.0
     i: 42.9
     d: 0
     i_clamp: 100.0
@@ -26,7 +26,7 @@ r_elbow_flex_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
   joint: r_elbow_flex_joint
   pid: &elbow_flex_velocity_gains
-    p: 5
+    p: 4.0
     i: 20.0
     d: 0
     i_clamp: 100.0
@@ -34,7 +34,7 @@ r_forearm_roll_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
   joint: r_forearm_roll_joint
   pid: &forearm_roll_velocity_gains
-    p: 20.0
+    p: 6.0
     i: 15.0
     d: 0
     i_clamp: 100.0
@@ -42,7 +42,7 @@ r_wrist_flex_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
   joint: r_wrist_flex_joint
   pid: &wrist_flex_velocity_gains
-    p: 8.0
+    p: 4.0
     i: 25.0
     d: 0
     i_clamp: 100.0
@@ -50,7 +50,7 @@ r_wrist_roll_velocity_controller:
   type: robot_mechanism_controllers/JointVelocityController
   joint: r_wrist_roll_joint
   pid: &wrist_roll_velocity_gains
-    p: 8.0
+    p: 4.0
     i: 25.0
     d: 0
     i_clamp: 100.0
