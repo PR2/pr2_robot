@@ -9,6 +9,7 @@
   <license>BSD</license>  
   <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_robot</url>
+  <depend stack="audio_common" /> <!-- sound_play -->
   <depend stack="camera_drivers" /> <!-- prosilica_camera, wge100_camera -->
   <depend stack="common_msgs" /> <!-- sensor_msgs, diagnostic_msgs -->
   <depend stack="diagnostics" /> <!-- diagnostic_updater, diagnostic_aggregator -->
@@ -27,8 +28,7 @@
   <depend stack="pr2_power_drivers" /> <!-- pr2_power_board, ocean_battery_driver, power_monitor -->
   <depend stack="robot_model" /> <!-- robot_state_publisher -->
   <depend stack="ros" />
-  <depend stack="ros_comm" /> <!-- std_msgs, rosbag, std_srvs, roscpp, rospy -->
-  <depend stack="sound_drivers" /> <!-- sound_play -->
+  <depend stack="ros_comm" /> <!-- std_msgs, rosbag, rospy, roscpp, std_srvs -->
   <depend stack="wifi_drivers" /> <!-- wifi_ddwrt -->
 
 </stack>
