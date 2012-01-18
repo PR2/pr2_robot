@@ -41,8 +41,9 @@ roslib.load_manifest('pr2_bringup')
 import rospy
 import getopt
 import yaml
+import sys
 from std_msgs.msg import *
-from pr2_mechanism_msgs.srv import LoadController, UnloadController, SwitchController, SwitchControllerRequest
+from pr2_mechanism_msgs.srv import LoadController, UnloadController, SwitchController, SwitchControllerRequest, ListControllers
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
 from pr2_controllers_msgs.srv import QueryCalibrationState
 from std_msgs.msg import Bool
@@ -55,13 +56,19 @@ calibration_params_namespace = "calibration_controllers"
 load_controller = rospy.ServiceProxy('pr2_controller_manager/load_controller', LoadController)
 unload_controller = rospy.ServiceProxy('pr2_controller_manager/unload_controller', UnloadController)
 switch_controller = rospy.ServiceProxy('pr2_controller_manager/switch_controller', SwitchController)
+list_controllers = rospy.ServiceProxy('pr2_controller_manager/list_controllers', ListControllers)
 
 hold_position = {'r_shoulder_pan': -0.7, 'l_shoulder_pan': 0.7, 'r_elbow_flex': -2.0, 
                  'l_elbow_flex': -2.0, 'r_upper_arm_roll': 0.0, 'l_upper_arm_roll': 0.0, 
                  'r_shoulder_lift': 1.0, 'l_shoulder_lift': 1.0}
 
+force_calibration = False
+
 def get_controller_name(joint_name):
     return calibration_params_namespace+"/calibrate/cal_%s" % joint_name
+
+def set_force_calibration(joint_name):
+    rospy.set_param(calibration_params_namespace+"/calibrate/cal_%s/force_calibration" % joint_name, True)
 
 def get_holding_name(joint_name):
     return "%s/hold/%s_position_controller" % (calibration_params_namespace, joint_name)
@@ -157,6 +164,9 @@ class CalibrateParallel:
         # spawn calibration controllers for all joints
         for j in joints:
             rospy.logdebug("Loading controller: %s" %get_controller_name(j))
+            global force_calibration
+            if force_calibration:
+                set_force_calibration(j)
             resp = load_controller(get_controller_name(j)) 
             if resp.ok:
                 # get service call to calibration controller to check calibration state
@@ -263,11 +273,13 @@ def main():
 
         
         # parse options
-        allowed_flags = ['alpha-casters', 'alpha-head', 'alpha2b-head', 'arms=']
+        allowed_flags = ['alpha-casters', 'alpha-head', 'alpha2b-head', 'arms=', 'force_calibration', 'recalibrate']
         opts, args = getopt.gnu_getopt(rospy.myargv(), 'h', allowed_flags)
         caster_list = ['caster_fl', 'caster_fr', 'caster_bl', 'caster_br']
         head_list = ['head_pan', 'head_tilt']
         arms = 'auto'
+        recalibrate = False
+        global force_calibration
         for o, a in opts:
             if o == '-h':
                 rospy.loginfo("Flags:", ' '.join(['--'+f for f in allowed_flags]))
@@ -280,6 +292,11 @@ def main():
                 head_list = ['head_pan_alpha2', 'head_tilt_alpha2b']
             elif o == '--arms':
                 arms = a
+            elif o == '--force_calibration':
+                force_calibration = True
+            elif o == '--recalibrate':
+                recalibrate = True
+                force_calibration = True
 
         if arms not in ['both', 'none', 'left', 'right', 'auto']:
             print 'Arms must be "both", "none", "left", "right", or "auto"'
@@ -301,8 +318,9 @@ def main():
         # status publishing
         imustatus = True
         joints_status = False
-        pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True)
-        pub_calibrated.publish(False)
+        if not recalibrate:
+            pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True)
+            pub_calibrated.publish(False)
         status = StatusPub()
 
         # Auto arm selection, determined based on which joints exist.
@@ -347,6 +365,15 @@ def main():
         head = CalibrateSequence([head_list, ['laser_tilt']], status)
         caster = CalibrateSequence([caster_list], status)
 
+        # if recalibrating, stop all running controllers first
+        if recalibrate:
+            controller_list = list_controllers()
+            def is_running(c) : return c[1]=='running'
+            running_controllers = [c[0] for c in filter(is_running, zip(controller_list.controllers, controller_list.state))]
+            print "Running controllers : ", running_controllers
+            if not switch_controller([], running_controllers, SwitchControllerRequest.STRICT):
+                print "Failed to stop controllers"
+                sys.exit(1)
         
         # calibrate imu and torso
         if not torso.is_calibrated():
@@ -388,7 +415,6 @@ def main():
         joints_status = True
         status.publish()
 
-
         
     finally:
         rospy.loginfo("Bringing down calibration node")
@@ -410,9 +436,14 @@ def main():
         else:
             rospy.loginfo('Calibration completed in %f sec' %(rospy.Time.now() - calibration_start_time).to_sec())
 
-        if joints_status:
-            pub_calibrated.publish(True)
-        rospy.spin()
+        if recalibrate:
+            if not switch_controller(running_controllers, [], SwitchControllerRequest.STRICT):
+                print "Could not start previously running controllers"
+            
+        if not recalibrate:
+            if joints_status:
+                pub_calibrated.publish(True)
+            rospy.spin()
             
 
 if __name__ == '__main__': main()
