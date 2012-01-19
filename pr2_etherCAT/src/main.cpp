@@ -562,35 +562,56 @@ lock_fd(int fd)
   return rv;
 }
 
-#define PIDDIR "/var/tmp/run/"
-#define PIDFILE "pr2_etherCAT.pid"
-static int setupPidFile(void)
+
+static const char* PIDDIR = "/var/tmp/run/";
+
+std::string generatePIDFilename(const char* interface)
+{
+  std::string filename;
+  if (interface != NULL)
+  {
+    // There should a lock file for each EtherCAT interface instead of for entire computer
+    // It is entirely possible to have different EtherCAT utilities operating indepedantly
+    //  on different interfaces
+    filename = std::string(PIDDIR) + "EtherCAT_" +  std::string(interface) + ".pid";
+  }
+  else 
+  {
+    filename = std::string(PIDDIR) + std::string("pr2_etherCAT.pid"); 
+  }
+  return filename;
+}
+
+
+static int setupPidFile(const char* interface)
 {
   int rv = -1;
   pid_t pid;
   int fd;
   FILE *fp = NULL;
 
+  std::string filename = generatePIDFilename(interface);
+
   umask(0);
   mkdir(PIDDIR, 0777);
-  fd = open(PIDDIR PIDFILE, O_RDWR | O_CREAT | O_EXCL, S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP | S_IWOTH | S_IROTH);
+  fd = open(filename.c_str(), O_RDWR | O_CREAT | O_EXCL, S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP | S_IWOTH | S_IROTH);
   if (fd == -1)
   {
     if (errno != EEXIST)
     {
-      ROS_FATAL("Unable to create pid file '%s': %s", PIDDIR PIDFILE, strerror(errno));
+      ROS_FATAL("Unable to create pid file '%s': %s", filename.c_str(), strerror(errno));
       goto end;
     }
 
-    if ((fd = open(PIDDIR PIDFILE, O_RDWR)) < 0)
+    if ((fd = open(filename.c_str(), O_RDWR)) < 0)
     {
-      ROS_FATAL("Unable to open pid file '%s': %s", PIDDIR PIDFILE, strerror(errno));
+      ROS_FATAL("Unable to open pid file '%s': %s", filename.c_str(), strerror(errno));
       goto end;
     }
 
     if ((fp = fdopen(fd, "rw")) == NULL)
     {
-      ROS_FATAL("Can't read from '%s': %s", PIDDIR PIDFILE, strerror(errno));
+      ROS_FATAL("Can't read from '%s': %s", filename.c_str(), strerror(errno));
       goto end;
     }
     pid = -1;
@@ -598,9 +619,9 @@ static int setupPidFile(void)
     {
       int rc;
 
-      if ((rc = unlink(PIDDIR PIDFILE)) == -1)
+      if ((rc = unlink(filename.c_str())) == -1)
       {
-        ROS_FATAL("Can't remove stale pid file '%s': %s", PIDDIR PIDFILE, strerror(errno));
+        ROS_FATAL("Can't remove stale pid file '%s': %s", filename.c_str(), strerror(errno));
         goto end;
       }
     } else {
@@ -609,18 +630,18 @@ static int setupPidFile(void)
     }
   }
 
-  unlink(PIDDIR PIDFILE);
-  fd = open(PIDDIR PIDFILE, O_RDWR | O_CREAT | O_EXCL, S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP | S_IWOTH | S_IROTH);
+  unlink(filename.c_str());
+  fd = open(filename.c_str(), O_RDWR | O_CREAT | O_EXCL, S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP | S_IWOTH | S_IROTH);
 
   if (fd == -1)
   {
-    ROS_FATAL("Unable to open pid file '%s': %s", PIDDIR PIDFILE, strerror(errno));
+    ROS_FATAL("Unable to open pid file '%s': %s", filename.c_str(), strerror(errno));
     goto end;
   }
 
   if (lock_fd(fd) == -1)
   {
-    ROS_FATAL("Unable to lock pid file '%s': %s", PIDDIR PIDFILE, strerror(errno));
+    ROS_FATAL("Unable to lock pid file '%s': %s", filename.c_str(), strerror(errno));
     goto end;
   }
 
@@ -640,9 +661,10 @@ end:
   return rv;
 }
 
-static void cleanupPidFile(void)
+static void cleanupPidFile(const char* interface)
 {
-  unlink(PIDDIR PIDFILE);
+  std::string filename = generatePIDFilename(interface);
+  unlink(filename.c_str());
 }
 
 #define CLOCK_PRIO 0
@@ -657,9 +679,6 @@ int main(int argc, char *argv[])
     perror("mlockall");
     return -1;
   }
-
-  // Setup single instance
-  if (setupPidFile() < 0) return -1;
 
   // Initialize ROS and parse command-line arguments
   ros::init(argc, argv, "realtime_loop");
@@ -707,6 +726,20 @@ int main(int argc, char *argv[])
   if (!g_options.xml_)
     Usage("You must specify a robot description XML file");
 
+  // The current EtherCAT software creates a lock for any EtherCAT master.
+  // This lock prevents two EtherCAT masters from running on the same computer.
+  // However, this locking scheme is too restrictive.  
+  // Two EtherCAT masters can run without conflicting with each other
+  // as long as they are communication with different sets of EtherCAT devices.
+  // A better locking scheme would be to prevent two EtherCAT 
+  // masters from running on same Ethernet interface.  
+  // To transition to having only lock per interface, this will create both 
+  // th global and per-interface lock files for next ROS release (Fuerte).  
+  // In the Galapogos ROS release, the global EtherCAT lock will be removed 
+  // and only the pre-interface lock will remain.
+  if (setupPidFile(NULL) < 0) return -1;
+  if (setupPidFile(g_options.interface_) < 0) return -1;
+
   ros::NodeHandle node(name);
 
   // Catch attempts to quit
@@ -729,8 +762,9 @@ int main(int argc, char *argv[])
   ros::spin();
   pthread_join(controlThread, (void **)&rv);
 
-  // Cleanup pid file
-  cleanupPidFile();
+  // Cleanup pid files
+  cleanupPidFile(NULL);
+  cleanupPidFile(g_options.interface_);
 
   return rv;
 }
