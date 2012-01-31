@@ -1,3 +1,57 @@
+shoulder_pan_gains: &shoulder_pan_gains
+  p: 2400.0
+  d: 18.0
+  i: 800.0
+  i_clamp: 4.0
+  mass: 3.3
+  proxy:
+    lambda: 3.0
+    acc_converge: 1.5
+    vel_limit: 2.088
+    effort_limit: 11.8
+
+shoulder_lift_gains: &shoulder_lift_gains
+  p: 1200.0
+  d: 10.0
+  i: 700.0
+  i_clamp: 4.0
+  mass: 2.0
+  proxy:
+    lambda: 3.0
+    acc_converge: 1.5
+    vel_limit: 2.082
+    effort_limit: 8.0
+
+upper_arm_roll_gains: &upper_arm_roll_gains
+  p: 1000.0
+  i: 600.0
+  d: 6.0
+  i_clamp: 4.0
+
+elbow_flex_gains: &elbow_flex_gains
+  p: 700.0
+  i: 450.0
+  d: 4.0
+  i_clamp: 4.0
+
+forearm_roll_gains: &forearm_roll_gains
+  p: 300.0
+  i: 300.0
+  d: 6.0
+  i_clamp: 2.0
+
+wrist_flex_gains: &wrist_flex_gains
+  p: 300.0
+  i: 300.0
+  d: 4.0
+  i_clamp: 2.0
+
+wrist_roll_gains: &wrist_roll_gains
+  p: 300.0
+  i: 300.0
+  d: 4.0
+  i_clamp: 2.0
+
 r_arm_controller:
   type: "robot_mechanism_controllers/JointTrajectoryActionController"
   joints:
@@ -9,33 +63,13 @@ r_arm_controller:
     - r_wrist_flex_joint
     - r_wrist_roll_joint
   gains:
-    r_shoulder_pan_joint:
-      p: 2400.0
-      d: 18.0
-      i: 800.0
-      i_clamp: 4.0
-      mass: 3.3
-      proxy:
-        lambda: 3.0
-        acc_converge: 1.5
-        vel_limit: 2.088
-        effort_limit: 11.8
-    r_shoulder_lift_joint:
-      p: 1200.0
-      d: 10.0
-      i: 700.0
-      i_clamp: 4.0
-      mass: 2.0
-      proxy:
-        lambda: 3.0
-        acc_converge: 1.5
-        vel_limit: 2.082
-        effort_limit: 8.0
-    r_upper_arm_roll_joint: {p: 1000.0, d: 6.0, i: 600.0, i_clamp: 4.0}
-    r_elbow_flex_joint: {p: 700.0, d: 4.0, i: 450, i_clamp: 4.0}
-    r_forearm_roll_joint: {p: 300.0, d: 6.0, i: 300, i_clamp: 2.0}
-    r_wrist_flex_joint: {p: 300.0, d: 4.0, i: 300, i_clamp: 2.0}
-    r_wrist_roll_joint: {p: 300.0, d: 4.0, i: 300, i_clamp: 2.0}
+    r_shoulder_pan_joint:    *shoulder_pan_gains
+    r_shoulder_lift_joint:   *shoulder_lift_gains
+    r_upper_arm_roll_joint:  *upper_arm_roll_gains
+    r_elbow_flex_joint:      *elbow_flex_gains
+    r_forearm_roll_joint:    *forearm_roll_gains
+    r_wrist_flex_joint:      *wrist_flex_gains
+    r_wrist_roll_joint:      *wrist_roll_gains
   joint_trajectory_action_node:
     joints:
       - r_shoulder_pan_joint
@@ -62,9 +96,6 @@ r_arm_controller:
       r_wrist_roll_joint:
         goal: 0.02
   
-
-
-
 l_arm_controller:
   type: "robot_mechanism_controllers/JointTrajectoryActionController"
   joints:
@@ -76,34 +107,13 @@ l_arm_controller:
     - l_wrist_flex_joint
     - l_wrist_roll_joint
   gains:
-    l_shoulder_pan_joint:
-      p: 2400.0
-      d: 18.0
-      i: 800.0
-      i_clamp: 4.0}
-      mass: 3.3
-      proxy:
-        lambda: 3.0
-        acc_converge: 1.5
-        vel_limit: 2.088
-        effort_limit: 11.8
-    l_shoulder_lift_joint:
-      p: 1200.0
-      d: 10.0
-      i: 700.0
-      i_clamp: 4.0
-      mass: 2.0
-      proxy:
-        lambda: 3.0
-        acc_converge: 1.5
-        vel_limit: 2.082
-        effort_limit: 8.0
-    l_upper_arm_roll_joint: {p: 1000.0, d: 6.0, i: 600.0, i_clamp: 4.0}
-    l_elbow_flex_joint: {p: 700.0, d: 4.0, i: 450, i_clamp: 4.0}
-    l_forearm_roll_joint: {p: 300.0, d: 6.0, i: 300, i_clamp: 2.0}
-    l_wrist_flex_joint: {p: 300.0, d: 4.0, i: 300, i_clamp: 2.0}
-    l_wrist_roll_joint: {p: 300.0, d: 4.0, i: 300, i_clamp: 2.0}
-
+    l_shoulder_pan_joint:    *shoulder_pan_gains
+    l_shoulder_lift_joint:   *shoulder_lift_gains
+    l_upper_arm_roll_joint:  *upper_arm_roll_gains
+    l_elbow_flex_joint:      *elbow_flex_gains
+    l_forearm_roll_joint:    *forearm_roll_gains
+    l_wrist_flex_joint:      *wrist_flex_gains
+    l_wrist_roll_joint:      *wrist_roll_gains
   joint_trajectory_action_node:
     joints:
       - l_shoulder_pan_joint
