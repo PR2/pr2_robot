@@ -67,6 +67,7 @@ static struct
   char *program_;
   char *interface_;
   char *xml_;
+  char *rosparam_;
   bool allow_unprogrammed_;
   bool stats_;
 } g_options;
@@ -79,7 +80,8 @@ void Usage(string msg = "")
   fprintf(stderr, "  Available options\n");
   fprintf(stderr, "    -i, --interface <interface> Connect to EtherCAT devices on this interface\n");
   fprintf(stderr, "    -s, --stats                 Publish statistics on the RT loop jitter on \"pr2_etherCAT/realtime\" in seconds\n");
-  fprintf(stderr, "    -x, --xml <file|param>      Load the robot description from this file or parameter name\n");
+  fprintf(stderr, "    -x, --xml <file>            Load the robot description from this file\n");
+  fprintf(stderr, "    -r, --rosparam <param>      Load the robot description from this parameter name\n");
   fprintf(stderr, "    -u, --allow_unprogrammed    Allow control loop to run with unprogrammed devices\n");
   fprintf(stderr, "    -h, --help                  Print this message and exit\n");
   if (msg != "")
@@ -316,16 +318,33 @@ void *controlLoop(void *)
   // Load robot description
   TiXmlDocument xml;
   struct stat st;
-  if (0 == stat(g_options.xml_, &st))
+  if (g_options.rosparam_ != NULL)
+  {
+    if (ros::param::get(g_options.rosparam_, g_robot_desc))
+    {
+      xml.Parse(g_robot_desc.c_str());
+    }
+    else
+    {
+      ROS_FATAL("Could not load the xml from parameter server: %s", g_options.rosparam_);
+      rv = -1;
+      goto end;
+    }    
+  }
+  else if (0 == stat(g_options.xml_, &st))
   {
     xml.LoadFile(g_options.xml_);
   }
   else
   {
+    // In ROS Galapagos remove this fall-back to rosparam functionality
     ROS_INFO("Xml file not found, reading from parameter server");
     ros::NodeHandle top_level_node;
     if (top_level_node.getParam(g_options.xml_, g_robot_desc))
+    {
       xml.Parse(g_robot_desc.c_str());
+      ROS_WARN("Using -x to load robot description from parameter server is depricated.  Use -r instead.");
+    }
     else
     {
       ROS_FATAL("Could not load the xml from parameter server: %s", g_options.xml_);
@@ -333,6 +352,7 @@ void *controlLoop(void *)
       goto end;
     }
   }
+  
   root_element = xml.RootElement();
   root = xml.FirstChildElement("robot");
   if (!root || !root_element)
@@ -685,6 +705,8 @@ int main(int argc, char *argv[])
 
   // Parse options
   g_options.program_ = argv[0];
+  g_options.xml_ = NULL;
+  g_options.rosparam_ = NULL;
   while (1)
   {
     static struct option long_options[] = {
@@ -693,6 +715,7 @@ int main(int argc, char *argv[])
       {"allow_unprogrammed", no_argument, 0, 'u'},
       {"interface", required_argument, 0, 'i'},
       {"xml", required_argument, 0, 'x'},
+      {"rosparam", required_argument, 0, 'r'},
     };
     int option_index = 0;
     int c = getopt_long(argc, argv, "hi:usx:", long_options, &option_index);
@@ -711,6 +734,9 @@ int main(int argc, char *argv[])
       case 'x':
         g_options.xml_ = optarg;
         break;
+      case 'r':
+        g_options.rosparam_ = optarg;
+        break;
       case 's':
         g_options.stats_ = 1;
         break;
@@ -723,8 +749,14 @@ int main(int argc, char *argv[])
 
   if (!g_options.interface_)
     Usage("You must specify a network interface");
-  if (!g_options.xml_)
-    Usage("You must specify a robot description XML file");
+  if (!g_options.xml_ && !g_options.rosparam_)
+  {
+    Usage("You must specify either an XML file or rosparam for robot description");
+  }
+  if (g_options.xml_ && g_options.rosparam_)
+  {
+    Usage("You must not specify both a rosparm and XML file for robot description");
+  }
 
   // The current EtherCAT software creates a lock for any EtherCAT master.
   // This lock prevents two EtherCAT masters from running on the same computer.
