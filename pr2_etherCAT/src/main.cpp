@@ -718,7 +718,7 @@ int main(int argc, char *argv[])
       {"rosparam", required_argument, 0, 'r'},
     };
     int option_index = 0;
-    int c = getopt_long(argc, argv, "hi:usx:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "hi:usx:r:", long_options, &option_index);
     if (c == -1) break;
     switch (c)
     {
