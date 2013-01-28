@@ -6,7 +6,7 @@
 
   </description>
   <author>Maintained by Wim Meeussen</author>
-  <license>BSD</license>  
+  <license>BSD</license>
   <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_robot</url>
   <depend stack="audio_common" /> <!-- sound_play -->
@@ -30,5 +30,7 @@
   <depend stack="ros" />
   <depend stack="ros_comm" /> <!-- std_msgs, rosbag, rospy, roscpp, std_srvs -->
   <depend stack="wifi_drivers" /> <!-- wifi_ddwrt -->
+
+  <depend stack="pr2_hardware" />
 
 </stack>

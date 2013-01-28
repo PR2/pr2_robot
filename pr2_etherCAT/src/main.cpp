@@ -116,7 +116,7 @@ static struct
   double overrun_cm;
 
   // These values are set when realtime loop does not meet performace expections
-  bool rt_loop_not_making_timing; 
+  bool rt_loop_not_making_timing;
   double halt_rt_loop_frequency;
   double rt_loop_frequency;
 } g_stats;
@@ -164,7 +164,7 @@ static void publishDiagnostics(realtime_tools::RealtimePublisher<diagnostic_msgs
     status.addf("Avg Loop Jitter (us)", "%.2f", avg_jitter * USEC_PER_SECOND);
     status.addf("Control Loop Overruns", "%d", g_stats.overruns);
     status.addf("Recent Control Loop Overruns", "%d", g_stats.recent_overruns);
-    status.addf("Last Control Loop Overrun Cause", "ec: %.2fus, cm: %.2fus", 
+    status.addf("Last Control Loop Overrun Cause", "ec: %.2fus, cm: %.2fus",
                 g_stats.overrun_ec*USEC_PER_SECOND, g_stats.overrun_cm*USEC_PER_SECOND);
     status.addf("Last Overrun Loop Time (us)", "%.2f", g_stats.overrun_loop_sec * USEC_PER_SECOND);
     status.addf("Realtime Loop Frequency", "%.4f", g_stats.rt_loop_frequency);
@@ -235,11 +235,11 @@ class RTLoopHistory
 {
 public:
   RTLoopHistory(unsigned length, double default_value) :
-    index_(0), 
+    index_(0),
     length_(length),
     history_(new double[length])
   {
-    for (unsigned i=0; i<length_; ++i) 
+    for (unsigned i=0; i<length_; ++i)
       history_[i] = default_value;
   }
 
@@ -248,8 +248,8 @@ public:
     delete[] history_;
     history_ = NULL;
   }
-  
-  void sample(double value) 
+
+  void sample(double value)
   {
     index_ = (index_+1) % length_;
     history_[index_] = value;
@@ -258,7 +258,7 @@ public:
   double average() const
   {
     double sum(0.0);
-    for (unsigned i=0; i<length_; ++i) 
+    for (unsigned i=0; i<length_; ++i)
       sum+=history_[i];
     return sum / double(length_);
   }
@@ -290,9 +290,9 @@ void *controlLoop(void *)
   double min_acceptable_rt_loop_frequency;
   if (!node.getParam("min_acceptable_rt_loop_frequency", min_acceptable_rt_loop_frequency))
   {
-    min_acceptable_rt_loop_frequency = 750.0; 
-  } 
-  else 
+    min_acceptable_rt_loop_frequency = 750.0;
+  }
+  else
   {
     ROS_WARN("min_acceptable_rt_loop_frequency changed to %f", min_acceptable_rt_loop_frequency);
   }
@@ -300,7 +300,7 @@ void *controlLoop(void *)
   double last_rt_monitor_time;
   double rt_loop_monitor_period = 0.6 / 3;
   // Keep history of last 3 calculation intervals.
-  RTLoopHistory rt_loop_history(3, 1000.0); 
+  RTLoopHistory rt_loop_history(3, 1000.0);
 
   if (g_options.stats_){
     rtpublisher = new realtime_tools::RealtimePublisher<std_msgs::Float64>(node, "realtime", 2);
@@ -360,7 +360,7 @@ void *controlLoop(void *)
     ROS_FATAL("Unable to create control thread: rv = %d", rv);
     goto end;
   }
-  
+
   // Set to realtime scheduler for this thread
   struct sched_param thread_param;
   policy = SCHED_FIFO;
@@ -385,7 +385,7 @@ void *controlLoop(void *)
     double this_loop_start = now();
     g_stats.loop_acc(this_loop_start - last_loop_start);
     last_loop_start = this_loop_start;
-    
+
     double start = now();
     if (g_reset_motors)
     {
@@ -417,14 +417,14 @@ void *controlLoop(void *)
       last_published = end;
     }
 
-    // Realtime loop should run about 1000Hz.  
+    // Realtime loop should run about 1000Hz.
     // Missing timing on a control cycles usually causes a controller glitch and actuators to jerk.
     // When realtime loop misses a lot of cycles controllers will perform poorly and may cause robot to shake.
     // Halt motors if realtime loop does not run enough cycles over a given period.
     ++rt_cycle_count;
     if ((start - last_rt_monitor_time) > rt_loop_monitor_period)
     {
-      // Calculate new average rt loop frequency       
+      // Calculate new average rt loop frequency
       double rt_loop_frequency = double(rt_cycle_count) / rt_loop_monitor_period;
 
       // Use last X samples of frequency when deciding whether or not to halt
@@ -448,12 +448,12 @@ void *controlLoop(void *)
     // Compute end of next period
     timespecInc(tick, period);
 
-    struct timespec before; 
-    clock_gettime(CLOCK_REALTIME, &before); 
+    struct timespec before;
+    clock_gettime(CLOCK_REALTIME, &before);
     if ((before.tv_sec + double(before.tv_nsec)/NSEC_PER_SECOND) > (tick.tv_sec + double(tick.tv_nsec)/NSEC_PER_SECOND))
     {
       // Total amount of time the loop took to run
-      g_stats.overrun_loop_sec = (before.tv_sec + double(before.tv_nsec)/NSEC_PER_SECOND) - 
+      g_stats.overrun_loop_sec = (before.tv_sec + double(before.tv_nsec)/NSEC_PER_SECOND) -
         (tick.tv_sec + double(tick.tv_nsec)/NSEC_PER_SECOND);
 
       // We overran, snap to next "period"
@@ -481,8 +481,8 @@ void *controlLoop(void *)
     clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &tick, NULL);
 
     // Calculate RT loop jitter
-    struct timespec after; 
-    clock_gettime(CLOCK_REALTIME, &after); 
+    struct timespec after;
+    clock_gettime(CLOCK_REALTIME, &after);
     double jitter = (after.tv_sec - tick.tv_sec + double(after.tv_nsec-tick.tv_nsec)/NSEC_PER_SECOND);
 
     g_stats.jitter_acc(jitter);
@@ -490,10 +490,10 @@ void *controlLoop(void *)
     // Publish realtime loops statistics, if requested
     if (rtpublisher)
     {
-      if (rtpublisher->trylock()) 
-      { 
-        rtpublisher->msg_.data  = jitter; 
-        rtpublisher->unlockAndPublish(); 
+      if (rtpublisher->trylock())
+      {
+        rtpublisher->msg_.data  = jitter;
+        rtpublisher->unlockAndPublish();
       }
     }
 
@@ -513,7 +513,7 @@ void *controlLoop(void *)
   }
   ec.update(false, true);
 
-  //pthread_join(diagnosticThread, 0);  
+  //pthread_join(diagnosticThread, 0);
 
 end:
   publisher.stop();
