@@ -6,7 +6,7 @@
 
   </description>
   <author>Maintained by Wim Meeussen</author>
-  <license>BSD</license>  
+  <license>BSD</license>
   <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_robot</url>
   <depend stack="audio_common" /> <!-- sound_play -->
