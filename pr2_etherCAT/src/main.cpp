@@ -44,7 +44,7 @@
 #include <pthread.h>
 
 #include <diagnostic_updater/DiagnosticStatusWrapper.h>
-#include <pr2_controller_manager/controller_manager.h>
+#include <pr2_hardware/controller_manager.h>
 #include <ethercat_hardware/ethercat_hardware.h>
 
 #include <ros/ros.h>
@@ -311,7 +311,7 @@ void *controlLoop(void *)
   ec.init(g_options.interface_, g_options.allow_unprogrammed_);
 
   // Create controller manager
-  pr2_controller_manager::ControllerManager cm(ec.hw_);
+  pr2_hardware::ControllerManager cm(ec.hw_);
 
   // Load robot description
   TiXmlDocument xml;
