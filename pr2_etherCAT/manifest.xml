@@ -5,7 +5,7 @@ Main loop that runs the robot.
   <author>Rob Wheeler/wheeler@willowgarage.com</author>
   <license>BSD</license>
   <review status="Doc Reviewed" notes=""/>
-  <depend package="pr2_controller_manager"/>
+  <depend package="pr2_hardware"/>
   <depend package="pr2_mechanism_model" />
   <depend package="pr2_hardware_interface"/>
   <depend package="roscpp" />

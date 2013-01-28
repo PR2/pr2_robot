@@ -31,4 +31,5 @@
   <depend stack="ros_comm" /> <!-- std_msgs, rosbag, rospy, roscpp, std_srvs -->
   <depend stack="wifi_drivers" /> <!-- wifi_ddwrt -->
 
+  <depend stack="pr2_hardware" />
 </stack>
