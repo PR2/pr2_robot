@@ -45,6 +45,13 @@ import time
 
 import re
 
+##### monkey-patch to suppress threading error message in python 2.7.3
+##### See http://stackoverflow.com/questions/13193278/understand-python-threading-bug
+if sys.version_info[:3] == (2, 7, 3):
+    import threading
+    threading._DummyThread._Thread__stop = lambda x: 42
+#####
+
 NAME = 'ntp_monitor'
 
 def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None, error_offset = 5000000):
