@@ -11,11 +11,12 @@
   <param name="pr2_etherCAT/realtime_socket_timeout" value="5000" />
 
   <!-- PR2 Calibration -->
-  <node name="calibrate_pr2" pkg="pr2_bringup" type="calibrate_pr2.py" output="screen" 
+  <node name="calibrate_pr2" pkg="pr2_bringup" type="calibrate_pr2.py" output="screen"
         args="$(find pr2_controller_configuration)/pr2_calibration_controllers.yaml $(find pr2_controller_configuration)/pr2_joint_position_controllers.yaml"/>
 
   <!-- Controller Manager -->
   <include file="$(find pr2_controller_manager)/controller_manager.launch" />
+  <node pkg="pr2_hardware" type="pr2_controller_manager_adapter.py" name="pr2_controller_manager_adapter" />
 
   <!-- PS3 joystick for A2 servers -->
   <node machine="c2" pkg="joy" type="joy_node" name="joy" >
@@ -40,7 +41,7 @@
     <param name="debug_level" type="int" value="0" />
   </node>
   <node pkg="power_monitor" type="power_monitor"  name="power_monitor" respawn="true"/>
-  
+
   <!-- Base Laser -->
   <node machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="base_hokuyo_node" args="scan:=base_scan">
     <param name="port" type="string" value="/etc/ros/sensors/base_hokuyo" />
@@ -96,7 +97,7 @@
   <include file="$(find pr2_bringup)/config/l_forearm_cam.launch" />
 
   <!-- Sound -->
-  <node pkg="sound_play" type="soundplay_node.py" machine="c1" name="sound_play" /> 
+  <node pkg="sound_play" type="soundplay_node.py" machine="c1" name="sound_play" />
 
   <!-- Runtime Diagnostics and Motor Trace Logging -->
   <node name="runtime_logger" machine="c1"  pkg="rosbag" type="record"
@@ -127,7 +128,7 @@
     <param name="router" type="string" value="wifi-router" />
    </node>
 
-  
+
   <!-- Diagnostics aggregation -->
   <node pkg="diagnostic_aggregator" type="aggregator_node"  name="diag_agg" />
 

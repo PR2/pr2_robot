@@ -9,6 +9,7 @@
   <review status="Doc Reviewed" notes=""/>
   <url>http://ros.org/wiki/pr2_bringup</url>
 
+  <depend package="pr2_hardware"/>
   <depend package="pr2_description"/>
   <depend package="pr2_machine"/>
   <depend package="pr2_etherCAT"/>
