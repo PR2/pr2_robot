@@ -1,0 +1,12 @@
+/build$
+.*\.pyc$
+.*\.cfgc$
+pr2_camera_synchronizer/cfg/cpp/pr2_camera_synchronizer/CameraSynchronizerConfig.h
+pr2_camera_synchronizer/docs/CameraSynchronizerConfig-usage.dox
+pr2_camera_synchronizer/docs/CameraSynchronizerConfig.dox
+pr2_camera_synchronizer/docs/CameraSynchronizerConfig.wikidoc
+pr2_camera_synchronizer/src/pr2_camera_synchronizer/cfg/CameraSynchronizerConfig.py
+pr2_camera_synchronizer/src/pr2_camera_synchronizer/cfg/__init__.py
+pr2_computer_monitor/bin/network_detector
+pr2_etherCAT/pr2_etherCAT
+pr2_run_stop_auto_restart/bin/run_stop_auto_restart
