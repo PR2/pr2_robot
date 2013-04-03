@@ -423,10 +423,10 @@ def check_mpstat(core_count = -1):
                 continue
 
             cpu_name = '%d' % (num_cores)
-            idle = lst[idle_col]
-            user = lst[3]
-            nice = lst[4]
-            system = lst[5]
+            idle = lst[idle_col].replace(',', '.')
+            user = lst[3].replace(',', '.')
+            nice = lst[4].replace(',', '.')
+            system = lst[5].replace(',', '.')
             
             core_level = 0
             usage = float(user) + float(nice)
