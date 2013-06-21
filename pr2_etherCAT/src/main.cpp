@@ -758,18 +758,15 @@ int main(int argc, char *argv[])
     Usage("You must not specify both a rosparm and XML file for robot description");
   }
 
-  // The current EtherCAT software creates a lock for any EtherCAT master.
-  // This lock prevents two EtherCAT masters from running on the same computer.
-  // However, this locking scheme is too restrictive.
+  // The previous EtherCAT software created a lock for any EtherCAT master.
+  // This lock prevented two EtherCAT masters from running on the same computer.
+  // However, this locking scheme was too restrictive.  
   // Two EtherCAT masters can run without conflicting with each other
   // as long as they are communication with different sets of EtherCAT devices.
-  // A better locking scheme would be to prevent two EtherCAT
-  // masters from running on same Ethernet interface.
-  // To transition to having only lock per interface, this will create both
-  // th global and per-interface lock files for next ROS release (Fuerte).
-  // In the Galapogos ROS release, the global EtherCAT lock will be removed
-  // and only the pre-interface lock will remain.
-  if (setupPidFile(NULL) < 0) return -1;
+  // A better locking scheme is to prevent two EtherCAT 
+  // masters from running on same Ethernet interface.  
+  // Therefore in the Groovy Galapagos ROS release, the global EtherCAT lock has been removed 
+  // and only the per-interface lock will remain.
   if (setupPidFile(g_options.interface_) < 0) return -1;
 
   ros::NodeHandle node(name);
