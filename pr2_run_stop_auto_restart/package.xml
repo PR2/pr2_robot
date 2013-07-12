@@ -1,0 +1,28 @@
+<package>
+  <name>pr2_run_stop_auto_restart</name>
+  <version>1.5.0</version>
+  <description>This package provides a node that monitors the state of the run stops of the pr2_robot. When the state of the
+   run stop changes from off to on, this node will automatically enable the power to the motors, and reset
+   the motors. This allows you to use the run stop as a 'pause' button. By using the run stop as a tool to
+   power up the robot, the run stop is also in reach of the user once the robot starts moving.</description>
+  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/pr2_run_stop_auto_restart</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Wim Meeussen</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>pr2_msgs</build_depend>
+  <build_depend>pr2_power_board</build_depend>
+  <build_depend>std_srvs</build_depend>
+  <build_depend>roscpp</build_depend>
+
+  <run_depend>pr2_msgs</run_depend>
+  <run_depend>pr2_power_board</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>roscpp</run_depend>
+</package>
