@@ -1,0 +1,28 @@
+<package>
+  <name>pr2_robot</name>
+  <version>1.5.0</version>
+  <description>This stack collects PR2-specific components that are used in bringing up
+  a robot.</description>
+  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/pr2_robot</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Maintained by Wim Meeussen</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>pr2_bringup</run_depend>
+  <run_depend>pr2_controller_configuration</run_depend>
+  <run_depend>pr2_etherCAT</run_depend>
+  <run_depend>pr2_computer_monitor</run_depend>
+  <run_depend>pr2_camera_synchronizer</run_depend>
+  <run_depend>pr2_run_stop_auto_restart</run_depend>
+  <run_depend>imu_monitor</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
