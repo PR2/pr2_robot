@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
 
 catkin_add_nosetests(test/parse_test.py)
 
-include_dirs(${catkin_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS})
 add_executable(network_detector src/network_detector.cpp)
 target_link_libraries(network_detector ${catkin_LIBRARIES})
 
