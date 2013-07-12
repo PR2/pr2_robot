@@ -1,0 +1,34 @@
+<package>
+  <name>imu_monitor</name>
+  <version>1.5.0</version>
+  <description>This package contains a single node that monitors the drift of the IMU
+gyroscopes. The results are published to the '/diagnostics' topic and
+are aggregated in the PR2 dashboard.</description>
+  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/imu_monitor</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Wim Meeussen</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- <build_depend>sensor_msgs</build_depend> -->
+  <!-- <build_depend>pr2_mechanism_controllers</build_depend> -->
+  <!-- <build_depend>kdl</build_depend> -->
+  <!-- <build_depend>rospy</build_depend> -->
+  <!-- <run_depend>sensor_msgs</run_depend> -->
+  <!-- <run_depend>pr2_mechanism_controllers</run_depend> -->
+  <!-- <run_depend>kdl</run_depend> -->
+  <!-- <run_depend>rospy</run_depend> -->
+  <!-- <test_depend>sensor_msgs</test_depend> -->
+  <!-- <test_depend>pr2_mechanism_controllers</test_depend> -->
+  <!-- <test_depend>kdl</test_depend> -->
+  <!-- <test_depend>rospy</test_depend> -->
+
+  <export>
+
+  </export>
+</package>
