@@ -1,0 +1,51 @@
+<package>
+  <name>pr2_bringup</name>
+  <version>1.5.0</version>
+  <description>Launch files and scripts needed to bring a PR2 up into a running state.</description>
+  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/pr2_bringup</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Wim Meeussen</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rostest</build_depend>
+
+  <run_depend>pr2_description</run_depend>
+  <run_depend>pr2_machine</run_depend>
+  <run_depend>pr2_etherCAT</run_depend>
+  <run_depend>pr2_controller_manager</run_depend>
+  <run_depend>pr2_controller_configuration</run_depend>
+  <run_depend>pr2_calibration_controllers</run_depend>
+  <run_depend>robot_mechanism_controllers</run_depend>
+  <run_depend>ethercat_trigger_controllers</run_depend>
+  <run_depend>pr2_head_action</run_depend>
+  <run_depend>pr2_gripper_action</run_depend>
+  <run_depend>joint_trajectory_action</run_depend>
+  <run_depend>single_joint_position_action</run_depend>
+  <run_depend>tf2_ros</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>robot_pose_ekf</run_depend>
+  <run_depend>pr2_camera_synchronizer</run_depend>
+  <run_depend>stereo_image_proc</run_depend>
+  <run_depend>hokuyo_node</run_depend>
+  <run_depend>wifi_ddwrt</run_depend>
+  <run_depend>microstrain_3dmgx2_imu</run_depend>
+  <run_depend>wge100_camera</run_depend>
+  <run_depend>prosilica_camera</run_depend>
+  <run_depend>sound_play</run_depend>
+  <run_depend>joy</run_depend>
+  <run_depend>std_srvs</run_depend>
+  <run_depend>pr2_run_stop_auto_restart</run_depend>
+  <run_depend>rosbag</run_depend>
+  <run_depend>pr2_power_board</run_depend>
+  <run_depend>ocean_battery_driver</run_depend>
+  <run_depend>power_monitor</run_depend>
+  <run_depend>pr2_computer_monitor</run_depend>
+  <run_depend>diagnostic_aggregator</run_depend>
+  <run_depend>pr2_dashboard_aggregator</run_depend>
+</package>

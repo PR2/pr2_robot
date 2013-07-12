@@ -1,9 +1,22 @@
-cmake_minimum_required(VERSION 2.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-rosbuild_init()
+# http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
+cmake_minimum_required(VERSION 2.8.3)
+project(pr2_computer_monitor)
+# Load catkin and all dependencies required for this package
+# TODO: remove all from COMPONENTS that are not catkin packages.
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
 
-rosbuild_add_pyunit(test/parse_test.py)
+catkin_add_nosetests(test/parse_test.py)
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+include_dirs(${catkin_INCLUDE_DIRS})
+add_executable(network_detector src/network_detector.cpp)
+target_link_libraries(network_detector ${catkin_LIBRARIES})
 
-rosbuild_add_executable(network_detector src/network_detector.cpp)
+catkin_package()
+
+install(DIRECTORY demo
+   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+install(DIRECTORY scripts/
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+catkin_python_setup()
