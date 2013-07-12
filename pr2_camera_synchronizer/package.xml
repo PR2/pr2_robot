@@ -1,0 +1,38 @@
+<package>
+  <name>pr2_camera_synchronizer</name>
+  <version>1.5.0</version>
+  <description>
+     <p>
+    The PR2 is equipped with a texture projector that can be used to
+    project a texture onto featureless surfaces, allowing their
+    three-dimensional structure to be determined using stereoscopy. The
+    projector operates in a pulsed mode, producing brief (2ms) pulses of
+    light. Cameras that want to see the texture must expose during the
+    projector pulse; other cameras should be expose while the projector is
+    off.
+    </p>
+
+    <p>
+      This package contains the pr2_projector_synchronizer node. Based on its dynamically reconfigurable parameters, this node controls the projector pulsing, and sets up triggering of the WGE100 cameras.
+    </p>
+  </description>
+  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://pr.willowgarage.com/wiki/pr2_camera_synchronizer</url>
+  <!-- <url type="bugtracker"></url> -->
+
+  <author>Blaise Gassend</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>dynamic_reconfigure</build_depend>
+  <build_depend>rostest</build_depend>
+
+  <run_depend>ethercat_trigger_controllers</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>dynamic_reconfigure</run_depend>
+  <run_depend>wge100_camera</run_depend>
+  <run_depend>diagnostic_msgs</run_depend>
+</package>
