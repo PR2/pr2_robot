@@ -1,9 +1,28 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-set(ROS_BUILD_TYPE Release)
-rosbuild_init()
-rosbuild_add_boost_directories()
-rosbuild_add_executable(pr2_etherCAT src/main.cpp)
-rosbuild_link_boost (pr2_etherCAT thread system)
-target_link_libraries (pr2_etherCAT rt)
-rosbuild_remove_compile_flags(pr2_etherCAT -W)
+# http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
+cmake_minimum_required(VERSION 2.8.3)
+project(pr2_etherCAT)
+
+# Load catkin and all dependencies required for this package
+find_package(catkin REQUIRED COMPONENTS 
+   roscpp 
+   std_srvs 
+   std_msgs
+   pr2_controller_manager 
+   ethercat_hardware 
+   realtime_tools 
+   diagnostic_updater)
+
+find_package(Boost REQUIRED COMPONENTS system thread)
+include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+
+catkin_package()
+
+add_executable(pr2_etherCAT src/main.cpp)
+target_link_libraries(pr2_etherCAT rt ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(pr2_etherCAT ${catkin_EXPORTED_TARGETS})
+
+install(TARGETS pr2_etherCAT
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(DIRECTORY scripts/
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
