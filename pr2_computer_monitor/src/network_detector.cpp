@@ -30,7 +30,7 @@ bool interfaceIsRunning( std::string interface_name )
     std::string warning = "Query of interface '" + interface_name + "' failed: '" + strerror( errno ) + "'  Presuming down.";
     if( warning != last_warning )
     {
-      ROS_WARN( warning.c_str() );
+      ROS_WARN("%s", warning.c_str() );
     }
     last_warning = warning;
     return false;
