@@ -17,7 +17,7 @@
 
   <run_depend>pr2_description</run_depend>
   <run_depend>pr2_machine</run_depend>
-  <run_depend>pr2_etherCAT</run_depend>
+  <run_depend>pr2_ethercat</run_depend>
   <run_depend>pr2_controller_manager</run_depend>
   <run_depend>pr2_controller_configuration</run_depend>
   <run_depend>pr2_calibration_controllers</run_depend>

@@ -16,7 +16,7 @@
 
   <run_depend>pr2_bringup</run_depend>
   <run_depend>pr2_controller_configuration</run_depend>
-  <run_depend>pr2_etherCAT</run_depend>
+  <run_depend>pr2_ethercat</run_depend>
   <run_depend>pr2_computer_monitor</run_depend>
   <run_depend>pr2_camera_synchronizer</run_depend>
   <run_depend>pr2_run_stop_auto_restart</run_depend>

@@ -89,7 +89,7 @@ def motor_state_cb(msg):
     global motors_halted
     motors_halted = msg.data
     rospy.logdebug("motors halted = %d"%motors_halted)
-rospy.Subscriber('pr2_etherCAT/motors_halted', Bool, motor_state_cb)
+rospy.Subscriber('pr2_ethercat/motors_halted', Bool, motor_state_cb)
 
 pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray) 
 def diagnostics(level, msg_short, msg_long):

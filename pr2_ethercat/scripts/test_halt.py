@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import roslib
-roslib.load_manifest('pr2_etherCAT')
+roslib.load_manifest('pr2_ethercat')
 import time
 import rospy, sys
 import std_srvs.srv
@@ -16,8 +16,8 @@ def callback(msg):
 
 rospy.init_node("test_halt")
 rospy.Subscriber("motor_state", Bool, callback)
-reset = rospy.ServiceProxy("pr2_etherCAT/reset_motors", std_srvs.srv.Empty)
-halt = rospy.ServiceProxy("pr2_etherCAT/halt_motors", std_srvs.srv.Empty)
+reset = rospy.ServiceProxy("pr2_ethercat/reset_motors", std_srvs.srv.Empty)
+halt = rospy.ServiceProxy("pr2_ethercat/halt_motors", std_srvs.srv.Empty)
 time.sleep(1)
 print "Entering main loop: motors %s" % "halted" if halted else "running"
 while 1:

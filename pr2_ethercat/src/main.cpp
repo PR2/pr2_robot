@@ -59,7 +59,7 @@
 #include <boost/accumulators/statistics/mean.hpp>
 using namespace boost::accumulators;
 
-static const std::string name = "pr2_etherCAT";
+static const std::string name = "pr2_ethercat";
 
 
 static struct
@@ -79,7 +79,7 @@ void Usage(string msg = "")
   fprintf(stderr, "Usage: %s [options]\n", g_options.program_);
   fprintf(stderr, "  Available options\n");
   fprintf(stderr, "    -i, --interface <interface> Connect to EtherCAT devices on this interface\n");
-  fprintf(stderr, "    -s, --stats                 Publish statistics on the RT loop jitter on \"pr2_etherCAT/realtime\" in seconds\n");
+  fprintf(stderr, "    -s, --stats                 Publish statistics on the RT loop jitter on \"pr2_ethercat/realtime\" in seconds\n");
   fprintf(stderr, "    -x, --xml <file>            Load the robot description from this file\n");
   fprintf(stderr, "    -r, --rosparam <param>      Load the robot description from this parameter name\n");
   fprintf(stderr, "    -u, --allow_unprogrammed    Allow control loop to run with unprogrammed devices\n");
@@ -645,7 +645,7 @@ static int setupPidFile(const char* interface)
         goto end;
       }
     } else {
-      ROS_FATAL("Another instance of pr2_etherCAT is already running with pid: %d", pid);
+      ROS_FATAL("Another instance of pr2_ethercat is already running with pid: %d", pid);
       goto end;
     }
   }

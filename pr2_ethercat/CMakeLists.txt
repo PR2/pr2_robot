@@ -1,6 +1,6 @@
 # http://ros.org/doc/groovy/api/catkin/html/user_guide/supposed.html
 cmake_minimum_required(VERSION 2.8.3)
-project(pr2_etherCAT)
+project(pr2_ethercat)
 
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS 
@@ -17,11 +17,11 @@ include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 catkin_package()
 
-add_executable(pr2_etherCAT src/main.cpp)
-target_link_libraries(pr2_etherCAT rt ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-add_dependencies(pr2_etherCAT ${catkin_EXPORTED_TARGETS})
+add_executable(pr2_ethercat src/main.cpp)
+target_link_libraries(pr2_ethercat rt ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(pr2_ethercat ${catkin_EXPORTED_TARGETS})
 
-install(TARGETS pr2_etherCAT
+install(TARGETS pr2_ethercat
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY scripts/

@@ -56,12 +56,12 @@ void powerStateCallback(const pr2_msgs::PowerBoardStateConstPtr& msg)
 
     // reset motors
     ros::Duration(2.0).sleep();  // give motors time to detect power up
-    if (!ros::service::waitForService("pr2_etherCAT/reset_motors", ros::Duration(5.0))){
+    if (!ros::service::waitForService("pr2_ethercat/reset_motors", ros::Duration(5.0))){
       ROS_ERROR("Could not find reset motors service");
       return;
     }
     std_srvs::Empty empty_cmd;
-    ros::service::call("pr2_etherCAT/reset_motors", empty_cmd);
+    ros::service::call("pr2_ethercat/reset_motors", empty_cmd);
     ROS_INFO("  - Reset motors");
   }
 
