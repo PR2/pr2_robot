@@ -6,5 +6,7 @@ find_package(catkin REQUIRED)
 
 catkin_package()
 
-install(DIRECTORY scripts/
+file(GLOB PYTHON_SCRIPTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" 
+   "${CMAKE_CURRENT_SOURCE_DIR}/scripts/*")
+install(PROGRAMS ${PYTHON_SCRIPTS}
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
