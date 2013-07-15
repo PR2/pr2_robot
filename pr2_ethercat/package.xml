@@ -1,6 +1,6 @@
 <package>
   <name>pr2_ethercat</name>
-  <version>1.6.1</version>
+  <version>1.6.2</version>
   <description>Main loop that runs the robot.</description>
   <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
 
