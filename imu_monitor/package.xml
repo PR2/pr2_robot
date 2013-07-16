@@ -17,7 +17,7 @@ are aggregated in the PR2 dashboard.</description>
 
   <run_depend>sensor_msgs</run_depend>
   <run_depend>pr2_mechanism_controllers</run_depend>
-  <run_depend>python-orocos-kdl</run_depend>
+  <run_depend>python_orocos_kdl</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>diagnostic_msgs</run_depend>
 </package>
