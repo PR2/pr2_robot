@@ -17,6 +17,8 @@ include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 catkin_package()
 
+add_definitions(-O3)
+
 add_executable(pr2_ethercat src/main.cpp)
 target_link_libraries(pr2_ethercat rt ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(pr2_ethercat ${catkin_EXPORTED_TARGETS})
