@@ -14,8 +14,6 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>pr2_controller_manager</build_depend>
-  <build_depend>pr2_mechanism_model</build_depend>
-  <build_depend>pr2_hardware_interface</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>ethercat_hardware</build_depend>
   <build_depend>std_srvs</build_depend>
@@ -24,8 +22,6 @@
   <build_depend>diagnostic_updater</build_depend>
 
   <run_depend>pr2_controller_manager</run_depend>
-  <run_depend>pr2_mechanism_model</run_depend>
-  <run_depend>pr2_hardware_interface</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>ethercat_hardware</run_depend>
   <run_depend>std_srvs</run_depend>
