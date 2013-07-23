@@ -7,8 +7,13 @@
   <remap from="/diagnostics_agg" to="/$(optenv ROS_NAMESPACE /)/diagnostics_agg" />
 
   <!-- pr2_ethercat -->
-  <node name="realtime_loop" machine="c1" launch-prefix="pr2-grant" pkg="pr2_ethercat" type="pr2_ethercat" args="-i ecat0 -x robot_description" output="screen" />
-  <param name="pr2_ethercat/realtime_socket_timeout" value="5000" />
+  <node name="realtime_loop" machine="c1" launch-prefix="pr2-grant"
+        pkg="pr2_ethercat" type="pr2_ethercat" output="screen"
+        args="-i ecat0 -r robot_description">
+    <param name="realtime_socket_timeout" value="5000" />
+  </node>
+  <node name="ethercat_relay" machine="c1" pkg="topic_tools" type="relay"
+   args="pr2_ethercat/motors_halted pr2_etherCAT/motors_halted" />
 
   <!-- PR2 Calibration -->
   <node name="calibrate_pr2" pkg="pr2_bringup" type="calibrate_pr2.py" output="screen" 
