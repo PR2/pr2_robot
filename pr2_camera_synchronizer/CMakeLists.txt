@@ -14,11 +14,10 @@ generate_dynamic_reconfigure_options(cfg/CameraSynchronizer.cfg)
 
 catkin_package(CATKIN_DEPENDS dynamic_reconfigure)
 
-install(DIRECTORY nodes/
-   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
 file(GLOB PYTHON_SCRIPTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" 
-   "${CMAKE_CURRENT_SOURCE_DIR}/scripts/*")
+   "${CMAKE_CURRENT_SOURCE_DIR}/scripts/*" 
+   "${CMAKE_CURRENT_SOURCE_DIR}/nodes/*")
+
 install(PROGRAMS ${PYTHON_SCRIPTS}
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
