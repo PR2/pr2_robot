@@ -1,6 +1,6 @@
 <package>
   <name>pr2_bringup</name>
-  <version>1.6.4</version>
+  <version>1.6.5</version>
   <description>Launch files and scripts needed to bring a PR2 up into a running state.</description>
   <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
 
