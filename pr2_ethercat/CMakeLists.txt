@@ -22,6 +22,7 @@ add_definitions(-O3)
 add_executable(pr2_ethercat src/main.cpp)
 target_link_libraries(pr2_ethercat rt ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(pr2_ethercat ${catkin_EXPORTED_TARGETS})
+pr2_enable_rpath(pr2_ethercat)
 
 install(TARGETS pr2_ethercat
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
