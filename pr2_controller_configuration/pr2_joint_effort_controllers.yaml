@@ -4,7 +4,7 @@ torso_lift_effort_controller:
 
 r_shoulder_pan_effort_controller:
   type: robot_mechanism_controllers/JointEffortController
-  joint: r_shouler_pan_joint
+  joint: r_shoulder_pan_joint
 r_shoulder_lift_effort_controller:
   type: robot_mechanism_controllers/JointEffortController
   joint: r_shoulder_lift_joint
@@ -26,7 +26,7 @@ r_wrist_roll_effort_controller:
 
 l_shoulder_pan_effort_controller:
   type: robot_mechanism_controllers/JointEffortController
-  joint: l_shouler_pan_joint
+  joint: l_shoulder_pan_joint
 l_shoulder_lift_effort_controller:
   type: robot_mechanism_controllers/JointEffortController
   joint: l_shoulder_lift_joint
