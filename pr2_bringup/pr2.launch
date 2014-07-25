@@ -18,7 +18,7 @@
   <include file="$(find pr2_controller_manager)/controller_manager.launch" />
 
   <!-- PS3 joystick for A2 servers -->
-  <node machine="c2" pkg="joy" type="joy_node" name="joy" >
+  <node machine="c2" pkg="joy" type="joy_node" name="joy_node" >
     <param name="deadzone" value="0.12" />
     <param name="dev" value="/etc/ros/sensors/ps3joy" />
     <param name="autorepeat_rate" value="10" />
