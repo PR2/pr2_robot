@@ -4,14 +4,20 @@ project(pr2_computer_monitor)
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
-catkin_package()
 
 catkin_add_nosetests(test/parse_test.py)
 
-include_directories(${catkin_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(network_detector src/network_detector.cpp)
 target_link_libraries(network_detector ${catkin_LIBRARIES})
 
+
+catkin_package(
+    DEPENDS roscpp std_msgs
+    CATKIN_DEPENDS # TODO
+    INCLUDE_DIRS # TODO include
+    LIBRARIES network_detector# TODO
+)
 
 
 install(DIRECTORY demo
