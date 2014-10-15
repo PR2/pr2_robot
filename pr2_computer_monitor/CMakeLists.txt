@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(pr2_computer_monitor)
 # Load catkin and all dependencies required for this package
 # TODO: remove all from COMPONENTS that are not catkin packages.
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
+find_package(catkin REQUIRED COMPONENTS roscpp roscpp_serialization rosconsole boost std_msgs)
 
 catkin_add_nosetests(test/parse_test.py)
 
