@@ -8,9 +8,6 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
 catkin_add_nosetests(test/parse_test.py)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
-add_executable(network_detector src/network_detector.cpp)
-target_link_libraries(network_detector ${catkin_LIBRARIES})
-add_dependencies(network_detector ${catkin_EXPORTED_TARGETS} pr2_computer_monitor_gencpp)
 
 catkin_package(
     DEPENDS roscpp std_msgs
@@ -27,6 +24,10 @@ file(GLOB PYTHON_SCRIPTS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
    "${CMAKE_CURRENT_SOURCE_DIR}/scripts/*")
 install(PROGRAMS ${PYTHON_SCRIPTS}
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+add_executable(network_detector src/network_detector.cpp)
+target_link_libraries(network_detector ${catkin_LIBRARIES})
+add_dependencies(network_detector ${catkin_EXPORTED_TARGETS} pr2_computer_monitor_gencpp)
 
 install(TARGETS network_detector
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
