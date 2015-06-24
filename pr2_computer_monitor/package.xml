@@ -23,8 +23,8 @@
   <run_depend>pr2_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
-
-
+  <run_depend>sysstat</run_depend>
+  <run_depend>ipmitool</run_depend>
 
 
 </package>
