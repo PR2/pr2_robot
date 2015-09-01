@@ -2,8 +2,7 @@
   <name>pr2_controller_configuration</name>
   <version>1.6.8</version>
   <description>Configuration files for PR2 controllers.</description>
-  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
-
+  <maintainer email="dash@clearpathrobotics.com">Devon Ash</maintainer>
   <license>BSD</license>
 
   <url type="website">http://ros.org/wiki/pr2_controller_configuration</url>
