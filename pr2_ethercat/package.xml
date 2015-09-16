@@ -2,7 +2,7 @@
   <name>pr2_ethercat</name>
   <version>1.6.9</version>
   <description>Main loop that runs the robot.</description>
-  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+  <maintainer email="ahendrix@willowgarage.com">Devon Ash</maintainer>
 
   <license>BSD</license>
 

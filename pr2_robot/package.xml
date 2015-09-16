@@ -3,7 +3,7 @@
   <version>1.6.9</version>
   <description>This stack collects PR2-specific components that are used in bringing up
   a robot.</description>
-  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+  <maintainer email="ahendrix@willowgarage.com">Devon Ash</maintainer>
 
   <license>BSD</license>
 
