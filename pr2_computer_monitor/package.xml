@@ -23,7 +23,7 @@
   <run_depend>pr2_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
-
+  <run_depend>impitool</run_depend>
 
 
 
