@@ -68,7 +68,7 @@ stat_dict = { 0: 'OK', 1: 'Warning', 2: 'Error' }
 temp_dict = { 0: 'OK', 1: 'Hot', 2: 'Critical Hot' }
 usage_dict = { 0: 'OK', 1: 'Low Disk Space', 2: 'Very Low Disk Space' }
 
-REMOVABLE = ['/dev/sg1', '/dev/sdb'] # Store removable drives so we can ignore if removed
+REMOVABLE = ['/dev/sda'] # Store removable drives so we can ignore if removed
 
 ## Connects to hddtemp daemon to get temp, HD make.
 def get_hddtemp_data(hostname = 'localhost', port = 7634):
