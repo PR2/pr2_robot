@@ -95,7 +95,7 @@ class WifiMonitor(object):
         self._last_update_time = None
         self._start_time = rospy.get_time()
 
-        self._diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
+        self._diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=10)
 
         self._ddwrt_sub = rospy.Subscriber('ddwrt/accesspoint', AccessPoint, self._cb)
 
