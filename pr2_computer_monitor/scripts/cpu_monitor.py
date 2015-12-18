@@ -520,7 +520,7 @@ def update_status_stale(stat, last_update_time):
 
 class CPUMonitor():
     def __init__(self, hostname, diag_hostname):
-        self._diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
+        self._diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=10)
 
         self._mutex = threading.Lock()
 

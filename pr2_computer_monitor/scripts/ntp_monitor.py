@@ -55,7 +55,7 @@ if sys.version_info[:3] == (2, 7, 3):
 NAME = 'ntp_monitor'
 
 def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None, error_offset = 5000000):
-    pub = rospy.Publisher("/diagnostics", DiagnosticArray)
+    pub = rospy.Publisher("/diagnostics", DiagnosticArray, queue_size=10)
     rospy.init_node(NAME, anonymous=True)
     
     hostname = socket.gethostname()

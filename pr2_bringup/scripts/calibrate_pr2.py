@@ -91,7 +91,7 @@ def motor_state_cb(msg):
     rospy.logdebug("motors halted = %d"%motors_halted)
 rospy.Subscriber('pr2_ethercat/motors_halted', Bool, motor_state_cb)
 
-pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray) 
+pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=10) 
 def diagnostics(level, msg_short, msg_long):
     if level == 0:
         rospy.loginfo(msg_long)        
@@ -118,7 +118,7 @@ class HoldingController:
         if resp.ok:
             rospy.logdebug("Starting holding controller for joint %s."%joint_name)
             switch_controller([get_holding_name(joint_name)], [], SwitchControllerRequest.STRICT)
-            self.pub_cmd = rospy.Publisher("%s/command" %get_holding_name(joint_name), Float64, latch=True)
+            self.pub_cmd = rospy.Publisher("%s/command" %get_holding_name(joint_name), Float64, latch=True, queue_size=10)
         else:
             rospy.logerr("Failed to load holding controller for joint %s."%joint_name)
             raise Exception('Failure to load holding controller')
@@ -135,7 +135,7 @@ class HoldingController:
 
 class StatusPub:
     def __init__(self):
-        self.pub_status = rospy.Publisher('calibration_status', String)
+        self.pub_status = rospy.Publisher('calibration_status', String, queue_size=10)
         self.status = {}
         self.status['active'] = []
         self.status['done'] = []
@@ -319,7 +319,7 @@ def main():
         imustatus = True
         joints_status = False
         if not recalibrate:
-            pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True)
+            pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True, queue_size=10)
             pub_calibrated.publish(False)
         status = StatusPub()
 
