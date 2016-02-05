@@ -22,4 +22,5 @@ install(PROGRAMS ${PYTHON_SCRIPTS}
 install(FILES
    pr2.launch
    pr2_recalibrate.launch
+   pr2-c2.launch
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

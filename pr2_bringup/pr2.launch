@@ -6,7 +6,7 @@
 
   <!-- New in Indigo, now c2's functionality is separated from c1s -->
   <group if="$(arg c2)">
-    <include file="$(find pr2_bringup/pr2-c2.launch" />
+    <include file="$(find pr2_bringup)/pr2-c2.launch" />
   </group>
 
   <!-- Remap diagnostics if we are pushed into a namespace. -->
