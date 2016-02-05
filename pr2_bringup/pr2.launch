@@ -4,6 +4,11 @@
 
   <include file="$(find pr2_machine)/pr2.machine" />
 
+  <!-- New in Indigo, now c2's functionality is separated from c1s -->
+  <group if="$(arg c2)">
+    <include file="$(find pr2_bringup/pr2-c2.launch" />
+  </group>
+
   <!-- Remap diagnostics if we are pushed into a namespace. -->
   <remap from="/diagnostics" to="/$(optenv ROS_NAMESPACE /)/diagnostics" />
   <remap from="/diagnostics_agg" to="/$(optenv ROS_NAMESPACE /)/diagnostics_agg" />
@@ -38,7 +43,7 @@
   <node name="power_board" pkg="pr2_power_board" type="power_node2" args="--address=10.68.0.50" respawn="true"/>
 
   <!-- Battery Monitor -->
-  <group if="$(arg c2)"> 
+ <!--  <group if="$(arg c2)"> 
       <node machine="c2" pkg="ocean_battery_driver" type="ocean_server"  name="ocean_server" respawn="true">
         <param name="number_of_ports" type="int" value="4" />
         <param name="port0" type="string" value="/etc/ros/sensors/battery0" />
@@ -47,12 +52,12 @@
         <param name="port3" type="string" value="/etc/ros/sensors/battery3" />
         <param name="debug_level" type="int" value="0" />
       </node>
-  </group>
+  </group> -->
 
   <node pkg="power_monitor" type="power_monitor"  name="power_monitor" respawn="true"/>
   
   <!-- Base Laser -->
-  <group if="$(arg c2)">
+  <!-- <group if="$(arg c2)">
     <node machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="base_hokuyo_node" args="scan:=base_scan">
         <param name="port" type="string" value="/etc/ros/sensors/base_hokuyo" />
         <param name="frame_id" type="string" value="base_laser_link" />
@@ -61,10 +66,10 @@
         <param name="skip" type="int" value="1" />
         <param name="intensity" value="false" />
       </node>
-  </group>
+  </group> -->
 
   <!-- Tilt Laser -->
-  <group if="$(arg c2)">
+  <!-- <group if="$(arg c2)">
       <node  machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="tilt_hokuyo_node" args="scan:=tilt_scan">
         <param name="port" type="string" value="/etc/ros/sensors/tilt_hokuyo" />
         <param name="frame_id" type="string" value="laser_tilt_link" />
@@ -73,7 +78,7 @@
         <param name="skip" type="int" value="1" />
         <param name="intensity" value="true" />
       </node>
-  </group>
+  </group> -->
 
   <!-- imu -->
   <node machine="c1" pkg="microstrain_3dmgx2_imu" type="imu_node" name="imu_node" output="screen">
@@ -135,7 +140,7 @@
     <param name="check_core_temps" type="bool" value="False" />
   </node>
 
-   <group if="$(arg c2)">
+  <group if="$(arg c2)">
       <node pkg="pr2_computer_monitor" name="two_cpu_monitor" type="cpu_monitor.py" args="--diag-hostname=c2" machine="c2" >
         <param name="check_core_temps" type="bool" value="False" />
         <param name="enforce_clock_speed" type="bool" value="False" />
