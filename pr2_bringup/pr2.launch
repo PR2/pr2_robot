@@ -18,7 +18,7 @@
    args="pr2_ethercat/motors_halted pr2_etherCAT/motors_halted" />
 
   <!-- PR2 Calibration -->
-  <node name="calibrate_pr2" pkg="pr2_bringup" type="calibrate_pr2.py" output="screen" 
+  <node name="calibrate_pr2" pkg="pr2_bringup" type="calibrate_pr2.py" output="screen"
         args="$(find pr2_controller_configuration)/pr2_calibration_controllers.yaml $(find pr2_controller_configuration)/pr2_joint_position_controllers.yaml"/>
 
   <!-- Controller Manager -->
@@ -38,7 +38,7 @@
   <node name="power_board" pkg="pr2_power_board" type="power_node2" args="--address=10.68.0.50" respawn="true"/>
 
   <!-- Battery Monitor -->
-  <group if="$(arg c2)"> 
+  <group if="$(arg c2)">
       <node machine="c2" pkg="ocean_battery_driver" type="ocean_server"  name="ocean_server" respawn="true">
         <param name="number_of_ports" type="int" value="4" />
         <param name="port0" type="string" value="/etc/ros/sensors/battery0" />
@@ -50,7 +50,7 @@
   </group>
 
   <node pkg="power_monitor" type="power_monitor"  name="power_monitor" respawn="true"/>
-  
+
   <!-- Base Laser -->
   <group if="$(arg c2)">
     <node machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="base_hokuyo_node" args="scan:=base_scan">
@@ -111,7 +111,7 @@
   <include file="$(find pr2_bringup)/config/l_forearm_cam.launch" />
 
   <!-- Sound -->
-  <node pkg="sound_play" type="soundplay_node.py" machine="c1" name="sound_play" /> 
+  <node pkg="sound_play" type="soundplay_node.py" machine="c1" name="sound_play" />
 
   <!-- Runtime Diagnostics and Motor Trace Logging -->
   <node name="runtime_logger" machine="c1"  pkg="rosbag" type="record"
@@ -179,5 +179,10 @@
   <node pkg="pr2_computer_monitor" type="network_detector" name="network_detector" output="screen">
     <param name="interface_name" value="wan0"/>
   </node>
+
+  <!-- Kinect 2 -->
+  <group if="$(optenv KINECT2 false)">
+    <include file="$(find pr2_bringup)/config/kinect2_bridge.launch"/>
+  </group>
 
 </launch>
