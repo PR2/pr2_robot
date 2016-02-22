@@ -21,8 +21,6 @@
   <arg name="nodelet_manager"   default="$(arg base_name)" />
   <arg name="start_manager"     default="true" />
 
-  <machine name="pr2-head" address="pr2-head" user="pr2-head" password="clearpath" env-loader="/home/pr2-head/kinect_ws/devel/env.sh"/>
-
   <node pkg="nodelet" type="nodelet" name="$(arg nodelet_manager)" args="manager"
         if="$(arg start_manager)" machine="pr2-head" output="screen"/>
 
