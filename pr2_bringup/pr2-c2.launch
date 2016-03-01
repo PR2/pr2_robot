@@ -1,0 +1,34 @@
+<launch>
+
+      <!-- Battery Monitor -->
+    <!--  <node machine="c2" pkg="ocean_battery_driver" type="ocean_server"  name="ocean_server" respawn="true">
+        <param name="number_of_ports" type="int" value="4" />
+        <param name="port0" type="string" value="/etc/ros/sensors/battery0" />
+        <param name="port1" type="string" value="/etc/ros/sensors/battery1" />
+        <param name="port2" type="string" value="/etc/ros/sensors/battery2" />
+        <param name="port3" type="string" value="/etc/ros/sensors/battery3" />
+        <param name="debug_level" type="int" value="0" />
+      </node> -->
+  
+      <!-- Base Laser -->
+      <node machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="base_hokuyo_node" args="scan:=base_scan">
+        <param name="port" type="string" value="/etc/ros/sensors/base_hokuyo" />
+        <param name="frame_id" type="string" value="base_laser_link" />
+        <param name="min_ang" type="double" value="-2.2689" />
+        <param name="max_ang" type="double" value="2.2689" />
+        <param name="skip" type="int" value="1" />
+        <param name="intensity" value="false" />
+      </node>
+ 
+      <!-- Tilt laser -->
+      <!-- <node  machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="tilt_hokuyo_node" args="scan:=tilt_scan">
+        <param name="port" type="string" value="/etc/ros/sensors/tilt_hokuyo" />
+        <param name="frame_id" type="string" value="laser_tilt_link" />
+        <param name="min_ang" type="double" value="-0.829" />
+        <param name="max_ang" type="double" value="0.829" />
+        <param name="skip" type="int" value="1" />
+        <param name="intensity" value="true" />
+      </node> -->
+
+
+</launch>

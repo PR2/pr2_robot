@@ -4,6 +4,11 @@
 
   <include file="$(find pr2_machine)/pr2.machine" />
 
+  <!-- New in Indigo, now c2's functionality is separated from c1s -->
+  <group if="$(arg c2)">
+    <include file="$(find pr2_bringup)/pr2-c2.launch" />
+  </group>
+
   <!-- Remap diagnostics if we are pushed into a namespace. -->
   <remap from="/diagnostics" to="/$(optenv ROS_NAMESPACE /)/diagnostics" />
   <remap from="/diagnostics_agg" to="/$(optenv ROS_NAMESPACE /)/diagnostics_agg" />
@@ -36,44 +41,6 @@
 
   <!-- Power Board Control Node -->
   <node name="power_board" pkg="pr2_power_board" type="power_node2" args="--address=10.68.0.50" respawn="true"/>
-
-  <!-- Battery Monitor -->
-  <group if="$(arg c2)">
-      <node machine="c2" pkg="ocean_battery_driver" type="ocean_server"  name="ocean_server" respawn="true">
-        <param name="number_of_ports" type="int" value="4" />
-        <param name="port0" type="string" value="/etc/ros/sensors/battery0" />
-        <param name="port1" type="string" value="/etc/ros/sensors/battery1" />
-        <param name="port2" type="string" value="/etc/ros/sensors/battery2" />
-        <param name="port3" type="string" value="/etc/ros/sensors/battery3" />
-        <param name="debug_level" type="int" value="0" />
-      </node>
-  </group>
-
-  <node pkg="power_monitor" type="power_monitor"  name="power_monitor" respawn="true"/>
-
-  <!-- Base Laser -->
-  <group if="$(arg c2)">
-    <node machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="base_hokuyo_node" args="scan:=base_scan">
-        <param name="port" type="string" value="/etc/ros/sensors/base_hokuyo" />
-        <param name="frame_id" type="string" value="base_laser_link" />
-        <param name="min_ang" type="double" value="-2.2689" />
-        <param name="max_ang" type="double" value="2.2689" />
-        <param name="skip" type="int" value="1" />
-        <param name="intensity" value="false" />
-      </node>
-  </group>
-
-  <!-- Tilt Laser -->
-  <group if="$(arg c2)">
-      <node  machine="c2" pkg="hokuyo_node" type="hokuyo_node" name="tilt_hokuyo_node" args="scan:=tilt_scan">
-        <param name="port" type="string" value="/etc/ros/sensors/tilt_hokuyo" />
-        <param name="frame_id" type="string" value="laser_tilt_link" />
-        <param name="min_ang" type="double" value="-0.829" />
-        <param name="max_ang" type="double" value="0.829" />
-        <param name="skip" type="int" value="1" />
-        <param name="intensity" value="true" />
-      </node>
-  </group>
 
   <!-- imu -->
   <node machine="c1" pkg="microstrain_3dmgx2_imu" type="imu_node" name="imu_node" output="screen">
@@ -120,27 +87,13 @@
   <!-- NTP monitoring script reports clock sync on diagnostics -->
   <node pkg="pr2_computer_monitor" name="ntp_c1" type="ntp_monitor.py" args="10.68.255.1 --offset-tolerance 50000 --diag-hostname=c1" machine="c1" />
 
-  <group if="$(arg c2)">
-      <node pkg="pr2_computer_monitor" name="ntp_c2" type="ntp_monitor.py" args="c1 --diag-hostname=c2" machine="c2"/>
-  </group>
-
   <!-- Disk usage monitoring script monitors HD temperature, usage on diagnostics -->
   <node pkg="pr2_computer_monitor" name="realtime_hd_monitor" type="hd_monitor.py" args="$(optenv HOME /home) --diag-hostname=c1" machine="c1"/>
-  <group if="$(arg c2)">
-      <node pkg="pr2_computer_monitor" name="two_hd_monitor" type="hd_monitor.py" args="--diag-hostname=c2" machine="c2"/>
-  </group>
 
   <!-- Monitor CPU temp, usage -->
   <node pkg="pr2_computer_monitor" name="realtime_cpu_monitor" type="cpu_monitor.py" args="--diag-hostname=c1" machine="c1" >
     <param name="check_core_temps" type="bool" value="False" />
   </node>
-
-   <group if="$(arg c2)">
-      <node pkg="pr2_computer_monitor" name="two_cpu_monitor" type="cpu_monitor.py" args="--diag-hostname=c2" machine="c2" >
-        <param name="check_core_temps" type="bool" value="False" />
-        <param name="enforce_clock_speed" type="bool" value="False" />
-      </node>
-   </group>
 
   <!-- Monitor Wifi/ddwrt -->
   <node pkg="pr2_computer_monitor" name="ddwrt_diag" type="wifi_monitor.py" machine="c1" />
