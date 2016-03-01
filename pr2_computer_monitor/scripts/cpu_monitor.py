@@ -47,7 +47,7 @@ import sys, os, time
 from time import sleep
 import subprocess
 import string
-
+import multiprocessing
 import socket
 
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus, KeyValue
@@ -538,7 +538,8 @@ class CPUMonitor():
         self._load5_threshold = rospy.get_param('~load5_threshold', 3.0)
 
         self._num_cores = rospy.get_param('~num_cores', 8.0)
-
+        if self._num_cores == -1:
+            self._num_cores = multiprocessing.cpu_count()
         self._temps_timer = None
         self._usage_timer = None
         self._nfs_timer = None
