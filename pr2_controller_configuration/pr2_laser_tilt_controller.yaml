@@ -6,6 +6,8 @@ laser_tilt_controller:
     i: 0.1
     d: 0.2
     i_clamp: 0.5
+    i_clamp_max: 0.5
+    i_clamp_min: -0.5
   velocity_filter:
     - name: low_pass
       type: filters/TransferFunctionFilterDouble
