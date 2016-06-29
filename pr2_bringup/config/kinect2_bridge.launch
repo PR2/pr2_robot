@@ -32,7 +32,7 @@
     <param name="publish_tf"        type="bool"   value="$(arg publish_tf)"/>
     <param name="base_name_tf"      type="str"    value="$(arg base_name_tf)"/>
     <param name="fps_limit"         type="double" value="$(arg fps_limit)"/>
-    <param name="calib_path"        type="str"    value="/home/pr2-head/kinect2_ws/src/iai_kinect2/kinect2_bridge/data/"/>
+    <param name="calib_path"        type="str"    value="/home/pr2-head/kinect_ws/src/iai_kinect2/kinect2_bridge/data/"/>
     <param name="use_png"           type="bool"   value="$(arg use_png)"/>
     <param name="jpeg_quality"      type="int"    value="$(arg jpeg_quality)"/>
     <param name="png_level"         type="int"    value="$(arg png_level)"/>
