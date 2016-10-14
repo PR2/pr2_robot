@@ -138,4 +138,7 @@
     <include file="$(find pr2_bringup)/config/kinect2_bridge.launch"/>
   </group>
 
+  <!-- Power monitor -->
+  <node pkg="power_monitor" type="power_monitor" name="power_monitor" respawn="true" output="screen"/>
+
 </launch>
