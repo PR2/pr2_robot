@@ -1,6 +1,6 @@
 <package>
   <name>pr2_run_stop_auto_restart</name>
-  <version>1.6.23</version>
+  <version>1.6.24</version>
   <description>This package provides a node that monitors the state of the run stops of the pr2_robot. When the state of the
    run stop changes from off to on, this node will automatically enable the power to the motors, and reset
    the motors. This allows you to use the run stop as a 'pause' button. By using the run stop as a tool to

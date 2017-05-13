@@ -1,6 +1,6 @@
 <package>
   <name>imu_monitor</name>
-  <version>1.6.23</version>
+  <version>1.6.24</version>
   <description>This package contains a single node that monitors the drift of the IMU
 gyroscopes. The results are published to the '/diagnostics' topic and
 are aggregated in the PR2 dashboard.</description>

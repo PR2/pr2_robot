@@ -1,6 +1,6 @@
 <package>
   <name>pr2_robot</name>
-  <version>1.6.23</version>
+  <version>1.6.24</version>
   <description>This stack collects PR2-specific components that are used in bringing up
   a robot.</description>
   <maintainer email="ahendrix@willowgarage.com">Devon Ash</maintainer>
