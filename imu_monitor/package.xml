@@ -4,7 +4,7 @@
   <description>This package contains a single node that monitors the drift of the IMU
 gyroscopes. The results are published to the '/diagnostics' topic and
 are aggregated in the PR2 dashboard.</description>
-  <maintainer email="ahendrix@willowgarage.com">Devon Ash</maintainer>
+  <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
 
   <license>BSD</license>
 
