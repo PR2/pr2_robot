@@ -2,6 +2,9 @@
 Changelog for package pr2_ethercat
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.6.25 (2018-03-19)
 -------------------
 * updated packages for new maintainer
