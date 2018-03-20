@@ -2,8 +2,8 @@
 Changelog for package pr2_run_stop_auto_restart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.25 (2018-03-19)
+-------------------
 * updated packages for new maintainer
 * updated changelogs
 * Contributors: David Feil-Seifer
