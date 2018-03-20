@@ -1,8 +1,8 @@
 <package>
   <name>pr2_ethercat</name>
-  <version>1.6.24</version>
+  <version>1.6.25</version>
   <description>Main loop that runs the robot.</description>
-  <maintainer email="ahendrix@willowgarage.com">Devon Ash</maintainer>
+  <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
 
   <license>BSD</license>
 

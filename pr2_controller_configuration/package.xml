@@ -1,8 +1,8 @@
 <package>
   <name>pr2_controller_configuration</name>
-  <version>1.6.24</version>
+  <version>1.6.25</version>
   <description>Configuration files for PR2 controllers.</description>
-  <maintainer email="dash@clearpathrobotics.com">Devon Ash</maintainer>
+  <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
   <license>BSD</license>
 
   <url type="website">http://ros.org/wiki/pr2_controller_configuration</url>
