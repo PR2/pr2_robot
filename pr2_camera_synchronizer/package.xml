@@ -1,6 +1,6 @@
 <package>
   <name>pr2_camera_synchronizer</name>
-  <version>1.6.26</version>
+  <version>1.6.27</version>
   <description>
      <p>
     The PR2 is equipped with a texture projector that can be used to
