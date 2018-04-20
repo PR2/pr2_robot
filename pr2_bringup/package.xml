@@ -31,7 +31,7 @@
   <run_depend>robot_pose_ekf</run_depend>
   <run_depend>pr2_camera_synchronizer</run_depend>
   <run_depend>stereo_image_proc</run_depend>
-  <run_depend>hokuyo_node</run_depend>
+  <run_depend>urg_node</run_depend>
   <run_depend>wifi_ddwrt</run_depend>
   <run_depend>microstrain_3dmgx2_imu</run_depend>
   <run_depend>wge100_camera</run_depend>
