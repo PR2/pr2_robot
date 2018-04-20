@@ -2,6 +2,9 @@
 Changelog for package pr2_computer_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.6.26 (2018-03-19)
 -------------------
 

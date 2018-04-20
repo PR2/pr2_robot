@@ -2,6 +2,9 @@
 Changelog for package pr2_run_stop_auto_restart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.6.26 (2018-03-19)
 -------------------
 

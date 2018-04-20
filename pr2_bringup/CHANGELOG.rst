@@ -2,6 +2,11 @@
 Changelog for package pr2_bringup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* updated hokuyo node dependencies to urg_ndoe
+* Contributors: David Feil-Seifer
+
 1.6.26 (2018-03-19)
 -------------------
 
