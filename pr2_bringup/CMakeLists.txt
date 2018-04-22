@@ -5,8 +5,10 @@ project(pr2_bringup)
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS rostest)
 
-# Tests that PR2 diagnostic analyzers configuration loads
-add_rostest(test/pr2_analyzers_load_test.launch)
+if(CATKIN_ENABLE_TESTING)
+	# Tests that PR2 diagnostic analyzers configuration loads
+	add_rostest(test/pr2_analyzers_load_test.launch)
+endif()
 
 catkin_package()
 

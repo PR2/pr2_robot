@@ -5,7 +5,9 @@ project(pr2_computer_monitor)
 # TODO: remove all from COMPONENTS that are not catkin packages.
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
 
-catkin_add_nosetests(test/parse_test.py)
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_nosetests(test/parse_test.py)
+endif()
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 

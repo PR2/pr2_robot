@@ -5,8 +5,10 @@ project(pr2_camera_synchronizer)
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS dynamic_reconfigure rostest)
 
-catkin_add_nosetests(test/test_classes.py)
-add_rostest(test/test_consistency.test)
+if(CATKIN_ENABLE_TESTING)
+	catkin_add_nosetests(test/test_classes.py)
+	add_rostest(test/test_consistency.test)
+endif()
 
 catkin_python_setup()
 
