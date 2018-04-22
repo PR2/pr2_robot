@@ -2,6 +2,11 @@
 Changelog for package pr2_computer_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* made sure tests only run if CATKIN_ENABLE_TESTING is set
+* Contributors: David Feil-Seifer
+
 1.6.27 (2018-04-20)
 -------------------
 
