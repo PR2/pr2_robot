@@ -2,6 +2,9 @@
 Changelog for package pr2_computer_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.6.28 (2018-04-21)
 -------------------
 * made sure tests only run if CATKIN_ENABLE_TESTING is set

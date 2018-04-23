@@ -2,6 +2,9 @@
 Changelog for package pr2_controller_configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.6.28 (2018-04-21)
 -------------------
 
