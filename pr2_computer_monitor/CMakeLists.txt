@@ -6,7 +6,7 @@ project(pr2_computer_monitor)
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs)
 
 if(CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(test/parse_test.py)
+  #catkin_add_nosetests(test/parse_test.py)
 endif()
 
 include_directories(include ${catkin_INCLUDE_DIRS})
