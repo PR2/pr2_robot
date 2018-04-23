@@ -2,8 +2,8 @@
 Changelog for package pr2_computer_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.30 (2018-04-23)
+-------------------
 * removed more tests for jenkins build
 * Contributors: David Feil-Seifer
 
