@@ -1,6 +1,6 @@
 <package>
   <name>pr2_controller_configuration</name>
-  <version>1.6.28</version>
+  <version>1.6.29</version>
   <description>Configuration files for PR2 controllers.</description>
   <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
   <license>BSD</license>

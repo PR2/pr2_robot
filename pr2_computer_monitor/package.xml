@@ -1,6 +1,6 @@
 <package>
   <name>pr2_computer_monitor</name>
-  <version>1.6.28</version>
+  <version>1.6.29</version>
   <description>Monitors the computer's processor and hard drives of the PR2 and publishes data to diagnostics.</description>
   <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
 
