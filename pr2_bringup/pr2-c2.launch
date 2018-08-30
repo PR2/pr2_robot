@@ -30,5 +30,15 @@
         <param name="intensity" value="true" />
       </node> 
 
-
+      <!-- Monitor NTP -->
+      <node pkg="pr2_computer_monitor" name="ntp_c2" type="ntp_monitor.py" args="c1 --diag-hostname=c2" machine="c2"/>
+      <!-- Monitor CPU temp, usage -->
+      <node pkg="pr2_computer_monitor" name="realtime_cpu_monitor_c2" type="cpu_monitor.py" args="--diag-hostname=c2" machine="c2" >
+	<param name="check_core_temps" type="bool" value="False" />
+	<param name="check_ipmi_tool" type="bool" value="False" />
+	<param name="enforce_clock_speed" type="bool" value="False" />
+	<param name="num_cores" value="12.0" />
+      </node>
+      <!-- Disk usage monitoring script monitors HD temperature, usage on diagnostics -->
+      <node pkg="pr2_computer_monitor" name="realtime_hd_monitor_c2" type="hd_monitor.py" args="$(optenv HOME /home) --diag-hostname=c2" machine="c2"/>
 </launch>
