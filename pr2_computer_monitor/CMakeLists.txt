@@ -29,7 +29,7 @@ install(PROGRAMS ${PYTHON_SCRIPTS}
 
 add_executable(network_detector src/network_detector.cpp)
 target_link_libraries(network_detector ${catkin_LIBRARIES})
-add_dependencies(network_detector ${catkin_EXPORTED_TARGETS} pr2_computer_monitor_gencpp)
+add_dependencies(network_detector ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
 install(TARGETS network_detector
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
