@@ -541,7 +541,7 @@ end:
 
   ros::shutdown();
 
-  return (void *)rv;
+  return (void *) (intptr_t) rv;
 }
 
 void quitRequested(int sig)
