@@ -2,8 +2,8 @@
 Changelog for package pr2_bringup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.31 (2020-04-14)
+-------------------
 * pr2_bringup: test launch files (`#255 <https://github.com/pr2/pr2_robot/issues/255>`_)
 
   * Disable because pr2.launch needs to resolve c1/c2 hostname

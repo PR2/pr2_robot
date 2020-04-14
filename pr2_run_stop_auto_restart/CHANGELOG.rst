@@ -2,8 +2,8 @@
 Changelog for package pr2_run_stop_auto_restart
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.31 (2020-04-14)
+-------------------
 * fixed CMake errors
 * Contributors: David Feil-Seifer
 

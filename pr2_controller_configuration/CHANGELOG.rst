@@ -2,8 +2,8 @@
 Changelog for package pr2_controller_configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.31 (2020-04-14)
+-------------------
 * fixed integer cast to void* warning in pr2_ethercat; fixed broken launchtest for now
 * Contributors: David Feil-Seifer
 
