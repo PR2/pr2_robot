@@ -78,7 +78,7 @@ analyzers:
         path: Forearm (Left)
         find_and_remove_prefix: l_forearm_cam
         num_items: 2
-        
+
   computers:
     type: diagnostic_aggregator/AnalyzerGroup
     path: Computers
@@ -223,7 +223,7 @@ analyzers:
   controllers:
     type: diagnostic_aggregator/GenericAnalyzer
     path: 'Realtime Controllers'
-    expected: [ 
+    expected: [
       'Realtime Control Loop',
       'Controller (head_camera_trigger)',
       'Controller (projector_controller)',
