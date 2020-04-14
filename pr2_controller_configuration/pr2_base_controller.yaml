@@ -9,17 +9,23 @@ base_controller:
     d: 0.0
     i: 0.0
     i_clamp: 4.0
+    i_clamp_max: 4.0
+    i_clamp_min: -4.0
   caster_position_pid_gains: &caster_position_pid_gains
     p: 80.0
     d: 0.0
     i: 0.0
     i_clamp: 3.45
+    i_clamp_max: 3.45
+    i_clamp_min: -3.45
 
   wheel_pid_gains: &wheel_pid_gains
     p: 3.0
     d: 0.0
     i: 0.0
     i_clamp: 2.0
+    i_clamp_max: 2.0
+    i_clamp_min: -2.0
 
   fl_caster_l_wheel_joint:
    *wheel_pid_gains

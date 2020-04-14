@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import roslib; roslib.load_manifest('imu_monitor')
 import rospy
 import PyKDL
 from sensor_msgs.msg import Imu

@@ -1,6 +1,6 @@
 <package>
   <name>pr2_camera_synchronizer</name>
-  <version>1.5.0</version>
+  <version>1.6.30</version>
   <description>
      <p>
     The PR2 is equipped with a texture projector that can be used to
@@ -16,7 +16,7 @@
       This package contains the pr2_projector_synchronizer node. Based on its dynamically reconfigurable parameters, this node controls the projector pulsing, and sets up triggering of the WGE100 cameras.
     </p>
   </description>
-  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+  <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
 
   <license>BSD</license>
 

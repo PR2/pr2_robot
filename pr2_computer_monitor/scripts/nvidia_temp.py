@@ -49,8 +49,8 @@ import pr2_computer_monitor
 
 class NVidiaTempMonitor(object):
     def __init__(self):
-        self._pub = rospy.Publisher('/diagnostics', DiagnosticArray)
-        self._gpu_pub = rospy.Publisher('gpu_status', GPUStatus)
+        self._pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=10)
+        self._gpu_pub = rospy.Publisher('gpu_status', GPUStatus, queue_size=10)
 
     def pub_status(self):
         gpu_stat = GPUStatus()

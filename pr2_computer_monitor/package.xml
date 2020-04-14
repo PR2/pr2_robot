@@ -1,8 +1,8 @@
 <package>
   <name>pr2_computer_monitor</name>
-  <version>1.5.0</version>
+  <version>1.6.30</version>
   <description>Monitors the computer's processor and hard drives of the PR2 and publishes data to diagnostics.</description>
-  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+  <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
 
   <license>BSD</license>
 
@@ -23,4 +23,8 @@
   <run_depend>pr2_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>std_msgs</run_depend>
+
+
+
+
 </package>

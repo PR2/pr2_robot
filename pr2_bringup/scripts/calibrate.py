@@ -131,7 +131,7 @@ def calibrate_imu():
     return True
 
 def main():
-    pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True)
+    pub_calibrated = rospy.Publisher('calibrated', Bool, latch=True, queue_size=10)
     rospy.wait_for_service('pr2_controller_manager/load_controller')
     rospy.wait_for_service('pr2_controller_manager/switch_controller')
     rospy.wait_for_service('pr2_controller_manager/unload_controller')

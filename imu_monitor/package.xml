@@ -1,10 +1,10 @@
 <package>
   <name>imu_monitor</name>
-  <version>1.5.0</version>
+  <version>1.6.30</version>
   <description>This package contains a single node that monitors the drift of the IMU
 gyroscopes. The results are published to the '/diagnostics' topic and
 are aggregated in the PR2 dashboard.</description>
-  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+  <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
 
   <license>BSD</license>
 
@@ -15,20 +15,9 @@ are aggregated in the PR2 dashboard.</description>
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <!-- <build_depend>sensor_msgs</build_depend> -->
-  <!-- <build_depend>pr2_mechanism_controllers</build_depend> -->
-  <!-- <build_depend>kdl</build_depend> -->
-  <!-- <build_depend>rospy</build_depend> -->
-  <!-- <run_depend>sensor_msgs</run_depend> -->
-  <!-- <run_depend>pr2_mechanism_controllers</run_depend> -->
-  <!-- <run_depend>kdl</run_depend> -->
-  <!-- <run_depend>rospy</run_depend> -->
-  <!-- <test_depend>sensor_msgs</test_depend> -->
-  <!-- <test_depend>pr2_mechanism_controllers</test_depend> -->
-  <!-- <test_depend>kdl</test_depend> -->
-  <!-- <test_depend>rospy</test_depend> -->
-
-  <export>
-
-  </export>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>pr2_mechanism_controllers</run_depend>
+  <run_depend>python_orocos_kdl</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>diagnostic_msgs</run_depend>
 </package>

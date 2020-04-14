@@ -5,10 +5,6 @@ project(pr2_controller_configuration)
 # Load catkin and all dependencies required for this package
 find_package(catkin REQUIRED COMPONENTS roslaunch)
 
-# roslaunch checks
-roslaunch_add_file_check(pr2_default_controllers.launch)
-roslaunch_add_file_check(pr2_jt_controllers.launch)
-
 catkin_package()
 
 install(FILES
@@ -24,7 +20,11 @@ install(FILES
    pr2_laser_tilt_controller.yaml
    pr2_odometry.yaml
    pr2_torso_controller.yaml
-
    pr2_default_controllers.launch
    pr2_jt_controllers.launch
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+
+
+# roslaunch checks
+roslaunch_add_file_check(pr2_default_controllers.launch)
+#roslaunch_add_file_check(pr2_jt_controllers.launch)

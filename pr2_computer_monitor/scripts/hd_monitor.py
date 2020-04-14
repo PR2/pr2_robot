@@ -68,7 +68,7 @@ stat_dict = { 0: 'OK', 1: 'Warning', 2: 'Error' }
 temp_dict = { 0: 'OK', 1: 'Hot', 2: 'Critical Hot' }
 usage_dict = { 0: 'OK', 1: 'Low Disk Space', 2: 'Very Low Disk Space' }
 
-REMOVABLE = ['/dev/sg1', '/dev/sdb'] # Store removable drives so we can ignore if removed
+REMOVABLE = ['/dev/sda'] # Store removable drives so we can ignore if removed
 
 ## Connects to hddtemp daemon to get temp, HD make.
 def get_hddtemp_data(hostname = 'localhost', port = 7634):
@@ -147,7 +147,7 @@ class hd_monitor():
             rospy.logwarn('Not warning for HD temperatures is deprecated. This will be removed in D-turtle')
         self._home_dir = home_dir
 
-        self._diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray)
+        self._diag_pub = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size=10)
 
         self._last_temp_time = 0
         self._last_usage_time = 0

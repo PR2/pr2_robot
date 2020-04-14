@@ -1,6 +1,0 @@
-/**
-\mainpage
-\htmlinclude manifest.html
-
-\b pr2_bringup exposes no public API.
-*/

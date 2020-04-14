@@ -1,9 +1,9 @@
 <package>
   <name>pr2_robot</name>
-  <version>1.5.0</version>
+  <version>1.6.30</version>
   <description>This stack collects PR2-specific components that are used in bringing up
   a robot.</description>
-  <maintainer email="ahendrix@willowgarage.com">Austin Hendrix</maintainer>
+  <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
 
   <license>BSD</license>
 
@@ -16,7 +16,7 @@
 
   <run_depend>pr2_bringup</run_depend>
   <run_depend>pr2_controller_configuration</run_depend>
-  <run_depend>pr2_etherCAT</run_depend>
+  <run_depend>pr2_ethercat</run_depend>
   <run_depend>pr2_computer_monitor</run_depend>
   <run_depend>pr2_camera_synchronizer</run_depend>
   <run_depend>pr2_run_stop_auto_restart</run_depend>
