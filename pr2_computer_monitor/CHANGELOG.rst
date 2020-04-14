@@ -2,6 +2,12 @@
 Changelog for package pr2_computer_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add --ignore-self arg in ntp_monitor.py (`#259 <https://github.com/pr2/pr2_robot/issues/259>`_)
+* fixed CMake errors
+* Contributors: David Feil-Seifer, Shingo Kitagawa
+
 1.6.30 (2018-04-23)
 -------------------
 * removed more tests for jenkins build

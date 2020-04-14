@@ -2,6 +2,29 @@
 Changelog for package pr2_bringup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* pr2_bringup: test launch files (`#255 <https://github.com/pr2/pr2_robot/issues/255>`_)
+
+  * Disable because pr2.launch needs to resolve c1/c2 hostname
+
+* rebased version of https://github.com/PR2/pr2_robot/pull/256 (`#263 <https://github.com/pr2/pr2_robot/issues/263>`_)
+
+  * Adapt monitoring to upgraded PR2s:
+    - no more IPMI
+    - new number of CPU cores
+    - re-add monitoring of c2
+
+* calibrate_pr2: intercept and print exception (`#248 <https://github.com/pr2/pr2_robot/issues/248>`_)
+  * This was silently ignored before.
+  * White space cleanup
+
+* Param names changed between urg_node and hokuyo_node (`#257 <https://github.com/pr2/pr2_robot/issues/257>`_)
+
+  * The new urg_node package is used for the laser scanners in kinetic, but the parameter names are still the one of the hokuyo_node package.
+
+* Contributors: Yuki Furuta, Matthieu Herrb, Michael Goerner, Yannick Jonetzko
+
 1.6.30 (2018-04-23)
 -------------------
 
