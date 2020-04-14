@@ -33,10 +33,9 @@ if (CATKIN_ENABLE_TESTING)
   find_package(roslaunch REQUIRED)
   # Tests that PR2 diagnostic analyzers configuration loads
   add_rostest(test/pr2_analyzers_load_test.launch)
-  set(roslaunch_check_script ${PROJECT_SOURCE_DIR}/test/roslaunch-check)
-  roslaunch_add_file_check(pr2.launch ROS_ENV_LOADER=/opt/ros/$ENV{ROS_DISTRO}/env.sh)
-  roslaunch_add_file_check(pr2-c2.launch)
+  # Disable because pr2.launch needs to resolve c1/c2 hostname
+  # roslaunch_add_file_check(pr2.launch ROS_ENV_LOADER=/opt/ros/$ENV{ROS_DISTRO}/env.sh)
+  # roslaunch_add_file_check(pr2-c2.launch)
   roslaunch_add_file_check(pr2_recalibrate.launch)
-  set(roslaunch_check_script ${roslaunch_DIR}/../scripts/roslaunch-check)
 endif()
 
