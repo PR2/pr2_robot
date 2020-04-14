@@ -54,7 +54,8 @@ if sys.version_info[:3] == (2, 7, 3):
 
 NAME = 'ntp_monitor'
 
-def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None, error_offset = 5000000):
+def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname=None,
+                error_offset=5000000, ignore_self=False):
     pub = rospy.Publisher("/diagnostics", DiagnosticArray, queue_size=10)
     rospy.init_node(NAME, anonymous=True)
     
@@ -62,22 +63,27 @@ def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None,
     if diag_hostname is None:
         diag_hostname = hostname
 
+    ntp_checks = []
     stat = DiagnosticStatus()
     stat.level = 0
     stat.name = "NTP offset from "+ diag_hostname + " to " + ntp_hostname
     stat.message = "OK"
     stat.hardware_id = hostname
     stat.values = []
+    ntp_checks.append((stat, ntp_hostname, offset))
 
-    self_stat = DiagnosticStatus()
-    self_stat.level = DiagnosticStatus.OK
-    self_stat.name = "NTP self-offset for "+ diag_hostname
-    self_stat.message = "OK"
-    self_stat.hardware_id = hostname
-    self_stat.values = []
-    
+    if not ignore_self:
+        self_stat = DiagnosticStatus()
+        self_stat.level = DiagnosticStatus.OK
+        self_stat.name = "NTP self-offset for "+ diag_hostname
+        self_stat.message = "OK"
+        self_stat.hardware_id = hostname
+        self_stat.values = []
+        ntp_checks.append((self_stat, hostname, self_offset))
+
     while not rospy.is_shutdown():
-        for st,host,off in [(stat,ntp_hostname,offset), (self_stat, hostname,self_offset)]:
+        msg = DiagnosticArray()
+        for st, host, off in ntp_checks:
             try:
                 p = Popen(["ntpdate", "-q", host], stdout=PIPE, stdin=PIPE, stderr=PIPE)
                 res = p.wait()
@@ -111,11 +117,9 @@ def ntp_monitor(ntp_hostname, offset=500, self_offset=500, diag_hostname = None,
                               KeyValue("Offset tolerance (us) for Error", str(error_offset)),
                               KeyValue("Output", o),
                               KeyValue("Errors", e) ]
+            msg.status.append(st)
 
-
-        msg = DiagnosticArray()
         msg.header.stamp = rospy.get_rostime()
-        msg.status = [stat, self_stat]
         pub.publish(msg)
         time.sleep(1)
 
@@ -135,6 +139,8 @@ def ntp_monitor_main(argv=sys.argv):
                       help="Computer name in diagnostics output (ex: 'c1')",
                       metavar="DIAG_HOSTNAME",
                       action="store", default=None)
+    parser.add_option("--ignore-self", dest="ignore_self",
+                      help="Ignore self NTP test", action="store_true")
     options, args = parser.parse_args(rospy.myargv())
 
     if (len(args) != 2):
@@ -145,10 +151,12 @@ def ntp_monitor_main(argv=sys.argv):
         offset = int(options.offset_tol)
         self_offset = int(options.self_offset_tol)
         error_offset = int(options.error_offset_tol)
+        ignore_self = options.ignore_self
     except:
         parser.error("Offsets must be numbers")        
     
-    ntp_monitor(args[1], offset, self_offset, options.diag_hostname, error_offset)
+    ntp_monitor(args[1], offset, self_offset, options.diag_hostname,
+                error_offset, ignore_self)
     
 
 if __name__ == "__main__":
