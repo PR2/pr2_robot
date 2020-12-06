@@ -1,0 +1,104 @@
+shoulder_pan_gains: &shoulder_pan_velocity_gains
+    p: 18.0
+    i: 4.67
+    d: 0.0
+    i_clamp: 100.0
+    i_clamp_max: 100.0
+    i_clamp_min: -100.0
+
+shoulder_lift_gains: &shoulder_lift_velocity_gains
+    p: 10.0
+    i: 5.67
+    d: 0
+    i_clamp: 100.0
+    i_clamp_max: 100.0
+    i_clamp_min: -100.0
+
+upper_arm_roll_gains: &upper_arm_roll_velocity_gains
+    p: 6.0
+    i: 42.9
+    d: 0
+    i_clamp: 100.0
+    i_clamp_max: 100.0
+    i_clamp_min: -100.0
+
+elbow_flex_gains: &elbow_flex_velocity_gains
+    p: 4.0
+    i: 20.0
+    d: 0
+    i_clamp: 100.0
+    i_clamp_max: 100.0
+    i_clamp_min: -100.0
+
+forearm_roll_gains: &forearm_roll_velocity_gains
+    p: 6.0
+    i: 15.0
+    d: 0
+    i_clamp: 100.0
+    i_clamp_max: 100.0
+    i_clamp_min: -100.0
+
+wrist_flex_gains: &wrist_flex_velocity_gains
+      p: 4.0
+      i: 25.0
+      d: 0
+      i_clamp: 100.0
+      i_clamp_max: 100.0
+      i_clamp_min: -100.0
+
+wrist_roll_gains: &wrist_roll_velocity_gains
+      p: 4.0
+      i: 25.0
+      d: 0
+      i_clamp: 100.0
+      i_clamp_max: 100.0
+      i_clamp_min: -100.0
+
+l_arm_joint_group_velocity_controller:
+  type: "robot_mechanism_controllers/JointGroupVelocityController"
+  joints:
+    - l_shoulder_pan_joint
+    - l_shoulder_lift_joint
+    - l_upper_arm_roll_joint
+    - l_elbow_flex_joint
+    - l_forearm_roll_joint
+    - l_wrist_flex_joint
+    - l_wrist_roll_joint
+  gains:
+    l_shoulder_pan_joint:    *shoulder_pan_velocity_gains
+    l_shoulder_lift_joint:   *shoulder_lift_velocity_gains
+    l_upper_arm_roll_joint:  *upper_arm_roll_velocity_gains
+    l_elbow_flex_joint:      *elbow_flex_velocity_gains
+    l_forearm_roll_joint:    *forearm_roll_velocity_gains
+    l_wrist_flex_joint:      *wrist_flex_velocity_gains
+    l_wrist_roll_joint:      *wrist_roll_velocity_gains
+
+r_arm_joint_group_velocity_controller:
+  type: "robot_mechanism_controllers/JointGroupVelocityController"
+  joints:
+    - r_shoulder_pan_joint
+    - r_shoulder_lift_joint
+    - r_upper_arm_roll_joint
+    - r_elbow_flex_joint
+    - r_forearm_roll_joint
+    - r_wrist_flex_joint
+    - r_wrist_roll_joint
+  gains:
+    r_shoulder_pan_joint:    *shoulder_pan_velocity_gains
+    r_shoulder_lift_joint:   *shoulder_lift_velocity_gains
+    r_upper_arm_roll_joint:  *upper_arm_roll_velocity_gains
+    r_elbow_flex_joint:      *elbow_flex_velocity_gains
+    r_forearm_roll_joint:    *forearm_roll_velocity_gains
+    r_wrist_flex_joint:      *wrist_flex_velocity_gains
+    r_wrist_roll_joint:      *wrist_roll_velocity_gains
+
+torso_lift_velocity_controller:
+  type: robot_mechanism_controllers/JointVelocityController
+  joint: torso_lift_joint
+  pid: &torso_lift_velocity_gains
+    p: 2000000.0
+    d: 0.0
+    i: 1000.0
+    i_clamp: 1200.0
+    i_clamp_max: 1200.0
+    i_clamp_min: -1200.0
