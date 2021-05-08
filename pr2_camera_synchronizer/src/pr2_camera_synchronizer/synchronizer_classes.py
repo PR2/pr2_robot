@@ -128,7 +128,7 @@ class MultiTriggerController:
     self.zero_offset = 0
     self.clear_waveform()
     self.name = name
-    self.async = AsynchronousUpdater(self.async_update, "Controller "+name)
+    self.async_ = AsynchronousUpdater(self.async_update, "Controller "+name)
     self.service = None
     self.transitions = []
 
@@ -161,7 +161,7 @@ class MultiTriggerController:
       # Run the update using an Asynchronous Updater so that if something
       # locks up, the rest of the node can keep working.
       #print "Trigger update on", self.name
-      self.async.update(self.period, self.zero_offset, self.transitions)
+      self.async_.update(self.period, self.zero_offset, self.transitions)
 
 class ProsilicaInhibitTriggerController(MultiTriggerController):
     def __init__(self, name, param, true_val, false_val):
@@ -359,7 +359,7 @@ class Camera:
     self.level = level
     self.proj = proj
     self.reconfigure_client = None
-    self.async = AsynchronousUpdater(self.async_apply_update, "Camera "+node_name)
+    self.async_ = AsynchronousUpdater(self.async_apply_update, "Camera "+node_name)
     self.trig_rising = True
 
   def param(self, config, name):
@@ -480,7 +480,7 @@ class Camera:
               }
       #print self.name, reconfig_request
 
-      self.async.update(reconfig_request)
+      self.async_.update(reconfig_request)
 
 # Need to set:
 # Global period if synchronized
