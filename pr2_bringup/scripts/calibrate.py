@@ -70,7 +70,7 @@ def calibrate(controllers):
                 success = False
             else:
                 launched.append(c)
-        print "Launched: %s" % ', '.join(launched)
+        print("Launched: %s" % ', '.join(launched))
 
         # Starts the launched controllers
         switch_controller(launched, [], SwitchControllerRequest.BEST_EFFORT)
@@ -85,7 +85,7 @@ def calibrate(controllers):
 
         # Waits until all the controllers have calibrated
         while waiting_for and not rospy.is_shutdown():
-            print "Waiting for: %s" % ', '.join(waiting_for)
+            print("Waiting for: %s" % ', '.join(waiting_for))
             sleep(0.5)
     finally:
         for name in launched:
@@ -123,7 +123,7 @@ def calibrate_imu():
                 self.sub.unregister()
             return self.is_calibrated
 
-    print "Waiting up to 20s for IMU calibration to complete."
+    print("Waiting up to 20s for IMU calibration to complete.")
     helper = is_calibrated_helper()
     if not helper.wait_for_calibrated("torso_lift_imu/is_calibrated", 20):
         rospy.logerr("IMU took too long to calibrate.")
@@ -158,9 +158,9 @@ def main():
     pub_calibrated.publish(True)
 
     if not imustatus:
-        print "Mechanism calibration complete, but IMU calibration failed."
+        print("Mechanism calibration complete, but IMU calibration failed.")
     else:
-        print "Calibration complete"
+        print("Calibration complete")
 
     rospy.spin()
 
