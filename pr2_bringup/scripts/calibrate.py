@@ -96,7 +96,7 @@ def calibrate(controllers):
                 resp_unload = unload_controller(name)
                 if (resp_unload == 0):
                     rospy.logerr("Failed to unload controller %s" % name)
-            except Exception, ex:
+            except Exception as ex:
                 rospy.logerr("Failed to stop/unload controller %s" % name)
     return success
 

@@ -144,7 +144,7 @@ if __name__ == '__main__':
             wifi_monitor.publish_stats()
     except KeyboardInterrupt:
         pass
-    except Exception, e:
+    except Exception as e:
         import traceback
         traceback.print_exc()
 

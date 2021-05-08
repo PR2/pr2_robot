@@ -104,7 +104,7 @@ class AsynchronousUpdater(threading.Thread):
             if allargs != None:
                 try:
                     self.f(*allargs[0], **allargs[1])
-                except Exception, e:
+                except Exception as e:
                     rospy.logerr("AsynchronousUpdater failed with exception: %s"%str(e))
                     pass
 

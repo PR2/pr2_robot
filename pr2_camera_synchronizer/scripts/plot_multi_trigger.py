@@ -194,7 +194,7 @@ class Camera(TriggerBase):
                 with_proj_exp = projector_pulse_len + 0.0015 + 2 * slight_shift
                 if alt and e - s > with_proj_exp:
                     raise Exception("Too long exposure for textured image %f instead of %f, %s."%(e-s,with_proj_exp,info))
-        except Exception, e:
+        except Exception as e:
             #import traceback
             #traceback.print_exc()
             self.parent.set_error(repr(e))

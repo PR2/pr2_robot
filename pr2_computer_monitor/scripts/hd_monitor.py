@@ -376,7 +376,7 @@ if __name__ == '__main__':
             hd_monitor.publish_stats()
     except KeyboardInterrupt:
         pass
-    except Exception, e:
+    except Exception as e:
         traceback.print_exc()
 
     hd_monitor.cancel_timers()
