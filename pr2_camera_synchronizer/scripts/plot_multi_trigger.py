@@ -25,7 +25,7 @@ class TriggerBase:
         #print >> sys.stderr, self.name
         #print >> sys.stderr, self.pts
         pts = [ (x % self.period, y) for (x, y) in self.pts ]
-        firstpt = pts.index(min(pts, key = lambda (x,y):x))
+        firstpt = pts.index(min(pts, key = lambda xy:xy[0]))
         pts = pts[firstpt:] + pts[:firstpt]
         #print >> sys.stderr, pts
         #print >> sys.stderr
