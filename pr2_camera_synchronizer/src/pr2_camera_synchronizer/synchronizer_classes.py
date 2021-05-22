@@ -104,7 +104,7 @@ class AsynchronousUpdater(threading.Thread):
             if allargs != None:
                 try:
                     self.f(*allargs[0], **allargs[1])
-                except Exception, e:
+                except Exception as e:
                     rospy.logerr("AsynchronousUpdater failed with exception: %s"%str(e))
                     pass
 
@@ -128,7 +128,7 @@ class MultiTriggerController:
     self.zero_offset = 0
     self.clear_waveform()
     self.name = name
-    self.async = AsynchronousUpdater(self.async_update, "Controller "+name)
+    self.async_ = AsynchronousUpdater(self.async_update, "Controller "+name)
     self.service = None
     self.transitions = []
 
@@ -155,13 +155,13 @@ class MultiTriggerController:
               rospy.logerr("Error setting waveform %s: %s"%(self.name, rslt.status_message))
           #print "Done updating waveform ", self.name
       except KeyboardInterrupt: # Handle CTRL+C
-          print "Aborted trigger update on", self.name
+          print("Aborted trigger update on", self.name)
 
   def update(self):
       # Run the update using an Asynchronous Updater so that if something
       # locks up, the rest of the node can keep working.
       #print "Trigger update on", self.name
-      self.async.update(self.period, self.zero_offset, self.transitions)
+      self.async_.update(self.period, self.zero_offset, self.transitions)
 
 class ProsilicaInhibitTriggerController(MultiTriggerController):
     def __init__(self, name, param, true_val, false_val):
@@ -359,7 +359,7 @@ class Camera:
     self.level = level
     self.proj = proj
     self.reconfigure_client = None
-    self.async = AsynchronousUpdater(self.async_apply_update, "Camera "+node_name)
+    self.async_ = AsynchronousUpdater(self.async_apply_update, "Camera "+node_name)
     self.trig_rising = True
 
   def param(self, config, name):
@@ -464,7 +464,7 @@ class Camera:
           #print "**** Reconfigured client", self.name
           #print "Done updating camera ", self.name
       except KeyboardInterrupt: # Handle CTRL+C
-          print "Aborted camera update on", self.name
+          print("Aborted camera update on", self.name)
       
   def apply_update(self):
       reconfig_request = {
@@ -480,7 +480,7 @@ class Camera:
               }
       #print self.name, reconfig_request
 
-      self.async.update(reconfig_request)
+      self.async_.update(reconfig_request)
 
 # Need to set:
 # Global period if synchronized
@@ -541,20 +541,20 @@ class CameraSynchronizer:
     for t in threads:
         if not t.isDaemon() and t != threading.currentThread():
             try: 
-               print t.name
+               print(t.name)
             except:
-                print "Unknown thread ", t
+                print("Unknown thread ", t)
             n = n + 1
     return n
 
   def kill(self):
-    print "\nWaiting for all threads to die..."
+    print("\nWaiting for all threads to die...")
     killAsynchronousUpdaters()
     #time.sleep(1)
     while self.print_threads() > 0:         
-        print "\nStill waiting for all threads to die..."
+        print("\nStill waiting for all threads to die...")
         time.sleep(1)
-    print
+    print()
 
   def reconfigure(self, config, level):
     # print "Reconfigure", config
@@ -627,4 +627,4 @@ class CameraSynchronizer:
     finally:
       rospy.signal_shutdown("Main thread exiting")
       self.kill()
-      print "Main thread exiting"
+      print("Main thread exiting")

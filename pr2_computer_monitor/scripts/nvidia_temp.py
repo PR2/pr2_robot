@@ -59,7 +59,7 @@ class NVidiaTempMonitor(object):
             card_out = pr2_computer_monitor.get_gpu_status()
             gpu_stat = pr2_computer_monitor.parse_smi_output(card_out)
             stat = pr2_computer_monitor.gpu_status_to_diag(gpu_stat)
-        except Exception, e:
+        except Exception as e:
             import traceback
             rospy.logerr('Unable to process nVidia GPU data')
             rospy.logerr(traceback.format_exc())

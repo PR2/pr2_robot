@@ -25,7 +25,7 @@ class TriggerBase:
         #print >> sys.stderr, self.name
         #print >> sys.stderr, self.pts
         pts = [ (x % self.period, y) for (x, y) in self.pts ]
-        firstpt = pts.index(min(pts, key = lambda (x,y):x))
+        firstpt = pts.index(min(pts, key = lambda xy:xy[0]))
         pts = pts[firstpt:] + pts[:firstpt]
         #print >> sys.stderr, pts
         #print >> sys.stderr
@@ -194,7 +194,7 @@ class Camera(TriggerBase):
                 with_proj_exp = projector_pulse_len + 0.0015 + 2 * slight_shift
                 if alt and e - s > with_proj_exp:
                     raise Exception("Too long exposure for textured image %f instead of %f, %s."%(e-s,with_proj_exp,info))
-        except Exception, e:
+        except Exception as e:
             #import traceback
             #traceback.print_exc()
             self.parent.set_error(repr(e))
@@ -308,7 +308,7 @@ class TriggerChecker:
             try:
                 self.gnuplot = subprocess.Popen('gnuplot', stdin = subprocess.PIPE)
             except:
-                print "Gnuplot must be installed to allow plotting of waveforms."
+                print("Gnuplot must be installed to allow plotting of waveforms.")
                 sys.exit(1)
             atexit.register(self.gnuplot.kill)
 
@@ -367,10 +367,10 @@ class TriggerChecker:
                         self.triggers[i].period, period))
                 return
         style = 'with linespoints title "%s"'
-        print >> self.gnuplot.stdin, 'plot "-"', style%self.triggers[0].name,
+        print('plot "-"', style%self.triggers[0].name, end=' ', file=self.gnuplot.stdin)
         for i in range(1, n):
-            print >> self.gnuplot.stdin, ', "-"', style%self.triggers[i].name,
-        print >> self.gnuplot.stdin 
+            print(', "-"', style%self.triggers[i].name, end=' ', file=self.gnuplot.stdin)
+        print(file=self.gnuplot.stdin) 
         for i in range(n):
             t = self.triggers[i]
             reps = int(period / t.period)
@@ -378,7 +378,7 @@ class TriggerChecker:
             if len(pts) == 0:
                 pts = [(0, 0)]
             def plot_pt(x, y):
-                print >> self.gnuplot.stdin, x, (n - i - 1) * 1.1 + y%2
+                print(x, (n - i - 1) * 1.1 + y%2, file=self.gnuplot.stdin)
             plot_pt(0, pts[-1][1])
             for k in range(reps):
                 xoffs = t.period * k
@@ -386,12 +386,12 @@ class TriggerChecker:
                     plot_pt(pts[j][0] + xoffs, pts[j-1][1])
                     plot_pt(pts[j][0] + xoffs, pts[j][1])
             plot_pt(period, pts[-1][1])
-            print >> self.gnuplot.stdin, "e"
-            print >> self.gnuplot.stdin
+            print("e", file=self.gnuplot.stdin)
+            print(file=self.gnuplot.stdin)
             sys.stdout.flush()
 
     def empty_plot(self):
-        print 'plot x, -x'
+        print('plot x, -x')
     
 import unittest
 class Test(unittest.TestCase):
