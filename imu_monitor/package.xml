@@ -1,4 +1,4 @@
-<package>
+<package format="3">
   <name>imu_monitor</name>
   <version>1.6.31</version>
   <description>This package contains a single node that monitors the drift of the IMU
@@ -15,9 +15,10 @@ are aggregated in the PR2 dashboard.</description>
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>sensor_msgs</run_depend>
-  <run_depend>pr2_mechanism_controllers</run_depend>
-  <run_depend>python_orocos_kdl</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>diagnostic_msgs</run_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>pr2_mechanism_controllers</exec_depend>
+  <exec_depend condition="$ROS_DISTRO != noetic">python_orocos_kdl</exec_depend>
+  <exec_depend condition="$ROS_DISTRO == noetic">python3-pykdl</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>diagnostic_msgs</exec_depend>
 </package>
