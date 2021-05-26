@@ -1,6 +1,6 @@
 <package>
   <name>pr2_bringup</name>
-  <version>1.6.31</version>
+  <version>1.6.32</version>
   <description>Launch files and scripts needed to bring a PR2 up into a running state.</description>
   <maintainer email="dave@cse.unr.edu">Dave Feil-Seifer</maintainer>
   <license>BSD</license>

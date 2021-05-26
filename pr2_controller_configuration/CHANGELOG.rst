@@ -2,8 +2,8 @@
 Changelog for package pr2_controller_configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.6.32 (2021-05-26)
+-------------------
 * add pr2_joint_group_velocity_controllers.yaml
   add JointGroupVelocityController in pr2_controllers (see https://github.com/PR2/pr2_controllers/pull/400)
 * Contributors: Shuang Li
