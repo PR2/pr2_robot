@@ -2,6 +2,13 @@
 Changelog for package pr2_bringup
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#268 <https://github.com/pr2/pr2_robot/issues/268>`_ from k-okada/fix_for_noetic
+* run 2to3 -w -fexcept .
+* run 2to3 -w -fprint .
+* Contributors: Kei Okada
+
 1.6.31 (2020-04-14)
 -------------------
 * pr2_bringup: test launch files (`#255 <https://github.com/pr2/pr2_robot/issues/255>`_)

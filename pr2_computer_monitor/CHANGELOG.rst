@@ -2,6 +2,13 @@
 Changelog for package pr2_computer_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#268 <https://github.com/pr2/pr2_robot/issues/268>`_ from k-okada/fix_for_noetic
+* run 2to3 -w -fexcept .
+* run 2to3 -w -fprint .
+* Contributors: Kei Okada
+
 1.6.31 (2020-04-14)
 -------------------
 * add --ignore-self arg in ntp_monitor.py (`#259 <https://github.com/pr2/pr2_robot/issues/259>`_)

@@ -2,6 +2,12 @@
 Changelog for package pr2_controller_configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add pr2_joint_group_velocity_controllers.yaml
+  add JointGroupVelocityController in pr2_controllers (see https://github.com/PR2/pr2_controllers/pull/400)
+* Contributors: Shuang Li
+
 1.6.31 (2020-04-14)
 -------------------
 * fixed integer cast to void* warning in pr2_ethercat; fixed broken launchtest for now

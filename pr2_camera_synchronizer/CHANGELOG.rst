@@ -2,6 +2,15 @@
 Changelog for package pr2_camera_synchronizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#268 <https://github.com/pr2/pr2_robot/issues/268>`_ from k-okada/fix_for_noetic
+* async is keyword in Python3.7
+* python3 did not take tuple for lambda : https://stackoverflow.com/questions/11328312/python-lambda-does-not-accept-tuple-argument
+* run 2to3 -w -fexcept .
+* run 2to3 -w -fprint .
+* Contributors: Kei Okada
+
 1.6.31 (2020-04-14)
 -------------------
 
