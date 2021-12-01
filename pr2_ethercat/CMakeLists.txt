@@ -10,14 +10,20 @@ find_package(catkin REQUIRED COMPONENTS
    pr2_controller_manager 
    ethercat_hardware 
    realtime_tools 
-   diagnostic_updater)
+   diagnostic_updater
+   cpp_common)
 
 find_package(Boost REQUIRED COMPONENTS system thread)
 include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
-catkin_package()
+catkin_package(DEPENDS CATKIN_DEPENDS cpp_common)
 
 add_definitions(-O3)
+
+# needed to circumvent LD_LIBRARY_PATH being emptied through ethercat_grant
+# in addition to not propagating ros_ethercat_loop RUNPATH to dependencies, in contrast to RPATH
+SET(GCC_NEWDTAGS_LINK_FLAGS "-Wl,--disable-new-dtags")
+SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GCC_NEWDTAGS_LINK_FLAGS}")
 
 add_executable(pr2_ethercat src/main.cpp)
 target_link_libraries(pr2_ethercat rt ${catkin_LIBRARIES} ${Boost_LIBRARIES})
