@@ -22,7 +22,7 @@
   <arg name="start_manager"     default="true" />
 
   <node pkg="nodelet" type="nodelet" name="$(arg nodelet_manager)" args="manager"
-        if="$(arg start_manager)" machine="pr2-head" output="screen"/>
+        if="$(arg start_manager)" machine="pr2-head" output="screen" respawn="true"/>
 
   <node pkg="nodelet" type="nodelet" name="$(arg base_name)_bridge" machine="pr2-head"
         args="load kinect2_bridge/kinect2_bridge_nodelet $(arg nodelet_manager)"
