@@ -80,6 +80,7 @@ def get_hddtemp_data(hostname = 'localhost', port = 7634):
             newdat = hd_sock.recv(1024)
             if len(newdat) == 0:
                 break
+            newdat = newdat.decode()
             sock_data = sock_data + newdat
         hd_sock.close()
         
@@ -201,10 +202,10 @@ class hd_monitor():
         for index in range(0, len(drives)):
             temp = temps[index]
             
-            if not unicode(temp).isnumeric() and drives[index] not in REMOVABLE:
+            if not temp.isnumeric() and drives[index] not in REMOVABLE:
                 temp_level = DiagnosticStatus.ERROR
                 temp_ok = False
-            elif not unicode(temp).isnumeric() and drives[index] in REMOVABLE:
+            elif not temp.isnumeric() and drives[index] in REMOVABLE:
                 temp_level = DiagnosticStatus.OK
                 temp = "Removed"
             else:
@@ -258,6 +259,7 @@ class hd_monitor():
             p = subprocess.Popen(["df", "-P", "--block-size=1G", self._home_dir], 
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = p.communicate()
+            stdout = stdout.decode()
             retcode = p.returncode
             
             if (retcode == 0):
@@ -267,7 +269,7 @@ class hd_monitor():
                 for row in stdout.split('\n'):
                     if len(row.split()) < 2:
                         continue
-                    if not unicode(row.split()[1]).isnumeric() or float(row.split()[1]) < 10: # Ignore small drives
+                    if not row.split()[1].isnumeric() or float(row.split()[1]) < 10: # Ignore small drives
                         continue
                 
                     row_count += 1
