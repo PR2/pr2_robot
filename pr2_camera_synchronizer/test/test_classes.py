@@ -45,7 +45,7 @@ def issorted(l):
     return copy == l
 
 def interlace(l1, l2):
-    l = zip(l1, l2)
+    l = list(zip(l1, l2))
     return list(sum(l, ()))
 
 class TestProjector(unittest.TestCase):

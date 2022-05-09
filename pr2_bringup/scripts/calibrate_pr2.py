@@ -369,7 +369,7 @@ def main():
         if recalibrate:
             controller_list = list_controllers()
             def is_running(c) : return c[1]=='running'
-            running_controllers = [c[0] for c in filter(is_running, zip(controller_list.controllers, controller_list.state))]
+            running_controllers = [c[0] for c in filter(is_running, list(zip(controller_list.controllers, controller_list.state)))]
             print("Running controllers : ", running_controllers)
             if not switch_controller([], running_controllers, SwitchControllerRequest.STRICT):
                 print("Failed to stop controllers")
