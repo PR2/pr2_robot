@@ -7,6 +7,8 @@
 sudo: true
 dist: bionic
 language: python
+python:
+  - "3.6"
 env:
   global:
     - JOB_PATH=/tmp/devel_job
@@ -25,6 +27,7 @@ install:
   # check python3 compatibility
   - if [ "${CHECK_PYTHON3_COMPILE}" == "true" ]; then python3 -m compileall -x asmach .; exit $?; fi
   # either install the latest released version of ros_buildfarm
+  - pip install pyyaml==5.4.1 ## latest pyyaml raises TypeError: load() missing 1 required positional argument: 'Loader'
   - pip install ros_buildfarm
   # or checkout a specific branch
   #- git clone -b master https://github.com/ros-infrastructure/ros_buildfarm /tmp/ros_buildfarm
