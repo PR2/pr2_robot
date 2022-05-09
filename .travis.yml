@@ -49,6 +49,8 @@ install:
   - cp -R $TRAVIS_BUILD_DIR $JOB_PATH/ws/src/
   # generate the script to run a pre-release job for that target and repo
   - generate_prerelease_script.py $INDEX_URL $ROS_DISTRO_NAME default $OS_NAME $OS_CODE_NAME $ARCH  --output-dir $JOB_PATH
+  # update keys for trusty/xenial
+  - set -x; if [ "${OS_CODE_NAME}" = "trusty" ] || [ "${OS_CODE_NAME}" = "xenial" ]; then sed -i /0.key$/a'curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | tee $WORKSPACE/keys/0.key' $JOB_PATH/prerelease_build_*.sh; fi
   # run the actual job which involves Docker
   - cd $JOB_PATH; sh ./prerelease.sh -y
 script:
