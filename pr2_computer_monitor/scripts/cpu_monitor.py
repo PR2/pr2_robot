@@ -72,6 +72,8 @@ def check_ipmi():
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
         retcode = p.returncode
                         
         if retcode != 0:
@@ -105,7 +107,7 @@ def check_ipmi():
             if words[0].startswith('CPU') and words[0].strip().endswith('Temp'):
                 if words[1].strip().endswith('degrees C'):
                     tmp = ipmi_val.rstrip(' degrees C').lstrip()
-                    if unicode(tmp).isnumeric():
+                    if tmp.isnumeric():
                         temperature = float(tmp)
                         diag_vals.append(KeyValue(key = name + ' (C)', value = tmp))
 
@@ -133,7 +135,7 @@ def check_ipmi():
                     diag_vals.append(KeyValue(key = name + ' (C)', value = tmp))
                     # Give temp warning
                     dev_name = name.split()[0]
-                    if unicode(tmp).isnumeric():
+                    if tmp.isnumeric():
                         temperature = float(tmp)
 
                         if temperature >= 60 and temperature < 75:
@@ -153,7 +155,7 @@ def check_ipmi():
             if (name.startswith('CPU') and name.endswith('Fan')) or name == 'MB Fan':
                 if ipmi_val.endswith('RPM'):
                     rpm = ipmi_val.rstrip(' RPM').lstrip()
-                    if unicode(rpm).isnumeric():
+                    if rpm.isnumeric():
                         if int(rpm) == 0:
                             diag_level = max(diag_level, DiagnosticStatus.ERROR)
                             diag_msgs.append('CPU Fan Off')
@@ -197,6 +199,8 @@ def check_core_temps(sys_temp_strings):
         p = subprocess.Popen(cmd, stdout = subprocess.PIPE, 
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
         retcode = p.returncode
 
         if retcode != 0:
@@ -207,7 +211,7 @@ def check_core_temps(sys_temp_strings):
             return diag_vals, diag_msgs, diag_level
   
         tmp = stdout.strip()
-        if unicode(tmp).isnumeric():
+        if tmp.isnumeric():
             temp = float(tmp) / 1000
             diag_vals.append(KeyValue(key = 'Core %d Temp' % index, value = str(temp)))
 
@@ -234,6 +238,8 @@ def check_clock_speed(enforce_speed):
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
         retcode = p.returncode
 
         if retcode != 0:
@@ -251,7 +257,7 @@ def check_clock_speed(enforce_speed):
 
             speed = words[1].strip().split('.')[0] # Conversion to float doesn't work with decimal
             vals.append(KeyValue(key = 'Core %d MHz' % index, value = speed))
-            if unicode(speed).isnumeric():
+            if speed.isnumeric():
                 mhz = float(speed)
                 
                 if mhz < 2240 and mhz > 2150:
@@ -291,6 +297,8 @@ def check_uptime(load1_threshold, load5_threshold):
         p = subprocess.Popen('uptime', stdout = subprocess.PIPE, 
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
         retcode = p.returncode
 
         if retcode != 0:
@@ -336,6 +344,7 @@ def check_memory():
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
+        stdout = stdout.decode()
         retcode = p.returncode
                
         if retcode != 0:
@@ -386,6 +395,8 @@ def check_mpstat(core_count = -1):
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
         retcode = p.returncode
 
         if retcode != 0:
@@ -478,6 +489,8 @@ def get_core_temp_names():
                              stdout = subprocess.PIPE,
                              stderr = subprocess.PIPE, shell = True)
         stdout, stderr = p.communicate()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
         retcode = p.returncode
 
         if retcode != 0:
@@ -622,6 +635,8 @@ class CPUMonitor():
                                  stdout = subprocess.PIPE,
                                  stderr = subprocess.PIPE, shell = True)
             stdout, stderr = p.communicate()
+            stdout = stdout.decode()
+            stderr = stderr.decode()
             retcode = p.returncode
             
             if retcode != 0:

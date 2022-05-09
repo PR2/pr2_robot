@@ -7,12 +7,20 @@
 sudo: true
 dist: bionic
 language: python
+python:
+  - "3.6"
+addons:
+  apt:
+    packages:
+    - python2.7
+    - 2to3
 env:
   global:
     - JOB_PATH=/tmp/devel_job
     - ABORT_ON_TEST_FAILURE=1
     - INDEX_URL=https://raw.githubusercontent.com/ros-infrastructure/ros_buildfarm_config/production/index.yaml
   matrix:
+    - CHECK_PYTHON2_COMPILE=true
     - CHECK_PYTHON3_COMPILE=true
     - ROS_DISTRO_NAME=indigo  OS_NAME=ubuntu OS_CODE_NAME=trusty ARCH=amd64 INDEX_URL=https://raw.githubusercontent.com/ros-infrastructure/ros_buildfarm_config/6a93d17/index.yaml
     - ROS_DISTRO_NAME=kinetic OS_NAME=ubuntu OS_CODE_NAME=xenial ARCH=amd64 INDEX_URL=https://raw.githubusercontent.com/ros-infrastructure/ros_buildfarm_config/6a93d17/index.yaml
@@ -22,9 +30,12 @@ env:
 #   allow_failures:
 #     - env: ROS_DISTRO_NAME=melodic OS_NAME=ubuntu OS_CODE_NAME=bionic ARCH=amd64
 install:
+  # check python2 compatibility
+  - if [ "${CHECK_PYTHON2_COMPILE}" == "true" ]; then python2 -m compileall .; exit $?; fi
   # check python3 compatibility
-  - if [ "${CHECK_PYTHON3_COMPILE}" == "true" ]; then python3 -m compileall -x asmach .; exit $?; fi
+  - if [ "${CHECK_PYTHON3_COMPILE}" == "true" ]; then bash -c "ret=0; trap 'ret=1' ERR; python3 -m compileall .; 2to3 -w -f except -f execfile -f has_key -f import -f raw_input -f zip .; git diff --exit-code . > /dev/null; echo Exitting with \$ret; exit \$ret"; exit $?; fi
   # either install the latest released version of ros_buildfarm
+  - pip install pyyaml==5.4.1 ## latest pyyaml raises TypeError: load() missing 1 required positional argument: 'Loader'
   - pip install ros_buildfarm
   # or checkout a specific branch
   #- git clone -b master https://github.com/ros-infrastructure/ros_buildfarm /tmp/ros_buildfarm
@@ -38,6 +49,8 @@ install:
   - cp -R $TRAVIS_BUILD_DIR $JOB_PATH/ws/src/
   # generate the script to run a pre-release job for that target and repo
   - generate_prerelease_script.py $INDEX_URL $ROS_DISTRO_NAME default $OS_NAME $OS_CODE_NAME $ARCH  --output-dir $JOB_PATH
+  # update keys for trusty/xenial
+  - set -x; if [ "${OS_CODE_NAME}" = "trusty" ] || [ "${OS_CODE_NAME}" = "xenial" ]; then sed -i /0.key$/a'curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | tee $WORKSPACE/keys/0.key' $JOB_PATH/prerelease_build_*.sh; fi
   # run the actual job which involves Docker
   - cd $JOB_PATH; sh ./prerelease.sh -y
 script:

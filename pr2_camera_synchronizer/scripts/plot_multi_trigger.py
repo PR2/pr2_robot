@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from __future__ import with_statement
+from __future__ import with_statement, print_function
 
 PKG='pr2_camera_synchronizer'
 import roslib; roslib.load_manifest(PKG)
