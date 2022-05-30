@@ -604,7 +604,7 @@ class CameraSynchronizer:
     self.diagnostic_pub.publish(da)
 
   def spin(self):
-    self.diagnostic_pub = rospy.Publisher("/diagnostics", DiagnosticArray)
+    self.diagnostic_pub = rospy.Publisher("/diagnostics", DiagnosticArray, queue_size= 1)
     try:
       reset_count = 0
       rospy.loginfo("Camera synchronizer is running...")
