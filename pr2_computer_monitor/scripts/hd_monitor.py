@@ -201,6 +201,8 @@ class hd_monitor():
 
         for index in range(0, len(drives)):
             temp = temps[index]
+            if type(temp) == bytes:
+                temp = temp.decode('utf-8')
             
             if not temp.isnumeric() and drives[index] not in REMOVABLE:
                 temp_level = DiagnosticStatus.ERROR
