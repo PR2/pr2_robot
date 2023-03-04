@@ -12,6 +12,8 @@
   <author>Kevin Watts (watts@willowgarage.com)</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 3">python3-setuptools</buildtool_depend>
 
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>pr2_msgs</build_depend>
