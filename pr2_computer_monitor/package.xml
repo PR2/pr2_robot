@@ -1,4 +1,4 @@
-<package>
+<package format="3">
   <name>pr2_computer_monitor</name>
   <version>1.6.32</version>
   <description>Monitors the computer's processor and hard drives of the PR2 and publishes data to diagnostics.</description>
@@ -12,17 +12,19 @@
   <author>Kevin Watts (watts@willowgarage.com)</author>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 2">python-setuptools</buildtool_depend>
+  <buildtool_depend condition="$ROS_PYTHON_VERSION == 3">python3-setuptools</buildtool_depend>
 
   <build_depend>diagnostic_msgs</build_depend>
   <build_depend>pr2_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
 
-  <run_depend>diagnostic_msgs</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>pr2_msgs</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>std_msgs</run_depend>
+  <exec_depend>diagnostic_msgs</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>pr2_msgs</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
 
 
 
