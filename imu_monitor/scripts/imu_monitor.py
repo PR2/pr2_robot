@@ -26,7 +26,9 @@ class ImuMonitor:
         self.odom_sub = rospy.Subscriber('base_odometry/odometer', Odometer, self.odom_cb)
 
         # diagnostics
-        self.pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray)
+        self.pub_diag = rospy.Publisher('/diagnostics', DiagnosticArray, queue_size= 1)
+
+        self.diag_timer = rospy.Timer(rospy.Duration(1), self.publish_diagnostics)
 
 
     def imu_cb(self, msg):
@@ -44,14 +46,16 @@ class ImuMonitor:
                 self.start_time = rospy.Time.now()
                 self.start_angle = self.last_angle
                 self.dist = dist
-        
+
             # do imu test if possible
             if rospy.Time.now() > self.start_time + rospy.Duration(10.0):
                 self.drift = fabs(self.start_angle - self.last_angle)*180/(pi*10)
                 self.start_time = rospy.Time.now()
                 self.start_angle = self.last_angle
                 self.last_measured = rospy.Time.now()
-                
+
+    def publish_diagnostics(self, event):
+        with self.lock:
             # publish diagnostics
             d = DiagnosticArray()
             d.header.stamp = rospy.Time.now()
@@ -77,7 +81,7 @@ class ImuMonitor:
                 elif age < 3600:
                     last_measured = '%f minutes ago'%(age/60)
                 else:
-                    last_measured = '%f hours ago'%(age/3600)                    
+                    last_measured = '%f hours ago'%(age/3600)
             ds.values = [
                 KeyValue('Last measured', last_measured),
                 KeyValue('Drift (deg/sec)', str(drift)) ]
