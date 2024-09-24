@@ -5,7 +5,7 @@ endif()
 project(pr2_controller_configuration)
 
 # Load catkin and all dependencies required for this package
-find_package(catkin REQUIRED COMPONENTS roslaunch)
+find_package(catkin REQUIRED)
 
 catkin_package()
 
@@ -27,6 +27,8 @@ install(FILES
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 
-# roslaunch checks
-roslaunch_add_file_check(pr2_default_controllers.launch)
-#roslaunch_add_file_check(pr2_jt_controllers.launch)
+if(CATKIN_ENABLE_TESTING)
+  find_package(roslaunch REQUIRED)
+  roslaunch_add_file_check(pr2_default_controllers.launch)
+  #roslaunch_add_file_check(pr2_jt_controllers.launch)
+endif()
